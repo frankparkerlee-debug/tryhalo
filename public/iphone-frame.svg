@@ -1,0 +1,38 @@
+<svg width="320" height="650" viewBox="0 0 320 650" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- iPhone 15 Pro style frame -->
+  <!-- Outer body -->
+  <rect x="2" y="2" width="316" height="646" rx="52" ry="52" fill="#1a1a1c" stroke="#2a2a2c" stroke-width="2"/>
+
+  <!-- Screen bezel -->
+  <rect x="10" y="10" width="300" height="630" rx="44" ry="44" fill="#000000"/>
+
+  <!-- Screen area (transparent for content overlay) -->
+  <rect x="12" y="12" width="296" height="626" rx="42" ry="42" fill="black"/>
+
+  <!-- Dynamic Island -->
+  <rect x="110" y="16" width="100" height="28" rx="14" fill="#1a1a1c"/>
+
+  <!-- Front camera lens in Dynamic Island -->
+  <circle cx="178" cy="30" r="5" fill="#0d0d0e"/>
+  <circle cx="178" cy="30" r="3" fill="#1a1a2a" opacity="0.6"/>
+
+  <!-- Side buttons -->
+  <!-- Power button (right) -->
+  <rect x="318" y="155" width="4" height="65" rx="2" fill="#2a2a2c"/>
+
+  <!-- Silent switch (left) -->
+  <rect x="-2" y="115" width="4" height="22" rx="2" fill="#2a2a2c"/>
+
+  <!-- Volume Up (left) -->
+  <rect x="-2" y="155" width="4" height="40" rx="2" fill="#2a2a2c"/>
+
+  <!-- Volume Down (left) -->
+  <rect x="-2" y="205" width="4" height="40" rx="2" fill="#2a2a2c"/>
+
+  <!-- Subtle highlights on edges for 3D effect -->
+  <rect x="3" y="60" width="1" height="200" rx="0.5" fill="white" opacity="0.03"/>
+  <rect x="316" y="60" width="1" height="200" rx="0.5" fill="white" opacity="0.03"/>
+
+  <!-- Bottom home indicator area hint -->
+  <rect x="120" y="620" width="80" height="4" rx="2" fill="#333"/>
+</svg>
