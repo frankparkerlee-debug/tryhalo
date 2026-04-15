@@ -363,17 +363,17 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating pills scattered across the viewport */}
-        <div className="floating-pill absolute top-[22%] right-[12%] z-10 hidden lg:flex" style={{ animationDelay: "0s" }}>
+        {/* Floating pills — desktop only */}
+        <div className="hidden lg:flex floating-pill absolute top-[22%] right-[12%] z-10" style={{ animationDelay: "0s" }}>
           <Zap className="w-3 h-3 text-halo-gold" /> More energy
         </div>
-        <div className="floating-pill absolute top-[45%] left-[8%] z-10 hidden lg:flex" style={{ animationDelay: "1.5s" }}>
+        <div className="hidden lg:flex floating-pill absolute top-[45%] left-[8%] z-10" style={{ animationDelay: "1.5s" }}>
           <Moon className="w-3 h-3 text-blue-300" /> Better sleep
         </div>
-        <div className="floating-pill absolute top-[35%] right-[25%] z-10 hidden lg:flex" style={{ animationDelay: "0.7s" }}>
+        <div className="hidden lg:flex floating-pill absolute top-[35%] right-[25%] z-10" style={{ animationDelay: "0.7s" }}>
           <Brain className="w-3 h-3 text-purple-300" /> Mental clarity
         </div>
-        <div className="floating-pill absolute bottom-[35%] right-[18%] z-10 hidden lg:flex" style={{ animationDelay: "2s" }}>
+        <div className="hidden lg:flex floating-pill absolute bottom-[35%] right-[18%] z-10" style={{ animationDelay: "2s" }}>
           <Heart className="w-3 h-3 text-rose-300" /> Feel balanced
         </div>
 
