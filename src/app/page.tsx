@@ -726,8 +726,8 @@ export default function Home() {
           ═══════════════════════════════════════════════ */}
       <section id="how-it-works" className="section-dark overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[650px]">
-          {/* LEFT: Phone UI mockup */}
-          <div className="relative overflow-hidden min-h-[300px] lg:min-h-[650px]">
+          {/* LEFT: Phone UI mockup — hidden on mobile */}
+          <div className="relative overflow-hidden hidden lg:block lg:min-h-[650px]">
             {/* Background */}
             <div className="absolute inset-0 bg-[#0f0f0f]">
               <div
