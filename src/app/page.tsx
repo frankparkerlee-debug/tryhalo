@@ -95,6 +95,7 @@ const programs = [
     cardBg: "#F5E6E0",
     accent: "#D4836B",
     icon: Heart,
+    image: "/hero-hrt.png",
     tier: "anchor",
     safety: "Hormone therapy may increase risk of blood clots, stroke, and certain cancers. Not suitable during pregnancy. Requires ongoing lab monitoring.",
   },
@@ -411,8 +412,18 @@ export default function Home() {
                   const Icon = program.icon;
                   return (
                     <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
-                      <div className="product-card-image">
-                        <Icon className="w-10 h-10 opacity-15" style={{ color: program.accent }} />
+                      <div className="product-card-image relative">
+                        {program.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={program.image}
+                            alt={`${program.name} — ${program.outcome}`}
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                            draggable={false}
+                          />
+                        ) : (
+                          <Icon className="w-10 h-10 opacity-15" style={{ color: program.accent }} />
+                        )}
                       </div>
                       <div className="product-card-info">
                         <div className="flex items-center justify-between">
@@ -487,17 +498,24 @@ export default function Home() {
         <div className="absolute inset-0 flex items-center justify-center">
           <HaloLogo size="xl" variant="dark" showText={false} className="opacity-[0.06] scale-[4]" />
         </div>
-        <div className="relative z-10 text-center max-w-2xl mx-auto px-6 py-20">
-          <p className="label-accent mb-4">Physician-led protocols</p>
-          <h2 className="headline-section text-3xl md:text-5xl text-white mb-4">
-            Not a supplement.
-            <br />
-            A clinical protocol.
-          </h2>
-          <p className="text-white/40 mb-8">Board-certified physicians design your protocol around your labs, your biology, your goals.</p>
-          <Link href="/quiz" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#1C1C1E] font-semibold text-sm hover:bg-white/90 transition-colors">
-            Get started <ArrowRight className="w-4 h-4" />
-          </Link>
+        <div className="relative z-10 text-center max-w-3xl mx-auto px-6 py-20">
+          <p className="label-accent mb-6">The Halo Difference</p>
+          <p className="manifesto-text text-white">
+            We believe wellness isn&rsquo;t about{" "}
+            <em>perfection</em> &mdash;
+            it&rsquo;s about waking up and actually feeling{" "}
+            <em>good</em>. About having
+            the <em>energy</em> to be
+            present, the <em>clarity</em>{" "}
+            to focus, and the{" "}
+            <em>confidence</em> that comes
+            from knowing your body is working with you, not against you.
+          </p>
+          <div className="mt-10">
+            <Link href="/quiz" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#1C1C1E] font-semibold text-sm hover:bg-white/90 transition-colors">
+              Begin your journey <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
