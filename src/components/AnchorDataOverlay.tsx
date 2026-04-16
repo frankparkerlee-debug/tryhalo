@@ -6,7 +6,7 @@
  * out of the way of the photograph's subject.
  *
  * HRT (Restoration) — 4 corner chips on desktop, 2 on mobile
- * TRT (Performance) — 3 chips (primary top-left + 2 corners), 2 on mobile
+ * TRT (Performance) — 3 chips on desktop (primary + 2 corners), 2 on mobile
  */
 
 import {
@@ -92,7 +92,7 @@ function SymbolicChip({
   const Icon = ICON_MAP[iconKey];
   return (
     <div
-      className={`absolute ${className} rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-2.5 py-1 md:px-3 md:py-1.5 inline-flex items-center gap-1.5 md:gap-2`}
+      className={`${className} absolute rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-2.5 py-1 md:px-3 md:py-1.5 items-center gap-1.5 md:gap-2`}
       style={{
         background,
         borderColor: "rgba(255, 255, 255, 0.55)",
@@ -117,12 +117,20 @@ function RestorationOverlay({
   accentColor,
   atmosphereTint,
 }: RestorationProps) {
-  // Mobile: diagonal pair (chip 0 + chip 3). Middle two hidden < md.
+  // On mobile we show only chips 0 and 3 (top-right + bottom-left),
+  // positioned to flank the subject's face without touching it:
+  //   Chip 0: top-right (above her shoulder)
+  //   Chip 3: bottom-left (below her torso, on the left)
+  // On desktop all 4 chips show at the four corners.
   const positions = [
-    "top-3 left-3 md:top-5 md:left-5",
-    "hidden md:inline-flex md:top-5 md:right-5 top-3 right-3",
-    "hidden md:inline-flex md:bottom-5 md:left-5 bottom-3 left-3",
-    "bottom-3 right-3 md:bottom-5 md:right-5",
+    // Chip 0 — mobile: top-right; desktop: top-left
+    "top-3 right-3 md:top-5 md:left-5 md:right-auto flex",
+    // Chip 1 — hidden on mobile; desktop: top-right
+    "hidden md:flex md:top-5 md:right-5",
+    // Chip 2 — hidden on mobile; desktop: bottom-left
+    "hidden md:flex md:bottom-5 md:left-5",
+    // Chip 3 — mobile: bottom-left; desktop: bottom-right
+    "bottom-3 left-3 md:bottom-5 md:right-5 md:left-auto flex",
   ];
 
   const chipBg = computeChipBg(atmosphereTint, 30);
@@ -164,10 +172,10 @@ function PerformanceOverlay({
       className="absolute inset-0 pointer-events-none z-10 select-none"
       aria-hidden="true"
     >
-      {/* Primary chip — featured, top-left. Slightly larger typography. */}
+      {/* Primary chip — featured, top-left corner. Always visible. */}
       {primary && PrimaryIcon && (
         <div
-          className="absolute top-3 left-3 md:top-5 md:left-5 rounded-full backdrop-blur-md border shadow-[0_8px_22px_rgba(0,0,0,0.1)] px-3 py-1.5 md:px-4 md:py-2 inline-flex items-center gap-2"
+          className="absolute top-3 left-3 md:top-5 md:left-5 flex rounded-full backdrop-blur-md border shadow-[0_8px_22px_rgba(0,0,0,0.1)] px-3 py-1.5 md:px-4 md:py-2 items-center gap-2"
           style={{
             background: chipBgStrong,
             borderColor: "rgba(255, 255, 255, 0.6)",
@@ -184,25 +192,27 @@ function PerformanceOverlay({
         </div>
       )}
 
-      {/* Secondary chip — desktop only (hidden on mobile to keep the face clear) */}
+      {/* Secondary chip (Recovery) — DESKTOP ONLY. Hidden on mobile to
+          prevent crowding around the primary Strength chip. */}
       {rest[0] && (
         <SymbolicChip
           label={rest[0].label}
           iconKey={rest[0].iconKey}
           accent={rest[0].accent || accentColor}
           background={chipBgLight}
-          className="hidden md:inline-flex md:bottom-5 md:left-5"
+          className="hidden md:flex md:top-5 md:right-5"
         />
       )}
 
-      {/* Third chip — bottom-right on mobile and desktop */}
+      {/* Third chip (Drive) — mobile: bottom-right (diagonal from primary).
+          Desktop: bottom-left so it anchors the other corner. */}
       {rest[1] && (
         <SymbolicChip
           label={rest[1].label}
           iconKey={rest[1].iconKey}
           accent={rest[1].accent || accentColor}
           background={chipBgLight}
-          className="bottom-3 right-3 md:bottom-auto md:top-5 md:right-5"
+          className="bottom-3 right-3 md:bottom-5 md:left-5 md:right-auto flex"
         />
       )}
     </div>
