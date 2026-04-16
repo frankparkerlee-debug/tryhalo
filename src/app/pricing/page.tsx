@@ -152,7 +152,7 @@ export default function PricingPage() {
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-serif text-xl font-semibold text-halo-charcoal">
+                        <h3 className="font-sans text-xl font-semibold text-halo-charcoal">
                           {program.name}
                         </h3>
                         {!program.available && (

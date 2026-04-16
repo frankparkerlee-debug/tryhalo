@@ -17,7 +17,7 @@ export default function TermsPage() {
 
         <div className="space-y-8">
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               1. Platform Description
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -30,7 +30,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               2. Eligibility
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -42,7 +42,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               3. Account Responsibilities
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -54,7 +54,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               4. Medical Disclaimer
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -68,7 +68,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               5. Payment and Billing
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
@@ -85,7 +85,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               6. Cancellation
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -97,7 +97,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               7. Intellectual Property
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -108,7 +108,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               8. Limitation of Liability
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -122,7 +122,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               9. Governing Law
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -134,7 +134,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               10. Changes to Terms
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -145,7 +145,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               11. Contact
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">

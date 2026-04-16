@@ -17,7 +17,7 @@ export default function PrivacyPage() {
 
         <div className="prose-halo space-y-8">
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               1. Introduction
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               2. Information We Collect
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               3. How We Use Your Information
             </h2>
             <ul className="list-disc pl-5 space-y-2 text-sm text-halo-charcoal/70">
@@ -71,7 +71,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               4. How We Share Your Information
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               5. HIPAA Compliance
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               6. Data Security
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               7. Your Rights
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               8. Cookies and Tracking
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -154,7 +154,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               9. Changes to This Policy
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -166,7 +166,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               10. Contact Us
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">

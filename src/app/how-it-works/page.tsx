@@ -130,7 +130,7 @@ export default function HowItWorksPage() {
                         <span className="text-sm font-bold text-[#6B7B6E]/50">
                           {step.num}
                         </span>
-                        <h3 className="font-serif text-xl font-semibold text-halo-charcoal">
+                        <h3 className="font-sans text-xl font-semibold text-halo-charcoal">
                           {step.title}
                         </h3>
                       </div>
@@ -221,7 +221,7 @@ export default function HowItWorksPage() {
                   key={i}
                   className="aos-child bg-white rounded-2xl p-7 border border-black/[0.06] shadow-sm"
                 >
-                  <h3 className="font-serif text-lg font-semibold text-halo-charcoal mb-2">
+                  <h3 className="font-sans text-lg font-semibold text-halo-charcoal mb-2">
                     {item.title}
                   </h3>
                   <p className="text-sm text-halo-charcoal/60 leading-relaxed">

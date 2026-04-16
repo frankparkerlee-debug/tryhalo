@@ -24,7 +24,7 @@ export default function PricingCard({
   return (
     <div className="max-w-xl mx-auto">
       <div className="bg-white rounded-2xl border border-[#E5E4E0] p-8 md:p-10 card-hover">
-        <h3 className="font-serif text-2xl font-bold text-halo-charcoal mb-2">
+        <h3 className="font-sans text-2xl font-bold text-halo-charcoal mb-2">
           {programName}
         </h3>
         <div className="flex items-baseline gap-2 mb-1">

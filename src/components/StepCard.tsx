@@ -13,7 +13,7 @@ export default function StepCard({ number, title, description }: StepCardProps) 
         </span>
       </div>
       <div>
-        <h3 className="font-serif text-xl font-semibold text-halo-charcoal mb-1.5 tracking-[-0.01em]">
+        <h3 className="font-sans text-xl font-semibold text-halo-charcoal mb-1.5 tracking-[-0.01em]">
           {title}
         </h3>
         <p className="text-halo-charcoal/60 leading-relaxed text-sm">

@@ -17,7 +17,7 @@ export default function ProgramCard({
       href={href}
       className="group block bg-halo-cream rounded-2xl p-8 card-hover"
     >
-      <h3 className="font-serif text-xl font-semibold text-halo-charcoal mb-3 group-hover:text-halo-charcoal/70 transition-colors duration-300">
+      <h3 className="font-sans text-xl font-semibold text-halo-charcoal mb-3 group-hover:text-halo-charcoal/70 transition-colors duration-300">
         {title}
       </h3>
       <p className="text-halo-charcoal/60 leading-relaxed text-sm mb-5">

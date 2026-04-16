@@ -114,7 +114,7 @@ export default function AboutPage() {
                   <div className="w-12 h-12 rounded-full border-[1.5px] border-[#E5E4E0]/30 flex items-center justify-center mb-5">
                     <pillar.icon className="w-5 h-5 text-[#6B7B6E]" />
                   </div>
-                  <h3 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+                  <h3 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
                     {pillar.title}
                   </h3>
                   <p className="text-sm text-halo-charcoal/60 leading-relaxed">
@@ -173,7 +173,7 @@ export default function AboutPage() {
                   <div className="w-10 h-10 rounded-full border border-[#E5E4E0]/30 flex items-center justify-center mx-auto mb-4">
                     <item.icon className="w-4 h-4 text-[#6B7B6E]" />
                   </div>
-                  <h3 className="font-serif text-base font-semibold text-white mb-2">
+                  <h3 className="font-sans text-base font-semibold text-white mb-2">
                     {item.title}
                   </h3>
                   <p className="text-sm text-white/40 leading-relaxed">

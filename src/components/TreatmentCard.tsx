@@ -12,7 +12,7 @@ export default function TreatmentCard({
   return (
     <div className="bg-white rounded-2xl p-7 card-hover">
       <div className="flex items-start justify-between gap-3 mb-3">
-        <h3 className="font-serif text-lg font-semibold text-halo-charcoal">
+        <h3 className="font-sans text-lg font-semibold text-halo-charcoal">
           {title}
         </h3>
         {comingSoon && (

@@ -58,7 +58,7 @@ export default function FAQ({ items, categories }: FAQProps) {
               }
               className="w-full flex items-center justify-between py-6 text-left group"
             >
-              <span className="font-serif text-lg font-semibold text-halo-charcoal pr-8 group-hover:text-halo-charcoal/70 transition-colors duration-300 tracking-[-0.01em]">
+              <span className="font-sans text-lg font-semibold text-halo-charcoal pr-8 group-hover:text-halo-charcoal/70 transition-colors duration-300 tracking-[-0.01em]">
                 {item.question}
               </span>
               <ChevronDown

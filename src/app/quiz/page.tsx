@@ -508,7 +508,7 @@ export default function QuizPage() {
           {/* ============ STEP 1: GENDER ============ */}
           {step === 1 && (
             <div className="text-center">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-white mb-3">
+              <h1 className="font-sans text-2xl md:text-3xl font-bold text-white mb-3">
                 Let&apos;s find what&apos;s right for you.
               </h1>
               <p className="text-white/40 text-sm mb-10">
@@ -531,7 +531,7 @@ export default function QuizPage() {
           {/* ============ STEP 2: AGE ============ */}
           {step === 2 && (
             <div className="text-center">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-white mb-10">
+              <h1 className="font-sans text-2xl md:text-3xl font-bold text-white mb-10">
                 What&apos;s your age range?
               </h1>
               <div className="flex flex-col gap-3 max-w-sm mx-auto">
@@ -551,7 +551,7 @@ export default function QuizPage() {
           {/* ============ STEP 3: GOALS ============ */}
           {step === 3 && (
             <div className="text-center">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-white mb-3">
+              <h1 className="font-sans text-2xl md:text-3xl font-bold text-white mb-3">
                 What are you most looking to improve?
               </h1>
               <p className="text-white/40 text-sm mb-10">Select up to 3.</p>
@@ -585,7 +585,7 @@ export default function QuizPage() {
           {/* ============ STEP 4: SYMPTOMS ============ */}
           {step === 4 && (
             <div className="text-center">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-white mb-3">
+              <h1 className="font-sans text-2xl md:text-3xl font-bold text-white mb-3">
                 Which of these do you experience?
               </h1>
               <p className="text-white/40 text-sm mb-10">Select all that apply.</p>
@@ -616,7 +616,7 @@ export default function QuizPage() {
           {/* ============ STEP 5: MEDICATIONS ============ */}
           {step === 5 && (
             <div className="text-center">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-white mb-10">
+              <h1 className="font-sans text-2xl md:text-3xl font-bold text-white mb-10">
                 Are you currently taking any medications?
               </h1>
               <div className="flex flex-col gap-3 max-w-sm mx-auto">
@@ -658,7 +658,7 @@ export default function QuizPage() {
           {/* ============ STEP 6: SAFETY ============ */}
           {step === 6 && (
             <div className="text-center">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-white mb-3">
+              <h1 className="font-sans text-2xl md:text-3xl font-bold text-white mb-3">
                 Do any of these apply to you?
               </h1>
               <p className="text-white/40 text-sm mb-10">
@@ -700,7 +700,7 @@ export default function QuizPage() {
                   animation: 'spin 3s linear infinite, ring-pulse 4s ease-in-out infinite',
                 }}
               />
-              <p className="font-serif text-xl md:text-2xl font-bold text-white mb-3">
+              <p className="font-sans text-xl md:text-2xl font-bold text-white mb-3">
                 Analyzing your responses...
               </p>
               <p className="text-white/30 text-sm">
@@ -724,7 +724,7 @@ export default function QuizPage() {
                   </button>
                   <Link href="/" className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full border-[1.5px] border-[#1C1C1E]" />
-                    <span className="font-serif text-lg font-bold text-[#2D2D2D]">
+                    <span className="font-sans text-lg font-bold text-[#2D2D2D]">
                       Halo
                     </span>
                   </Link>
@@ -733,7 +733,7 @@ export default function QuizPage() {
               </div>
 
               <div className="pt-16 max-w-2xl mx-auto">
-                <h1 className="font-serif text-2xl md:text-3xl font-bold text-[#2D2D2D] mb-10 text-center">
+                <h1 className="font-sans text-2xl md:text-3xl font-bold text-[#2D2D2D] mb-10 text-center">
                   Based on your responses, here&apos;s what we&apos;d recommend.
                 </h1>
 
@@ -743,7 +743,7 @@ export default function QuizPage() {
                     <p className="text-xs font-semibold text-[#6B7B6E] uppercase tracking-widest mb-4">
                       Recommended for you
                     </p>
-                    <h2 className="font-serif text-2xl font-bold text-[#2D2D2D] mb-1">
+                    <h2 className="font-sans text-2xl font-bold text-[#2D2D2D] mb-1">
                       {programs[primaryRec].name}
                     </h2>
                     <p className="text-[#2D2D2D]/40 text-sm mb-4">
@@ -805,7 +805,7 @@ export default function QuizPage() {
                           href={programs[key].href}
                           className="rounded-xl border border-[#2D2D2D]/10 bg-white p-6 hover:border-[#2D2D2D]/20 transition-all duration-300 hover:shadow-sm group"
                         >
-                          <h3 className="font-serif text-lg font-bold text-[#2D2D2D] mb-1 group-hover:text-[#2D2D2D]/70 transition-colors">
+                          <h3 className="font-sans text-lg font-bold text-[#2D2D2D] mb-1 group-hover:text-[#2D2D2D]/70 transition-colors">
                             {programs[key].name}
                           </h3>
                           <p className="text-[#2D2D2D]/40 text-xs mb-3">
@@ -841,7 +841,7 @@ export default function QuizPage() {
                           className="rounded-xl border border-[#2D2D2D]/10 bg-white/60 p-6"
                         >
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-serif text-lg font-bold text-[#2D2D2D]">
+                            <h3 className="font-sans text-lg font-bold text-[#2D2D2D]">
                               {programs[key].name}
                             </h3>
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#2D2D2D]/[0.06] text-[#2D2D2D]/40 font-medium">
@@ -866,7 +866,7 @@ export default function QuizPage() {
                 {/* EMAIL CAPTURE */}
                 <div className="mt-10 pt-10 border-t border-[#2D2D2D]/[0.06]">
                   <div className="text-center mb-6">
-                    <p className="font-serif text-lg font-bold text-[#2D2D2D] mb-2">
+                    <p className="font-sans text-lg font-bold text-[#2D2D2D] mb-2">
                       Lock in your founding rate.
                     </p>
                     <p className="text-sm text-[#2D2D2D]/50">

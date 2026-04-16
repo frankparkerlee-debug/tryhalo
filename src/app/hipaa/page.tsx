@@ -24,7 +24,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               1. Who We Are
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -37,7 +37,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               2. How We Use and Disclose Your Health Information
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
@@ -70,7 +70,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               3. Uses and Disclosures Requiring Your Authorization
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -83,7 +83,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               4. Your Rights
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
@@ -123,7 +123,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               5. Our Responsibilities
             </h2>
             <ul className="list-disc pl-5 space-y-2 text-sm text-halo-charcoal/70">
@@ -136,7 +136,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               6. Filing a Complaint
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
@@ -160,7 +160,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               7. Changes to This Notice
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
@@ -171,7 +171,7 @@ export default function HipaaPage() {
           </section>
 
           <section>
-            <h2 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
               8. Contact Information
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
