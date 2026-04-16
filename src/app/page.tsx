@@ -100,10 +100,10 @@ const programs = [
     overlay: {
       variant: "restoration" as const,
       chips: [
-        { label: "Estradiol", value: "82 pg/mL" },
-        { label: "Mood", value: "Steady" },
-        { label: "Sleep", value: "7.8h" },
-        { label: "Mental Clarity", value: "+32%" },
+        { label: "Estradiol", iconKey: "up" as const },
+        { label: "Mood", iconKey: "waves" as const },
+        { label: "Sleep", iconKey: "moon" as const },
+        { label: "Clarity", iconKey: "sparkles" as const },
       ],
     },
     tier: "anchor",
@@ -129,9 +129,9 @@ const programs = [
     overlay: {
       variant: "performance" as const,
       chips: [
-        { label: "Strength", value: "+23% in 90 days" },
-        { label: "Recovery", value: "Faster" },
-        { label: "Drive", value: "Restored" },
+        { label: "Strength", iconKey: "plus" as const },
+        { label: "Recovery", iconKey: "rotate" as const },
+        { label: "Drive", iconKey: "up" as const },
       ],
     },
     tier: "anchor",
