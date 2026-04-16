@@ -95,7 +95,7 @@ const programs = [
     cardBg: "#F5E6E0",
     accent: "#D4836B",
     icon: Heart,
-    image: "/hero-hrt.png",
+    image: "/hero-hrt-person.jpg",
     tier: "anchor",
     safety: "Hormone therapy may increase risk of blood clots, stroke, and certain cancers. Not suitable during pregnancy. Requires ongoing lab monitoring.",
   },
@@ -115,6 +115,7 @@ const programs = [
     cardBg: "#E3E8EE",
     accent: "#5A7394",
     icon: Zap,
+    image: "/hero-trt-person.jpg",
     tier: "anchor",
     safety: "TRT may affect fertility and is not appropriate for men planning conception. May increase red blood cell count. Requires regular lab monitoring.",
   },
@@ -135,6 +136,7 @@ const programs = [
     cardBg: "#EDE8DC",
     accent: "#B8974E",
     icon: Activity,
+    image: "/support-glp1.jpg",
     tier: "support",
     safety: "GLP-1 medications may cause nausea, vomiting, diarrhea, or pancreatitis. Not for personal or family history of MTC or MEN 2. Requires lab monitoring.",
   },
@@ -154,6 +156,7 @@ const programs = [
     cardBg: "#E4EBE3",
     accent: "#6B8F68",
     icon: Moon,
+    image: "/support-peptide.jpg",
     tier: "support",
     safety: "Peptide therapy is prescribed off-label. Not FDA-approved for anti-aging. May cause injection site reactions, headache, or flushing.",
   },
@@ -173,6 +176,7 @@ const programs = [
     cardBg: "#E8E3ED",
     accent: "#7B6B8F",
     icon: Brain,
+    image: "/support-nad.jpg",
     tier: "support",
     safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment.",
   },
@@ -439,22 +443,32 @@ export default function Home() {
                 })}
             </div>
 
-            {/* Row 2: PRIMARY SUPPORT programs — GLP-1, Peptide, NAD+ */}
+            {/* Row 2: PRIMARY SUPPORT programs — slim banner cards with image backgrounds */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               {personalizedPrograms
                 .filter((p) => p.tier === "support" && p.name !== "Vitality Injections")
                 .map((program) => {
                   const Icon = program.icon;
                   return (
-                    <Link key={program.name} href={program.href} className="flex items-center gap-3 p-3.5 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors group">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: program.cardBg }}>
-                        <Icon className="w-4 h-4" style={{ color: program.accent }} />
+                    <Link key={program.name} href={program.href} className="support-card group">
+                      {/* Banner background image */}
+                      {program.image && (
+                        <div className="support-card-bg" style={{ background: program.cardBg }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={program.image} alt="" draggable={false} />
+                        </div>
+                      )}
+                      {/* Foreground content */}
+                      <div className="support-card-content flex items-center gap-3 p-3.5 backdrop-blur-[2px] bg-white/55">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: program.cardBg }}>
+                          <Icon className="w-4 h-4" style={{ color: program.accent }} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-halo-charcoal truncate">{program.outcome}</p>
+                          <p className="text-[11px] text-halo-charcoal/50">{program.name.replace(" Therapy", "").replace(" Weight Management", "")} &middot; {program.startingPrice}</p>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/25 flex-shrink-0 group-hover:text-halo-charcoal/60 transition-colors" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-halo-charcoal truncate">{program.outcome}</p>
-                        <p className="text-[11px] text-halo-charcoal/40">{program.name.replace(" Therapy", "").replace(" Weight Management", "")} &middot; {program.startingPrice}</p>
-                      </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/15 flex-shrink-0" />
                     </Link>
                   );
                 })}
@@ -491,14 +505,19 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          1b · FULL-BLEED PRODUCT ART
+          1b · FULL-BLEED — The Halo Difference (cinematic editorial)
           ═══════════════════════════════════════════════ */}
-      <section className="full-bleed-product bg-[#2A2520]">
-        {/* Product image placeholder — this will be the dramatic diagonal vial shot */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <HaloLogo size="xl" variant="dark" showText={false} className="opacity-[0.06] scale-[4]" />
+      <section className="full-bleed-cinematic bg-[#1A1A1F]">
+        {/* Cinematic background image */}
+        <div className="full-bleed-cinematic-image">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/halo-difference.jpg" alt="" draggable={false} />
         </div>
-        <div className="relative z-10 text-center max-w-3xl mx-auto px-6 py-20">
+        {/* Gradient scrim for text legibility */}
+        <div className="full-bleed-cinematic-scrim" />
+
+        {/* Content layer */}
+        <div className="relative z-10 text-center max-w-3xl mx-auto px-6 py-28 md:py-36">
           <p className="label-accent mb-6">The Halo Difference</p>
           <p className="manifesto-text text-white">
             We believe wellness isn&rsquo;t about{" "}
