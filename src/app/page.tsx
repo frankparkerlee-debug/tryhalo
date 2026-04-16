@@ -194,7 +194,7 @@ const programs = [
     cardBg: "#E8E3ED",
     accent: "#7B6B8F",
     icon: Brain,
-    image: "/support-nad.jpg",
+    image: "/support-nad.png",
     tier: "support",
     safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment.",
   },
