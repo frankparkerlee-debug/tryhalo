@@ -28,6 +28,7 @@ import CountUpNumber from "@/components/CountUpNumber";
 import FAQ from "@/components/FAQ";
 import HaloLogo from "@/components/HaloLogo";
 import HeroVideo from "@/components/HeroVideo";
+import AnchorDataOverlay from "@/components/AnchorDataOverlay";
 import { usePersonalization } from "@/hooks/usePersonalization";
 
 /* ─── DATA ────────────────────────────────────────────────────── */
@@ -95,6 +96,15 @@ const programs = [
     cardBg: "#F5E6E0",
     accent: "#D4836B",
     icon: Heart,
+    image: "/hero-hrt-person.jpg",
+    overlay: {
+      label: "Estradiol",
+      value: "82",
+      unit: "pg/mL",
+      trend: "+24% / 90 days",
+      secondary: { label: "Sleep", value: "7.8h" },
+      position: "top-right" as const,
+    },
     tier: "anchor",
     safety: "Hormone therapy may increase risk of blood clots, stroke, and certain cancers. Not suitable during pregnancy. Requires ongoing lab monitoring.",
   },
@@ -114,6 +124,15 @@ const programs = [
     cardBg: "#E3E8EE",
     accent: "#5A7394",
     icon: Zap,
+    image: "/hero-trt-person.jpg",
+    overlay: {
+      label: "Testosterone",
+      value: "742",
+      unit: "ng/dL",
+      trend: "+38% / 90 days",
+      secondary: { label: "Recovery", value: "94%" },
+      position: "top-left" as const,
+    },
     tier: "anchor",
     safety: "TRT may affect fertility and is not appropriate for men planning conception. May increase red blood cell count. Requires regular lab monitoring.",
   },
@@ -410,17 +429,27 @@ export default function Home() {
                 .slice(0, 2)
                 .map((program) => {
                   const Icon = program.icon;
+                  const hasImage = Boolean(program.image);
                   return (
                     <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
                       <div className="product-card-image relative">
-                        {program.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={program.image}
-                            alt={`${program.name} — ${program.outcome}`}
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                            draggable={false}
-                          />
+                        {hasImage ? (
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={program.image}
+                              alt={`${program.name} — ${program.outcome}`}
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                              draggable={false}
+                            />
+                            {/* Code-built glassmorphic data overlay — pixel-perfect, never rendered by AI */}
+                            {program.overlay && (
+                              <AnchorDataOverlay
+                                {...program.overlay}
+                                accentColor={program.accent}
+                              />
+                            )}
+                          </>
                         ) : (
                           <Icon className="w-10 h-10 opacity-15" style={{ color: program.accent }} />
                         )}
