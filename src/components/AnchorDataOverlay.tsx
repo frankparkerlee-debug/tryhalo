@@ -1,20 +1,20 @@
 /**
- * AnchorDataOverlay — integrated overlay variants for anchor hero cards
+ * AnchorDataOverlay — purpose-built overlay per program
  * ─────────────────────────────────────────────────────────────────────
- * Approach: overlays read as *part of the scene* not a dashboard HUD.
+ * Each anchor program has its own overlay *layout* tuned to its story:
  *
- * PERFORMANCE (TRT) — an arcing sparkline traced across the frame like a
- *   light trail + one clean metric card. The line glows softly in the
- *   image's own color world so it feels atmospheric, not applied.
+ * HRT (Restoration) — 4 chips in a scattered constellation around the
+ *   subject's face. Feels like facets of wholeness returning at once.
  *
- * RESTORATION (HRT) — a constellation of small tinted chips floating
- *   around the subject + a soft settling wave at the base. Chips carry
- *   a faint image-world tint so they feel like part of the photograph.
+ * TRT (Performance) — 3 chips in an asymmetric vertical stack, each
+ *   with a punchier feel. The first chip is larger/primary, the other
+ *   two reinforce beneath it. Masculine minimalism, not a dashboard.
+ *
+ * Both share visual DNA (glassmorphic, image-tinted) but never look
+ * identical.
  */
 
-type Position = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
-interface RestorationChip {
+interface Chip {
   label: string;
   value: string;
   accent?: string;
@@ -27,179 +27,33 @@ interface SharedProps {
   atmosphereTint?: string;
 }
 
-interface PerformanceProps extends SharedProps {
-  variant: "performance";
-  label: string;
-  value: string;
-  unit: string;
-  trend?: string;
-  position?: Position;
-}
-
 interface RestorationProps extends SharedProps {
   variant: "restoration";
-  chips: RestorationChip[];
+  chips: Chip[];
 }
 
-type AnchorDataOverlayProps = PerformanceProps | RestorationProps;
-
-/* ─── PERFORMANCE — Line graph with real data points ────────── */
-
-// 12 data points (90-day testosterone progression) — polyline, no smoothing.
-// Starts low-left around y=210 (baseline), climbs to y=30 at the top-right.
-const PERFORMANCE_POINTS: Array<[number, number]> = [
-  [0, 210],
-  [45, 205],
-  [90, 190],
-  [135, 175],
-  [180, 160],
-  [225, 140],
-  [270, 115],
-  [315, 105],
-  [360, 85],
-  [405, 70],
-  [450, 55],
-  [495, 40],
-  [540, 30],
-];
-
-const PERFORMANCE_POLYLINE = PERFORMANCE_POINTS.map(([x, y]) => `${x},${y}`).join(" ");
-const PERFORMANCE_AREA_PATH = `M ${PERFORMANCE_POLYLINE.replace(/ /g, " L ")} L 540 260 L 0 260 Z`;
-
-const POSITION_CLASSES: Record<Position, string> = {
-  "top-left": "top-4 left-4 md:top-5 md:left-5",
-  "top-right": "top-4 right-4 md:top-5 md:right-5",
-  "bottom-left": "bottom-4 left-4 md:bottom-5 md:left-5",
-  "bottom-right": "bottom-4 right-4 md:bottom-5 md:right-5",
-};
-
-function PerformanceOverlay({
-  label,
-  value,
-  unit,
-  trend,
-  accentColor,
-  atmosphereTint,
-  position = "bottom-left",
-}: PerformanceProps) {
-  const chipBg = atmosphereTint
-    ? `color-mix(in srgb, ${atmosphereTint} 35%, white 65%)`
-    : "rgba(255, 255, 255, 0.65)";
-
-  return (
-    <>
-      {/* Line graph: polyline connecting 90-day data points */}
-      <svg
-        className="absolute inset-0 w-full h-full pointer-events-none z-[1]"
-        viewBox="0 0 540 260"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <defs>
-          {/* Fill gradient under the line — fades from accent to transparent */}
-          <linearGradient id="perf-area-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0.25" />
-            <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
-          </linearGradient>
-          {/* Line stroke gradient — faint on the left, strong on the right */}
-          <linearGradient id="perf-line-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0.35" />
-            <stop offset="100%" stopColor={accentColor} stopOpacity="1" />
-          </linearGradient>
-        </defs>
-
-        {/* Horizontal grid reference lines — subtle baseline context */}
-        {[60, 130, 200].map((y) => (
-          <line
-            key={y}
-            x1="0"
-            y1={y}
-            x2="540"
-            y2={y}
-            stroke={accentColor}
-            strokeOpacity="0.08"
-            strokeWidth="0.75"
-            strokeDasharray="2 4"
-          />
-        ))}
-
-        {/* Area fill under the polyline */}
-        <path d={PERFORMANCE_AREA_PATH} fill="url(#perf-area-grad)" />
-
-        {/* The line graph itself — straight segments, no smoothing */}
-        <polyline
-          points={PERFORMANCE_POLYLINE}
-          fill="none"
-          stroke="url(#perf-line-grad)"
-          strokeWidth="2"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-
-        {/* Data point nodes — every 3rd point visible so it reads as a real chart */}
-        {PERFORMANCE_POINTS.filter((_, i) => i % 3 === 0).map(([x, y], i) => (
-          <g key={`pt-${i}`}>
-            <circle
-              cx={x}
-              cy={y}
-              r="3"
-              fill="white"
-              stroke={accentColor}
-              strokeWidth="1.5"
-            />
-          </g>
-        ))}
-
-        {/* Prominent current-value marker at the final point */}
-        <circle cx="540" cy="30" r="4" fill={accentColor} />
-        <circle cx="540" cy="30" r="9" fill={accentColor} fillOpacity="0.25" />
-      </svg>
-
-      {/* Single tinted metric card */}
-      <div
-        className={`absolute ${POSITION_CLASSES[position]} z-10 pointer-events-none select-none`}
-        aria-hidden="true"
-      >
-        <div
-          className="rounded-xl backdrop-blur-sm border shadow-[0_8px_24px_rgba(0,0,0,0.08)] px-3.5 py-2.5 min-w-[150px]"
-          style={{
-            background: chipBg,
-            borderColor: "rgba(255, 255, 255, 0.55)",
-          }}
-        >
-          <p className="text-[9px] uppercase tracking-wider text-halo-charcoal/60 font-semibold leading-tight">
-            {label}
-          </p>
-          <div className="flex items-baseline gap-1 mt-0.5">
-            <span className="text-xl font-bold text-halo-charcoal leading-tight tracking-tight">
-              {value}
-            </span>
-            <span className="text-[11px] text-halo-charcoal/60 font-medium">
-              {unit}
-            </span>
-          </div>
-          {trend && (
-            <p
-              className="text-[10px] font-semibold mt-0.5"
-              style={{ color: accentColor }}
-            >
-              ↗ {trend}
-            </p>
-          )}
-        </div>
-      </div>
-    </>
-  );
+interface PerformanceProps extends SharedProps {
+  variant: "performance";
+  chips: Chip[];
 }
 
-/* ─── RESTORATION — Distributed chips only ────────────────── */
+type AnchorDataOverlayProps = RestorationProps | PerformanceProps;
+
+/* ─── Helper: compute a soft image-tinted chip background ─── */
+
+function computeChipBg(atmosphereTint?: string, intensity = 30) {
+  if (!atmosphereTint) return "rgba(255, 255, 255, 0.7)";
+  return `color-mix(in srgb, ${atmosphereTint} ${intensity}%, white ${100 - intensity}%)`;
+}
+
+/* ─── RESTORATION — Constellation of 4 chips around the subject ─── */
 
 function RestorationOverlay({
   chips,
   accentColor,
   atmosphereTint,
 }: RestorationProps) {
-  // Chips placed to surround the subject without covering the face
+  // Scattered positions suggesting facets returning simultaneously.
   const positions = [
     "top-5 right-5 md:top-6 md:right-8",
     "top-[38%] right-4 md:right-6",
@@ -207,9 +61,7 @@ function RestorationOverlay({
     "top-8 left-5 md:top-10 md:left-6",
   ];
 
-  const chipBg = atmosphereTint
-    ? `color-mix(in srgb, ${atmosphereTint} 30%, white 70%)`
-    : "rgba(255, 255, 255, 0.7)";
+  const chipBg = computeChipBg(atmosphereTint, 30);
 
   return (
     <div
@@ -237,7 +89,95 @@ function RestorationOverlay({
           </span>
         </div>
       ))}
+    </div>
+  );
+}
 
+/* ─── PERFORMANCE — 3 chips in an asymmetric vertical stack ─── */
+
+function PerformanceOverlay({
+  chips,
+  accentColor,
+  atmosphereTint,
+}: PerformanceProps) {
+  const chipBgStrong = computeChipBg(atmosphereTint, 35);
+  const chipBgLight = computeChipBg(atmosphereTint, 20);
+
+  const [primary, ...rest] = chips;
+
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none z-10 select-none"
+      aria-hidden="true"
+    >
+      {/* Primary chip — bigger, featured, top-left to anchor the eye */}
+      {primary && (
+        <div
+          className="absolute top-5 left-5 md:top-7 md:left-7 rounded-2xl backdrop-blur-md border shadow-[0_10px_28px_rgba(0,0,0,0.1)] px-4 py-3 flex flex-col"
+          style={{
+            background: chipBgStrong,
+            borderColor: "rgba(255, 255, 255, 0.6)",
+            minWidth: "132px",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: primary.accent || accentColor }}
+            />
+            <span className="text-[9px] uppercase tracking-wider text-halo-charcoal/55 font-bold">
+              {primary.label}
+            </span>
+          </div>
+          <span className="text-base font-bold text-halo-charcoal leading-tight tracking-tight">
+            {primary.value}
+          </span>
+        </div>
+      )}
+
+      {/* Secondary chip — smaller, right side, offset vertically from primary */}
+      {rest[0] && (
+        <div
+          className="absolute top-[22%] right-5 md:right-8 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
+          style={{
+            background: chipBgLight,
+            borderColor: "rgba(255, 255, 255, 0.55)",
+          }}
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ background: rest[0].accent || accentColor }}
+          />
+          <span className="text-[10px] font-semibold text-halo-charcoal/80 whitespace-nowrap">
+            {rest[0].label}
+          </span>
+          <span className="text-[10px] text-halo-charcoal/60 whitespace-nowrap">
+            {rest[0].value}
+          </span>
+        </div>
+      )}
+
+      {/* Third chip — bottom-right, reinforces */}
+      {rest[1] && (
+        <div
+          className="absolute bottom-6 right-6 md:bottom-8 md:right-8 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
+          style={{
+            background: chipBgLight,
+            borderColor: "rgba(255, 255, 255, 0.55)",
+          }}
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ background: rest[1].accent || accentColor }}
+          />
+          <span className="text-[10px] font-semibold text-halo-charcoal/80 whitespace-nowrap">
+            {rest[1].label}
+          </span>
+          <span className="text-[10px] text-halo-charcoal/60 whitespace-nowrap">
+            {rest[1].value}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

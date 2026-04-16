@@ -127,11 +127,10 @@ const programs = [
     icon: Zap,
     image: "/hero-trt-person.jpg",
     overlay: {
-      variant: "restoration" as const,
+      variant: "performance" as const,
       chips: [
-        { label: "Energy", value: "All day" },
-        { label: "Recovery", value: "12 hours" },
-        { label: "Strength", value: "+23%" },
+        { label: "Strength", value: "+23% in 90 days" },
+        { label: "Recovery", value: "Faster" },
         { label: "Drive", value: "Restored" },
       ],
     },
