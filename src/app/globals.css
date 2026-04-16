@@ -533,16 +533,16 @@ body {
    =========================== */
 
 .headline-hero {
-  font-family: var(--font-serif);
-  font-weight: 800;
-  line-height: 1.08;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.03em;
 }
 
 .headline-section {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.12;
   letter-spacing: -0.02em;
 }
 
@@ -551,11 +551,11 @@ body {
    =========================== */
 
 .manifesto-text {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
   font-weight: 400;
-  font-style: italic;
-  line-height: 1.55;
+  font-style: normal;
+  line-height: 1.65;
   letter-spacing: -0.01em;
   color: var(--color-halo-charcoal);
   text-align: center;
@@ -1014,12 +1014,18 @@ body {
 
 .product-card-image {
   width: 100%;
-  aspect-ratio: 4/3;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .product-card-image {
+    height: 160px;
+  }
 }
 
 .product-card-info {

@@ -18,7 +18,6 @@ import {
   Activity,
   Stethoscope,
   GraduationCap,
-  Smartphone,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -356,59 +355,64 @@ export default function Home() {
             {heroHeadline.line2}
           </h1>
 
-          {/* Hero grid — 2 large featured cards + smaller category cards + coming soon */}
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
-            {/* Top row: 2 large program cards with image areas */}
-            {personalizedPrograms.slice(0, 2).map((program) => {
-              const Icon = program.icon;
-              return (
-                <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
-                  <div className="product-card-image">
-                    {/* Image placeholder — replace with real product photo */}
-                    <Icon className="w-16 h-16 opacity-20" style={{ color: program.accent }} />
-                  </div>
-                  <div className="product-card-info">
-                    <h3 className="font-serif text-lg md:text-xl font-bold text-halo-charcoal mb-0.5">{program.outcome}</h3>
-                    <p className="text-xs text-halo-charcoal/40 mb-2">{program.name} &middot; {program.foundingPrice}</p>
-                    <span className="text-xs font-medium" style={{ color: program.accent }}>Get started &rarr;</span>
-                  </div>
-                </Link>
-              );
-            })}
+          {/* Hero grid — compact, Hims-style */}
+          <div className="space-y-3">
+            {/* Row 1: 2 featured program cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {personalizedPrograms.slice(0, 2).map((program) => {
+                const Icon = program.icon;
+                return (
+                  <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
+                    <div className="product-card-image">
+                      <Icon className="w-10 h-10 opacity-15" style={{ color: program.accent }} />
+                    </div>
+                    <div className="product-card-info">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm md:text-base font-semibold text-halo-charcoal">{program.outcome}</h3>
+                          <p className="text-xs text-halo-charcoal/40">{program.name} &middot; {program.foundingPrice}</p>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-halo-charcoal/20 group-hover:text-halo-charcoal/50 transition-colors" />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
 
-            {/* Bottom row: smaller category links */}
-            {personalizedPrograms.slice(2).map((program) => {
-              const Icon = program.icon;
-              return (
-                <Link key={program.name} href={program.href} className="flex items-center gap-3 p-4 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/20 transition-colors group">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: program.cardBg }}>
-                    <Icon className="w-4 h-4" style={{ color: program.accent }} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-halo-charcoal">{program.outcome}</p>
-                    <p className="text-xs text-halo-charcoal/40">{program.foundingPrice}</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-halo-charcoal/20 group-hover:text-halo-charcoal/60 transition-colors" />
-                </Link>
-              );
-            })}
-
-            {/* Coming soon pills */}
-            {comingSoonPrograms.map((p) => {
-              const Icon = p.icon;
-              return (
-                <a key={p.name} href="#founding-circle" className="flex items-center gap-3 p-4 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/20 transition-colors">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: p.cardBg || '#F0EFEC' }}>
-                    <Icon className="w-4 h-4" style={{ color: p.accent || '#86868B' }} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-halo-charcoal">{p.name}</p>
-                    <p className="text-xs text-halo-charcoal/40">{p.label}</p>
-                  </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/30">Soon</span>
-                </a>
-              );
-            })}
+            {/* Row 2: All other programs + coming soon as a single inline strip */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {personalizedPrograms.slice(2).map((program) => {
+                const Icon = program.icon;
+                return (
+                  <Link key={program.name} href={program.href} className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors group">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: program.cardBg }}>
+                      <Icon className="w-3.5 h-3.5" style={{ color: program.accent }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-halo-charcoal truncate">{program.outcome}</p>
+                      <p className="text-[10px] text-halo-charcoal/35">{program.foundingPrice}</p>
+                    </div>
+                    <ArrowRight className="w-3 h-3 text-halo-charcoal/15 flex-shrink-0" />
+                  </Link>
+                );
+              })}
+              {comingSoonPrograms.map((p) => {
+                const Icon = p.icon;
+                return (
+                  <a key={p.name} href="#founding-circle" className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: p.cardBg }}>
+                      <Icon className="w-3.5 h-3.5" style={{ color: p.accent }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-halo-charcoal truncate">{p.name}</p>
+                      <p className="text-[10px] text-halo-charcoal/35">{p.label}</p>
+                    </div>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/25 flex-shrink-0">Soon</span>
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -491,157 +495,48 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════
           3 · HOW IT WORKS — Split layout + overlapping cards
           ═══════════════════════════════════════════════ */}
-      <section id="how-it-works" className="section-dark overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[650px]">
-          {/* LEFT: Phone UI mockup — hidden on mobile */}
-          <div className="relative overflow-hidden hidden lg:block lg:min-h-[650px]">
-            {/* Background */}
-            <div className="absolute inset-0 bg-[#0f0f0f]">
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: "radial-gradient(ellipse at 60% 40%, rgba(107,123,110,0.1) 0%, transparent 60%)",
-                }}
-              />
+      <section id="how-it-works" className="py-20 md:py-28 px-6 section-light">
+        <div className="max-w-6xl mx-auto">
+          <AnimateOnScroll>
+            <div className="text-center mb-14">
+              <p className="label-accent mb-3">How It Works</p>
+              <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal">
+                From curious to feeling different.
+              </h2>
             </div>
+          </AnimateOnScroll>
 
-            {/* iPhone mockup — SVG frame with screen content overlay */}
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-              <div className="relative w-[260px] lg:w-[280px]">
-                {/* SVG iPhone frame */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/iphone-frame.svg"
-                  alt=""
-                  className="relative z-10 w-full h-auto pointer-events-none select-none"
-                  draggable={false}
-                />
-                {/* Screen content — positioned inside the frame */}
-                <div className="absolute top-[2.8%] left-[4.5%] right-[4.5%] bottom-[2.5%] z-0 rounded-[2.2rem] overflow-hidden bg-[#0a0a0a]">
-                  {/* Status bar */}
-                  <div className="flex items-center justify-between px-5 pt-3 pb-1">
-                    <span className="text-[9px] text-white/50 font-medium">9:41</span>
-                    <div className="flex items-center gap-1">
-                      <div className="flex gap-[2px] items-end">
-                        <div className="w-[2px] h-[4px] bg-white/40 rounded-sm" />
-                        <div className="w-[2px] h-[6px] bg-white/40 rounded-sm" />
-                        <div className="w-[2px] h-[8px] bg-white/40 rounded-sm" />
-                        <div className="w-[2px] h-[10px] bg-white/20 rounded-sm" />
-                      </div>
-                      <div className="w-[16px] h-[8px] border border-white/25 rounded-[2px] ml-1 relative">
-                        <div className="absolute inset-[1px] right-[2px] bg-green-400 rounded-[1px]" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* App header */}
-                  <div className="px-3 py-1.5 flex items-center justify-between">
-                    <span className="text-[10px] text-white/25">&larr;</span>
-                    <span className="text-[10px] text-white/50 font-medium">Video Visit</span>
-                    <span className="text-[10px] text-white/25">&#8226;&#8226;&#8226;</span>
-                  </div>
-
-                  {/* Video call area */}
-                  <div className="mx-2.5 rounded-xl overflow-hidden" style={{ background: "linear-gradient(145deg, #152535 0%, #0d1a28 100%)" }}>
-                    <div className="h-[52%] min-h-[200px] flex flex-col items-center justify-center relative">
-                      <div className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: "#5A7394" }}>
-                        DR
-                      </div>
-                      <p className="text-white text-[10px] mt-2 font-medium">Dr. Rivera, DO</p>
-                      <p className="text-white/30 text-[8px] mt-0.5">Men&rsquo;s Health &middot; Board Certified</p>
-                      {/* LIVE */}
-                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-full px-1.5 py-0.5">
-                        <div className="w-[4px] h-[4px] rounded-full bg-green-400 animate-pulse" />
-                        <span className="text-[7px] text-white/60 font-medium">LIVE</span>
-                      </div>
-                      {/* Duration */}
-                      <div className="absolute top-2.5 right-2.5 bg-black/40 backdrop-blur-sm rounded-full px-1.5 py-0.5">
-                        <span className="text-[7px] text-white/40">12:34</span>
-                      </div>
-                      {/* Self view */}
-                      <div className="absolute bottom-2.5 right-2.5 w-[40px] h-[54px] rounded-lg bg-[#111] border border-white/10 flex items-center justify-center">
-                        <span className="text-[6px] text-white/20">You</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Controls */}
-                  <div className="flex items-center justify-center gap-4 mt-4">
-                    <div className="w-9 h-9 rounded-full bg-white/[0.06] flex items-center justify-center">
-                      <Video className="w-3.5 h-3.5 text-white/40" />
-                    </div>
-                    <div className="w-11 h-11 rounded-full bg-red-500 flex items-center justify-center">
-                      <Smartphone className="w-4 h-4 text-white rotate-[135deg]" />
-                    </div>
-                    <div className="w-9 h-9 rounded-full bg-white/[0.06] flex items-center justify-center">
-                      <Stethoscope className="w-3.5 h-3.5 text-white/40" />
-                    </div>
-                  </div>
-
-                  {/* Bottom text */}
-                  <p className="text-[6px] text-white/10 text-center mt-3 px-4">Your provider reviews your labs and builds a protocol around your biology</p>
-
-                  {/* Home indicator */}
-                  <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[70px] h-[3px] bg-white/15 rounded-full" />
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          {/* RIGHT: Steps as overlapping cards */}
-          <div className="px-6 lg:px-14 py-16 lg:py-20 flex flex-col">
-            <AnimateOnScroll>
-              <div className="mb-10">
-                <p className="label-accent mb-3">How It Works</p>
-                <h2 className="headline-section text-3xl md:text-4xl text-white">
-                  From curious to
-                  <br />
-                  feeling different.
-                </h2>
-              </div>
-            </AnimateOnScroll>
-
-            <AnimateOnScroll stagger>
-              <div className="flex flex-col gap-0">
-                {steps.map((step, i) => {
-                  const Icon = step.icon;
-                  return (
+          <AnimateOnScroll stagger>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
+              {steps.map((step) => {
+                const Icon = step.icon;
+                return (
+                  <div key={step.num} className="aos-child text-center">
                     <div
-                      key={step.num}
-                      className="aos-child relative bg-white/[0.04] border border-white/[0.06] rounded-2xl p-5 lg:p-6 -mt-2 first:mt-0 hover:bg-white/[0.06] transition-colors"
-                      style={{ zIndex: steps.length - i }}
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                      style={{ background: `${step.color}15`, border: `1px solid ${step.color}20` }}
                     >
-                      {/* Large faded step number */}
-                      <span className="absolute top-3 right-5 text-5xl font-serif font-bold text-white/[0.03] select-none">
-                        {step.num}
-                      </span>
-                      <div className="flex items-start gap-4 relative z-10">
-                        <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{ background: `${step.color}18`, border: `1px solid ${step.color}25` }}
-                        >
-                          <Icon className="w-5 h-5" style={{ color: step.color }} />
-                        </div>
-                        <div>
-                          <h3 className="font-serif text-base lg:text-lg font-semibold text-white mb-1">{step.title}</h3>
-                          <p className="text-sm text-white/35 leading-relaxed">{step.desc}</p>
-                        </div>
-                      </div>
+                      <Icon className="w-5 h-5" style={{ color: step.color }} />
                     </div>
-                  );
-                })}
-              </div>
-            </AnimateOnScroll>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: step.color }}>
+                      Step {step.num}
+                    </p>
+                    <h3 className="text-sm font-semibold text-halo-charcoal mb-1">{step.title}</h3>
+                    <p className="text-xs text-halo-charcoal/40 leading-relaxed">{step.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </AnimateOnScroll>
 
-            <AnimateOnScroll>
-              <div className="mt-10">
-                <Link href="/quiz" className="btn-outline !py-3 !px-6 !text-sm">
-                  Start your journey <ArrowRight className="w-3.5 h-3.5 btn-arrow" />
-                </Link>
-              </div>
-            </AnimateOnScroll>
-          </div>
+          <AnimateOnScroll>
+            <div className="text-center mt-12">
+              <Link href="/quiz" className="btn-filled !text-sm">
+                Take the quiz &mdash; 2 min <ArrowRight className="w-3.5 h-3.5 btn-arrow" />
+              </Link>
+              <p className="text-xs text-halo-charcoal/25 mt-3">No commitment until your first consultation.</p>
+            </div>
+          </AnimateOnScroll>
         </div>
       </section>
 
