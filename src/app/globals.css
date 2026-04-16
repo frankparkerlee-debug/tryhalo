@@ -1134,18 +1134,18 @@ body {
 .support-card-banner img {
   width: 100%;
   height: 100%;
-  /* The pill lives in the right third of the 21:9 banner image.
-     With a square crop we need to recenter on it. The combination of
-     object-fit:cover + object-position: 80% center + scale 1.15
-     puts the pill at ~85% of the square, centered. */
+  /* The pill sits at roughly horizontal 40% of the 21:9 banner, centered
+     vertically. object-fit: cover + object-position: 40% center centers
+     the pill in the square crop. transform: scale(1.05) sizes the pill
+     to ~85% of the square. */
   object-fit: cover;
-  object-position: 80% center;
-  transform: scale(1.15);
+  object-position: 40% center;
+  transform: scale(1.05);
   transition: transform 600ms ease;
 }
 
 .support-card:hover .support-card-banner img {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 /* Fallback: no image */
