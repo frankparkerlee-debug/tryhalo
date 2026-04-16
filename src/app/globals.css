@@ -1113,8 +1113,14 @@ body {
 
 .full-bleed-cinematic-image {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  max-width: 1600px;
   z-index: 0;
+  overflow: hidden;
 }
 
 .full-bleed-cinematic-image img {
@@ -1122,6 +1128,28 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+/* Dark fade on either side when the image is capped and the section is wider */
+.full-bleed-cinematic-image::before,
+.full-bleed-cinematic-image::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.full-bleed-cinematic-image::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(26, 26, 31, 0.55), transparent);
+}
+
+.full-bleed-cinematic-image::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(26, 26, 31, 0.55), transparent);
 }
 
 .full-bleed-cinematic-scrim {

@@ -539,7 +539,7 @@ export default function Home() {
           1b · FULL-BLEED — The Halo Difference (cinematic editorial)
           ═══════════════════════════════════════════════ */}
       <section className="full-bleed-cinematic bg-[#1A1A1F]">
-        {/* Cinematic background image */}
+        {/* Cinematic background image — capped at max-width for wide screens */}
         <div className="full-bleed-cinematic-image">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/halo-difference.jpg" alt="" draggable={false} />
@@ -547,25 +547,22 @@ export default function Home() {
         {/* Gradient scrim for text legibility */}
         <div className="full-bleed-cinematic-scrim" />
 
-        {/* Content layer */}
+        {/* Content layer — short hero statement only, manifesto paragraph lives below */}
         <div className="relative z-10 text-center max-w-3xl mx-auto px-6 py-28 md:py-36">
           <p className="label-accent mb-6">The Halo Difference</p>
-          <p className="manifesto-text text-white">
-            We believe wellness isn&rsquo;t about{" "}
-            <em>perfection</em> &mdash;
-            it&rsquo;s about waking up and actually feeling{" "}
-            <em>good</em>. About having
-            the <em>energy</em> to be
-            present, the <em>clarity</em>{" "}
-            to focus, and the{" "}
-            <em>confidence</em> that comes
-            from knowing your body is working with you, not against you.
+          <h2 className="headline-section text-3xl md:text-5xl lg:text-6xl text-white mb-6 leading-[1.1]">
+            Physician-led.
+            <br />
+            Tracked in your labs.
+            <br />
+            Felt in your life.
+          </h2>
+          <p className="text-white/60 text-sm md:text-base max-w-xl mx-auto mb-10">
+            Every Halo protocol is designed by a board-certified physician and tuned to your biology.
           </p>
-          <div className="mt-10">
-            <Link href="/quiz" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#1C1C1E] font-semibold text-sm hover:bg-white/90 transition-colors">
-              Begin your journey <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+          <Link href="/quiz" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#1C1C1E] font-semibold text-sm hover:bg-white/90 transition-colors">
+            Begin your journey <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
