@@ -43,7 +43,7 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 backdrop-blur-xl ${
           scrolled
-            ? "bg-[#141414]/90 shadow-[0_1px_0_rgba(200,169,110,0.1)]"
+            ? "bg-[#141414]/90 shadow-[0_1px_0_rgba(255,255,255,0.06)]"
             : "bg-[#141414]/60"
         }`}
       >
@@ -59,7 +59,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm text-white/50 hover:text-white transition-colors duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-[1px] after:bg-halo-gold after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-center"
+                className="text-sm text-white/50 hover:text-white transition-colors duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-[1px] after:bg-white/40 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-center"
               >
                 {link.label}
               </Link>
@@ -70,7 +70,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             <Link
               href="/quiz"
-              className="btn-gold-outline !py-2 !px-5 !text-sm hidden sm:inline-flex"
+              className="btn-gold-outline !py-2 !px-5 !text-sm hidden sm:inline-flex border border-white/25 text-white hover:bg-white hover:text-[#1C1C1E]"
             >
               Get Started
             </Link>
@@ -123,7 +123,7 @@ export default function Navbar() {
             <Link
               href="/quiz"
               onClick={() => setMobileOpen(false)}
-              className="btn-gold-filled !text-sm mt-6 justify-center"
+              className="btn-gold-filled !text-sm mt-6 justify-center bg-[#F8F7F4] text-[#1C1C1E]"
             >
               Get Started
             </Link>

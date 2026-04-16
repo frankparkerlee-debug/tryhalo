@@ -42,7 +42,7 @@ export default function RestorePage() {
       <section className="py-20 px-6 section-dark relative overflow-hidden">
         <div
           className="absolute top-[10%] right-[10%] w-[350px] h-[350px] rounded-full pointer-events-none"
-          style={{ background: "#C8A96E", filter: "blur(150px)", opacity: 0.1 }}
+          style={{ background: "#6B7B6E", filter: "blur(150px)", opacity: 0.1 }}
         />
         <div className="max-w-4xl mx-auto text-center relative z-10 pt-24 pb-8">
           <h1 className="headline-hero text-4xl md:text-5xl lg:text-6xl mb-8 text-white">
@@ -59,9 +59,9 @@ export default function RestorePage() {
           </a>
           <p className="mt-8 text-sm text-white/35 flex items-center justify-center gap-3 flex-wrap">
             <span>Licensed providers</span>
-            <span className="w-1 h-1 rounded-full bg-halo-gold" />
+            <span className="w-1 h-1 rounded-full bg-[#6B7B6E]" />
             <span>Compounded peptides</span>
-            <span className="w-1 h-1 rounded-full bg-halo-gold" />
+            <span className="w-1 h-1 rounded-full bg-[#6B7B6E]" />
             <span>Shipped to your door</span>
           </p>
         </div>
@@ -168,8 +168,8 @@ export default function RestorePage() {
                 { category: "Mental Clarity", quote: "Focus improved noticeably within the first month." },
               ].map((t, i) => (
                 <div key={i} className="aos-child p-6 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
-                  <p className="text-xs font-medium text-halo-gold uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-halo-gold/50" />
+                  <p className="text-xs font-medium text-[#6B7B6E] uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#6B7B6E]/50" />
                     {t.category}
                   </p>
                   <p className="text-sm text-white/60 leading-relaxed italic">

@@ -12,7 +12,6 @@ import {
   TestTube2,
   Video,
   Package,
-  Sparkles,
   Zap,
   Heart,
   Moon,
@@ -90,7 +89,7 @@ const programs = [
     price: "$149/mo",
     foundingPrice: "$129/mo",
     href: "/renew",
-    colorClass: "color-block-rose",
+    colorClass: "",
     color: "#E8927C",
     icon: Heart,
     safety: "Hormone therapy may increase risk of blood clots, stroke, and certain cancers. Not suitable during pregnancy. Requires ongoing lab monitoring.",
@@ -104,7 +103,7 @@ const programs = [
     price: "$149/mo",
     foundingPrice: "$129/mo",
     href: "/vital",
-    colorClass: "color-block-blue",
+    colorClass: "",
     color: "#4A6FA5",
     icon: Zap,
     safety: "TRT may affect fertility and is not appropriate for men planning conception. May increase red blood cell count. Requires regular lab monitoring.",
@@ -118,7 +117,7 @@ const programs = [
     price: "$229/mo",
     foundingPrice: "$179/mo",
     href: "/restore",
-    colorClass: "color-block-green",
+    colorClass: "",
     color: "#7A8B6F",
     icon: Moon,
     safety: "Peptide therapy is prescribed off-label. Not FDA-approved for anti-aging. May cause injection site reactions, headache, or flushing. Medical supervision required.",
@@ -132,7 +131,7 @@ const programs = [
     price: "$229/mo",
     foundingPrice: "$179/mo",
     href: "/vitality",
-    colorClass: "color-block-violet",
+    colorClass: "",
     color: "#8B7FA5",
     icon: Brain,
     safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment. Medical supervision required.",
@@ -170,7 +169,7 @@ const comingSoonPrograms = [
   {
     name: "Weight Management",
     label: "GLP-1 therapy",
-    color: "#C8A96E",
+    color: "#6B7B6E",
     icon: Activity,
   },
   {
@@ -187,7 +186,7 @@ const steps = [
     title: "Tell us about you",
     desc: "A few questions about your goals, symptoms, and health history.",
     icon: ClipboardList,
-    color: "#C8A96E",
+    color: "#6B7B6E",
   },
   {
     num: "02",
@@ -352,7 +351,7 @@ export default function Home() {
         <div className="absolute inset-0 pointer-events-none z-[1]">
           <div
             className="absolute top-[10%] right-[10%] w-[600px] h-[600px] rounded-full"
-            style={{ background: "#C8A96E", filter: "blur(200px)", opacity: 0.1 }}
+            style={{ background: "#6B7B6E", filter: "blur(200px)", opacity: 0.1 }}
           />
           <div
             className="absolute bottom-[20%] left-[5%] w-[400px] h-[400px] rounded-full"
@@ -363,33 +362,20 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Floating pills — desktop only */}
-        <div className="hidden lg:flex floating-pill absolute top-[22%] right-[12%] z-10" style={{ animationDelay: "0s" }}>
-          <Zap className="w-3 h-3 text-halo-gold" /> More energy
-        </div>
-        <div className="hidden lg:flex floating-pill absolute top-[45%] left-[8%] z-10" style={{ animationDelay: "1.5s" }}>
-          <Moon className="w-3 h-3 text-blue-300" /> Better sleep
-        </div>
-        <div className="hidden lg:flex floating-pill absolute top-[35%] right-[25%] z-10" style={{ animationDelay: "0.7s" }}>
-          <Brain className="w-3 h-3 text-purple-300" /> Mental clarity
-        </div>
-        <div className="hidden lg:flex floating-pill absolute bottom-[35%] right-[18%] z-10" style={{ animationDelay: "2s" }}>
-          <Heart className="w-3 h-3 text-rose-300" /> Feel balanced
-        </div>
+        {/* Clean — no floating pills */}
 
         {/* Content — anchored to bottom */}
         <div className="relative z-10 flex flex-col justify-end min-h-screen px-6 md:px-12 lg:px-20 pb-16 md:pb-20 pt-32">
           <AnimateOnScroll>
             <div className="max-w-2xl">
-              <div className="flex items-center gap-2.5 mb-5">
-                <span className="label-gold">Launching Summer 2026</span>
-                <span className="sparkle"><Sparkles className="w-3.5 h-3.5" /></span>
+              <div className="mb-5">
+                <span className="label-accent">Launching Summer 2026</span>
               </div>
 
               <h1 className="headline-hero text-4xl md:text-6xl lg:text-7xl mb-5 text-white">
                 {heroHeadline.line1}
                 <br />
-                <span className="text-halo-gold">{heroHeadline.line2.split(" ")[0]}</span>{" "}
+                <span className="text-white/80">{heroHeadline.line2.split(" ")[0]}</span>{" "}
                 {heroHeadline.line2.split(" ").slice(1).join(" ")}
               </h1>
 
@@ -399,7 +385,7 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row items-start gap-4 mb-4">
-                <Link href="/quiz" className="btn-gold-filled">
+                <Link href="/quiz" className="btn-filled">
                   Take the quiz &mdash; 2 min
                   <ArrowRight className="w-4 h-4 btn-arrow" />
                 </Link>
@@ -410,7 +396,7 @@ export default function Home() {
 
               {/* Pricing transparency */}
               <p className="text-sm text-white/25 mb-6">
-                Programs from <span className="text-halo-gold font-semibold">$129/mo</span>{" "}
+                Programs from <span className="text-white/60 font-semibold">$129/mo</span>{" "}
                 <span className="text-white/15">&mdash; labs, meds, visits, shipping included</span>
               </p>
 
@@ -427,7 +413,7 @@ export default function Home() {
                 </div>
                 <span className="hidden sm:inline text-white/10">|</span>
                 <span className="inline-flex items-center gap-1.5 text-sm text-white/25">
-                  <Check className="w-3.5 h-3.5 text-halo-gold" /> Everything included
+                  <Check className="w-3.5 h-3.5 text-white/40" /> Everything included
                 </span>
               </div>
             </div>
@@ -437,13 +423,13 @@ export default function Home() {
           <div className="absolute bottom-20 right-12 lg:right-20 hidden lg:flex items-end gap-10">
             <AnimateOnScroll>
               <div className="text-right">
-                <p className="stat-large text-4xl text-halo-gold">352</p>
+                <p className="stat-large text-4xl text-white/80">352</p>
                 <p className="text-xs text-white/25 mt-1">spots remaining</p>
               </div>
             </AnimateOnScroll>
             <AnimateOnScroll>
               <div className="text-right">
-                <p className="stat-large text-4xl text-halo-gold">6</p>
+                <p className="stat-large text-4xl text-white/80">6</p>
                 <p className="text-xs text-white/25 mt-1">programs launching</p>
               </div>
             </AnimateOnScroll>
@@ -466,20 +452,20 @@ export default function Home() {
 
             <p className="manifesto-text">
               We believe wellness isn&rsquo;t about{" "}
-              <span className="manifesto-highlight">perfection</span> &mdash;
+              <em>perfection</em> &mdash;
               it&rsquo;s about waking up and actually feeling{" "}
-              <span className="manifesto-highlight">good</span>. About having
-              the <span className="manifesto-highlight">energy</span> to be
-              present, the <span className="manifesto-highlight">clarity</span>{" "}
+              <em>good</em>. About having
+              the <em>energy</em> to be
+              present, the <em>clarity</em>{" "}
               to focus, and the{" "}
-              <span className="manifesto-highlight">confidence</span> that comes
+              <em>confidence</em> that comes
               from knowing your body is working with you, not against you.
             </p>
 
             <div className="mt-10 text-center">
               <Link
                 href="/quiz"
-                className="inline-flex items-center gap-2 text-sm font-medium text-halo-charcoal/50 hover:text-halo-gold transition-colors border-b border-halo-charcoal/10 hover:border-halo-gold/40 pb-0.5"
+                className="inline-flex items-center gap-2 text-sm font-medium text-halo-charcoal/50 hover:text-halo-charcoal transition-colors border-b border-halo-charcoal/10 hover:border-halo-charcoal/30 pb-0.5"
               >
                 Begin your wellness journey <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -492,7 +478,7 @@ export default function Home() {
               {trustBadges.map((badge) => (
                 <div key={badge.label} className="trust-badge">
                   <div className="trust-badge-icon">
-                    <badge.icon className="w-5 h-5 text-halo-gold" />
+                    <badge.icon className="w-5 h-5 text-[#6B7B6E]" />
                   </div>
                   <span className="text-xs font-medium text-halo-charcoal/45 whitespace-nowrap">{badge.label}</span>
                 </div>
@@ -502,7 +488,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
           3 · PROGRAMS — Asymmetric bento grid
@@ -513,13 +499,13 @@ export default function Home() {
           <AnimateOnScroll>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
               <div>
-                <p className="label-gold mb-3">Programs</p>
+                <p className="label-accent mb-3">Programs</p>
                 <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal">
                   What are you ready
                   <br className="hidden md:block" /> to change?
                 </h2>
               </div>
-              <Link href="/quiz" className="inline-flex items-center gap-2 text-sm font-medium text-halo-gold hover:text-halo-charcoal transition-colors">
+              <Link href="/quiz" className="inline-flex items-center gap-2 text-sm font-medium text-[#6B7B6E] hover:text-halo-charcoal transition-colors">
                 Find your program <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -543,7 +529,7 @@ export default function Home() {
                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/35 backdrop-blur-sm">
                       <FeaturedIcon className="w-5 h-5 text-halo-charcoal/70" />
                     </div>
-                    <span className="floating-pill-light text-[10px] font-medium" style={{ animation: "none" }}>
+                    <span className="text-[10px] font-medium px-2.5 py-1 rounded-full bg-white/60 backdrop-blur-sm text-halo-charcoal/60" style={{ animation: "none" }}>
                       {featured.label}
                     </span>
                   </div>
@@ -608,20 +594,6 @@ export default function Home() {
                   </Link>
                 );
               })()}
-
-              {/* STAT CARD — woven into the grid */}
-              <div className="aos-child bento-card color-block-gold">
-                <div className="bento-card-inner min-h-[260px] flex flex-col items-center justify-center text-center">
-                  <CountUpNumber
-                    target={647}
-                    start={600}
-                    duration={2000}
-                    className="font-serif font-bold text-5xl text-halo-charcoal tracking-tight"
-                  />
-                  <p className="text-sm text-halo-charcoal/40 mt-2">on the waitlist</p>
-                  <p className="text-xs text-halo-charcoal/25 mt-1">of 999 founding spots</p>
-                </div>
-              </div>
 
               {/* Third program — 1 col, row 2 */}
               {(() => {
@@ -706,10 +678,10 @@ export default function Home() {
                   <a
                     key={p.name}
                     href="#founding-circle"
-                    className="group inline-flex items-center gap-3 px-5 py-3 rounded-full border border-halo-charcoal/[0.06] bg-white hover:border-halo-gold/30 transition-all"
+                    className="group inline-flex items-center gap-3 px-5 py-3 rounded-full border border-halo-charcoal/[0.06] bg-white hover:border-halo-charcoal/20 transition-all"
                   >
                     <Icon className="w-4 h-4" style={{ color: p.color }} />
-                    <span className="text-sm font-medium text-halo-charcoal group-hover:text-halo-gold transition-colors">{p.name}</span>
+                    <span className="text-sm font-medium text-halo-charcoal group-hover:text-halo-charcoal/70 transition-colors">{p.name}</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/35">Soon</span>
                   </a>
                 );
@@ -719,7 +691,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
           4 · HOW IT WORKS — Split layout + overlapping cards
@@ -733,7 +705,7 @@ export default function Home() {
               <div
                 className="absolute inset-0"
                 style={{
-                  background: "radial-gradient(ellipse at 60% 40%, rgba(200,169,110,0.1) 0%, transparent 60%)",
+                  background: "radial-gradient(ellipse at 60% 40%, rgba(107,123,110,0.1) 0%, transparent 60%)",
                 }}
               />
             </div>
@@ -820,20 +792,13 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Floating pills */}
-            <div className="floating-pill absolute top-[15%] right-[10%] hidden lg:flex" style={{ animationDelay: "0.5s" }}>
-              <Check className="w-3 h-3 text-green-400" /> All-inclusive
-            </div>
-            <div className="floating-pill absolute bottom-[20%] left-[8%] hidden lg:flex" style={{ animationDelay: "1.5s" }}>
-              <Shield className="w-3 h-3 text-halo-gold" /> HIPAA secure
-            </div>
           </div>
 
           {/* RIGHT: Steps as overlapping cards */}
           <div className="px-6 lg:px-14 py-16 lg:py-20 flex flex-col">
             <AnimateOnScroll>
               <div className="mb-10">
-                <p className="label-gold mb-3">How It Works</p>
+                <p className="label-accent mb-3">How It Works</p>
                 <h2 className="headline-section text-3xl md:text-4xl text-white">
                   From curious to
                   <br />
@@ -876,7 +841,7 @@ export default function Home() {
 
             <AnimateOnScroll>
               <div className="mt-10">
-                <Link href="/quiz" className="btn-gold-outline !py-3 !px-6 !text-sm">
+                <Link href="/quiz" className="btn-outline !py-3 !px-6 !text-sm">
                   Start your journey <ArrowRight className="w-3.5 h-3.5 btn-arrow" />
                 </Link>
               </div>
@@ -885,7 +850,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
           5 · TESTIMONIALS — Featured + stacked asymmetric
@@ -895,10 +860,10 @@ export default function Home() {
           <AnimateOnScroll>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
               <div>
-                <p className="label-gold mb-3">Why They Joined</p>
+                <p className="label-accent mb-3">Why They Joined</p>
                 <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal">What founding members are looking for</h2>
               </div>
-              <a href="#founding-circle" className="inline-flex items-center gap-2 text-sm font-medium text-halo-gold hover:text-halo-charcoal transition-colors">
+              <a href="#founding-circle" className="inline-flex items-center gap-2 text-sm font-medium text-[#6B7B6E] hover:text-halo-charcoal transition-colors">
                 Join them <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -936,7 +901,7 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="pt-5 border-t border-halo-charcoal/[0.06]">
-                      <p className="stat-large text-3xl text-halo-gold">352</p>
+                      <p className="stat-large text-3xl text-[#1C1C1E]">352</p>
                       <p className="text-xs text-halo-charcoal/35 mt-0.5">founding spots left</p>
                     </div>
                   </div>
@@ -969,7 +934,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
           5b · YOUR PROVIDERS — Doctor credibility
@@ -978,7 +943,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto relative z-10">
           <AnimateOnScroll>
             <div className="text-center mb-14">
-              <p className="label-gold mb-3">Your Medical Team</p>
+              <p className="label-accent mb-3">Your Medical Team</p>
               <h2 className="headline-section text-3xl md:text-4xl text-white mb-3">
                 Board-certified physicians.
                 <br className="hidden md:block" />
@@ -996,7 +961,7 @@ export default function Home() {
               {providers.map((doc) => (
                 <div
                   key={doc.name}
-                  className="aos-child rounded-2xl bg-white/[0.04] border border-white/[0.06] p-6 hover:border-halo-gold/20 transition-colors"
+                  className="aos-child rounded-2xl bg-white/[0.04] border border-white/[0.06] p-6 hover:border-white/15 transition-colors"
                 >
                   {/* Avatar */}
                   <div className="flex items-center gap-4 mb-5">
@@ -1008,7 +973,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-white">{doc.name}</p>
-                      <p className="text-xs text-halo-gold">{doc.title}</p>
+                      <p className="text-xs text-white/50">{doc.title}</p>
                     </div>
                   </div>
                   {/* Specialty */}
@@ -1034,7 +999,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
           6 · FOUNDING CIRCLE — Full-width split
@@ -1046,22 +1011,11 @@ export default function Home() {
             {/* Ambient gold glow */}
             <div
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-              style={{ background: "#C8A96E", filter: "blur(200px)", opacity: 0.08 }}
+              style={{ background: "#6B7B6E", filter: "blur(200px)", opacity: 0.08 }}
             />
             {/* Large halo logo watermark */}
             <div className="absolute inset-0 flex items-center justify-center">
               <HaloLogo size="xl" variant="dark" showText={false} className="opacity-[0.06] scale-[3.5]" />
-            </div>
-
-            {/* Floating pills */}
-            <div className="floating-pill absolute top-[18%] right-[12%]" style={{ animationDelay: "0.3s" }}>
-              Free Labs
-            </div>
-            <div className="floating-pill absolute top-[55%] left-[15%]" style={{ animationDelay: "1.8s" }}>
-              Locked Pricing
-            </div>
-            <div className="floating-pill absolute bottom-[25%] right-[20%]" style={{ animationDelay: "1s" }}>
-              Priority Access
             </div>
 
             {/* Counter overlaid at bottom-left */}
@@ -1080,9 +1034,9 @@ export default function Home() {
           <div className="flex flex-col justify-center px-6 lg:px-16 py-16 lg:py-20">
             <div className="max-w-md">
               <AnimateOnScroll>
-                <div className="flex items-center gap-2 mb-5">
-                  <p className="label-gold">Founding Circle</p>
-                  <span className="sparkle"><Sparkles className="w-3.5 h-3.5" /></span>
+                <div className="mb-5">
+                  <span className="label-rule" />
+                  <p className="label-accent">Founding Circle</p>
                 </div>
                 <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white mb-5">
                   The first 999 get in at the best price. Permanently.
@@ -1100,7 +1054,7 @@ export default function Home() {
                 <div className="mt-10 space-y-3">
                   {foundingBenefits.map((b, i) => (
                     <div key={i} className="aos-child flex items-start gap-3">
-                      <span className="w-1.5 h-1.5 rounded-full bg-halo-gold mt-2 flex-shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-white/40 mt-2 flex-shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-white">{b.title}</p>
                         <p className="text-sm text-white/25">{b.desc}</p>
@@ -1120,7 +1074,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
           7 · FAQ — Asymmetric 4/8 with sticky heading
@@ -1132,7 +1086,7 @@ export default function Home() {
             <div className="lg:col-span-4">
               <div className="lg:sticky lg:top-28">
                 <AnimateOnScroll>
-                  <p className="label-gold mb-3">FAQ</p>
+                  <p className="label-accent mb-3">FAQ</p>
                   <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal mb-4">
                     Common
                     <br />
@@ -1158,36 +1112,21 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
           8 · FINAL CTA — Centered with visual depth
           ═══════════════════════════════════════════════ */}
-      <section className="py-28 md:py-36 px-6 section-dark relative overflow-hidden halo-ring-bg">
-        {/* Ambient glow */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{ background: "#C8A96E", filter: "blur(200px)", opacity: 0.08 }}
-        />
-
-        {/* Tilted image placeholders behind text (desktop only) */}
-        <div className="absolute top-1/2 left-[8%] -translate-y-1/2 w-40 h-56 rounded-2xl overflow-hidden opacity-[0.07] hidden lg:block" style={{ transform: "translateY(-50%) rotate(-8deg)" }}>
-          <div className="w-full h-full color-block-rose" />
-        </div>
-        <div className="absolute top-1/2 right-[8%] -translate-y-1/2 w-40 h-56 rounded-2xl overflow-hidden opacity-[0.07] hidden lg:block" style={{ transform: "translateY(-50%) rotate(6deg)" }}>
-          <div className="w-full h-full color-block-blue" />
-        </div>
-
+      <section className="py-28 md:py-36 px-6 section-dark relative overflow-hidden">
         <AnimateOnScroll>
           <div className="max-w-3xl mx-auto text-center relative z-10">
-            <span className="sparkle mb-4 inline-block"><Sparkles className="w-5 h-5" /></span>
             <h2 className="headline-section text-3xl md:text-5xl lg:text-6xl text-white mb-5">
               Ready to feel the difference?
             </h2>
             <p className="text-lg text-white/30 mb-10 leading-relaxed max-w-lg mx-auto">
               Take a 2-minute quiz and find out which program is built for you.
             </p>
-            <Link href="/quiz" className="btn-gold-filled">
+            <Link href="/quiz" className="btn-filled">
               Take the quiz <ArrowRight className="w-4 h-4 btn-arrow" />
             </Link>
 

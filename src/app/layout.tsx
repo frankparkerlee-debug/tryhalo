@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Manrope, Inter } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${inter.variable} antialiased`}
+      className={`${playfair.variable} ${inter.variable} antialiased`}
     >
       <body className="min-h-screen flex flex-col font-sans">
         <AnnouncementBar />

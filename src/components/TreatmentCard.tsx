@@ -16,7 +16,7 @@ export default function TreatmentCard({
           {title}
         </h3>
         {comingSoon && (
-          <span className="flex-shrink-0 text-xs font-medium text-halo-gold bg-halo-gold/10 px-2.5 py-1 rounded-full">
+          <span className="flex-shrink-0 text-xs font-medium text-[#86868B] bg-[#86868B]/10 px-2.5 py-1 rounded-full">
             Coming soon
           </span>
         )}

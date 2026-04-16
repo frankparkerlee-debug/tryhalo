@@ -49,7 +49,7 @@ export default function FAQ({ items, categories }: FAQProps) {
       </div>
 
       {/* FAQ items */}
-      <div className="divide-y divide-halo-charcoal/10">
+      <div className="divide-y divide-[#E5E4E0]">
         {filteredItems.map((item, index) => (
           <div key={index} className="aos-child">
             <button
@@ -58,7 +58,7 @@ export default function FAQ({ items, categories }: FAQProps) {
               }
               className="w-full flex items-center justify-between py-6 text-left group"
             >
-              <span className="font-serif text-lg font-semibold text-halo-charcoal pr-8 group-hover:text-halo-gold transition-colors duration-300 tracking-[-0.01em]">
+              <span className="font-serif text-lg font-semibold text-halo-charcoal pr-8 group-hover:text-halo-charcoal/70 transition-colors duration-300 tracking-[-0.01em]">
                 {item.question}
               </span>
               <ChevronDown

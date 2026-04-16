@@ -25,7 +25,7 @@ const steps = [
     title: "Complete Your Health Profile",
     desc: "A 5-minute questionnaire covering your health history, symptoms, goals, and lifestyle. This gives your provider a comprehensive starting point before reviewing your labs.",
     icon: ClipboardList,
-    color: "#C8A96E",
+    color: "#6B7B6E",
     timeline: "Day 1 (5 minutes)",
   },
   {
@@ -71,7 +71,7 @@ export default function HowItWorksPage() {
         <div
           className="absolute top-[10%] right-[10%] w-[350px] h-[350px] rounded-full pointer-events-none"
           style={{
-            background: "#C8A96E",
+            background: "#6B7B6E",
             filter: "blur(150px)",
             opacity: 0.1,
           }}
@@ -127,7 +127,7 @@ export default function HowItWorksPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-sm font-bold text-halo-gold/50">
+                        <span className="text-sm font-bold text-[#6B7B6E]/50">
                           {step.num}
                         </span>
                         <h3 className="font-serif text-xl font-semibold text-halo-charcoal">
@@ -137,7 +137,7 @@ export default function HowItWorksPage() {
                       <p className="text-sm text-halo-charcoal/60 leading-relaxed mb-2">
                         {step.desc}
                       </p>
-                      <p className="text-xs text-halo-gold font-medium">
+                      <p className="text-xs text-[#6B7B6E] font-medium">
                         {step.timeline}
                       </p>
                     </div>
@@ -174,7 +174,7 @@ export default function HowItWorksPage() {
                   key={item.label}
                   className="aos-child flex items-center gap-3 p-4 rounded-xl bg-white/[0.04] border border-white/[0.06]"
                 >
-                  <item.icon className="w-5 h-5 text-halo-gold flex-shrink-0" />
+                  <item.icon className="w-5 h-5 text-[#6B7B6E] flex-shrink-0" />
                   <span className="text-sm text-white/70">{item.label}</span>
                 </div>
               ))}

@@ -155,7 +155,7 @@ export default function TermsPage() {
               Halo Health Inc.
               <br />
               Email:{" "}
-              <a href="mailto:legal@tryhalo.co" className="text-halo-gold hover:underline">
+              <a href="mailto:legal@tryhalo.co" className="text-[#6B7B6E] hover:underline">
                 legal@tryhalo.co
               </a>
             </p>

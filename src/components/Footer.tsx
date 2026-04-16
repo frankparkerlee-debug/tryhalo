@@ -37,7 +37,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#141414] text-white/70 relative">
       {/* Gold accent line */}
-      <div className="h-px bg-gradient-to-r from-transparent via-halo-gold/40 to-transparent" />
+      <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
       <div className="max-w-6xl mx-auto px-6 pt-16 pb-10">
         {/* Top: Logo + columns */}

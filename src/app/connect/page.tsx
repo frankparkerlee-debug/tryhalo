@@ -37,7 +37,7 @@ export default function ConnectPage() {
       <section className="py-20 px-6 section-dark relative overflow-hidden">
         <div
           className="absolute top-[10%] right-[10%] w-[350px] h-[350px] rounded-full pointer-events-none"
-          style={{ background: "#C8A96E", filter: "blur(150px)", opacity: 0.1 }}
+          style={{ background: "#6B7B6E", filter: "blur(150px)", opacity: 0.1 }}
         />
         <div className="max-w-4xl mx-auto text-center relative z-10 pt-24 pb-8">
           <h1 className="headline-hero text-4xl md:text-5xl lg:text-6xl mb-8 text-white">
@@ -54,9 +54,9 @@ export default function ConnectPage() {
           </a>
           <p className="mt-8 text-sm text-white/35 flex items-center justify-center gap-3 flex-wrap">
             <span>FDA-approved therapies</span>
-            <span className="w-1 h-1 rounded-full bg-halo-gold" />
+            <span className="w-1 h-1 rounded-full bg-[#6B7B6E]" />
             <span>Licensed providers</span>
-            <span className="w-1 h-1 rounded-full bg-halo-gold" />
+            <span className="w-1 h-1 rounded-full bg-[#6B7B6E]" />
             <span>Discreet shipping</span>
           </p>
         </div>
@@ -180,8 +180,8 @@ export default function ConnectPage() {
                   key={i}
                   className="aos-child p-6 rounded-xl bg-white/[0.04] border border-white/[0.06]"
                 >
-                  <div className="w-10 h-10 rounded-full border border-halo-gold/30 flex items-center justify-center mb-4">
-                    <item.icon className="w-5 h-5 text-halo-gold" />
+                  <div className="w-10 h-10 rounded-full border border-[#E5E4E0]/30 flex items-center justify-center mb-4">
+                    <item.icon className="w-5 h-5 text-[#6B7B6E]" />
                   </div>
                   <h3 className="font-serif text-lg font-semibold text-white mb-2">
                     {item.title}

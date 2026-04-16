@@ -60,7 +60,7 @@ export default function HeroVideo({ src, poster, className = "" }: HeroVideoProp
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at 60% 30%, rgba(200,169,110,0.08) 0%, transparent 50%), linear-gradient(180deg, #0c0c0c 0%, #111 100%)",
+              "radial-gradient(ellipse at 60% 30%, rgba(107,123,110,0.08) 0%, transparent 50%), linear-gradient(180deg, #0c0c0c 0%, #111 100%)",
           }}
         />
         {poster && (

@@ -45,7 +45,7 @@ export default function AboutPage() {
         <div
           className="absolute top-[10%] right-[10%] w-[350px] h-[350px] rounded-full pointer-events-none"
           style={{
-            background: "#C8A96E",
+            background: "#6B7B6E",
             filter: "blur(150px)",
             opacity: 0.1,
           }}
@@ -111,8 +111,8 @@ export default function AboutPage() {
                   key={pillar.title}
                   className="aos-child bg-white rounded-2xl p-8 border border-black/[0.06] shadow-sm"
                 >
-                  <div className="w-12 h-12 rounded-full border-[1.5px] border-halo-gold/30 flex items-center justify-center mb-5">
-                    <pillar.icon className="w-5 h-5 text-halo-gold" />
+                  <div className="w-12 h-12 rounded-full border-[1.5px] border-[#E5E4E0]/30 flex items-center justify-center mb-5">
+                    <pillar.icon className="w-5 h-5 text-[#6B7B6E]" />
                   </div>
                   <h3 className="font-serif text-xl font-semibold text-halo-charcoal mb-3">
                     {pillar.title}
@@ -170,8 +170,8 @@ export default function AboutPage() {
                   key={i}
                   className="aos-child p-6 rounded-xl bg-white/[0.04] border border-white/[0.06] text-center"
                 >
-                  <div className="w-10 h-10 rounded-full border border-halo-gold/30 flex items-center justify-center mx-auto mb-4">
-                    <item.icon className="w-4 h-4 text-halo-gold" />
+                  <div className="w-10 h-10 rounded-full border border-[#E5E4E0]/30 flex items-center justify-center mx-auto mb-4">
+                    <item.icon className="w-4 h-4 text-[#6B7B6E]" />
                   </div>
                   <h3 className="font-serif text-base font-semibold text-white mb-2">
                     {item.title}

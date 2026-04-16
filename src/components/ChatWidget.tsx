@@ -85,14 +85,14 @@ export default function ChatWidget() {
         className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
           isOpen
             ? "bg-[#2D2D2D] rotate-0"
-            : "bg-[#C8A96E] hover:bg-[#d4b67a] hover:shadow-[0_0_25px_rgba(200,169,110,0.3)] hover:scale-105"
+            : "bg-[#1C1C1E] hover:bg-[#2D2D2D] hover:shadow-[0_0_25px_rgba(0,0,0,0.2)] hover:scale-105"
         }`}
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
         {isOpen ? (
           <X className="w-5 h-5 text-white" />
         ) : (
-          <MessageCircle className="w-5 h-5 text-[#1a1a1a]" />
+          <MessageCircle className="w-5 h-5 text-white" />
         )}
       </button>
 
@@ -126,7 +126,7 @@ export default function ChatWidget() {
               <div
                 className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-[#C8A96E] text-[#1a1a1a] rounded-br-md"
+                    ? "bg-[#1C1C1E] text-white rounded-br-md"
                     : "bg-white/[0.06] text-white/80 rounded-bl-md"
                 }`}
               >
@@ -193,7 +193,7 @@ export default function ChatWidget() {
 
         {/* Input */}
         <div className="bg-[#141414] px-4 py-3 border-t border-white/[0.06]">
-          <div className="flex items-center gap-2 bg-white/[0.06] rounded-full px-4 py-2 border border-white/[0.08] focus-within:border-[#C8A96E]/40 transition-colors">
+          <div className="flex items-center gap-2 bg-white/[0.06] rounded-full px-4 py-2 border border-white/[0.08] focus-within:border-white/30 transition-colors">
             <input
               ref={inputRef}
               type="text"
@@ -209,7 +209,7 @@ export default function ChatWidget() {
               disabled={!input.trim() || isLoading}
               className={`p-1.5 rounded-full transition-all duration-200 ${
                 input.trim() && !isLoading
-                  ? "bg-[#C8A96E] text-[#1a1a1a] hover:bg-[#d4b67a]"
+                  ? "bg-white text-[#1C1C1E] hover:bg-white/90"
                   : "bg-white/[0.06] text-white/20"
               }`}
             >

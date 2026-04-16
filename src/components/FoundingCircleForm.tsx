@@ -76,7 +76,7 @@ export default function FoundingCircleForm({
   if (status === "duplicate") {
     return (
       <div className="text-center py-4">
-        <p className="text-halo-gold font-semibold text-lg mb-1">
+        <p className="text-[#6B7B6E] font-semibold text-lg mb-1">
           You&apos;re already on the list.
         </p>
         <p className={`text-sm ${isDark ? "text-white/50" : "text-halo-charcoal/50"}`}>
@@ -89,7 +89,7 @@ export default function FoundingCircleForm({
   if (status === "success") {
     return (
       <div className="text-center py-4">
-        <p className="text-halo-gold font-semibold text-lg mb-2">
+        <p className="text-[#6B7B6E] font-semibold text-lg mb-2">
           You&apos;re in. Check your inbox.
         </p>
         <p className={`text-sm mb-4 ${isDark ? "text-white/60" : "text-halo-charcoal/60"}`}>
@@ -108,7 +108,7 @@ export default function FoundingCircleForm({
               alert("Link copied!");
             }
           }}
-          className={isDark ? "btn-gold-outline !py-2.5 !px-6 !text-sm" : "btn-halo !py-2.5 !px-6 !text-sm"}
+          className={isDark ? "btn-gold-outline !py-2.5 !px-6 !text-sm border-white/25 text-white hover:bg-white hover:text-[#1C1C1E]" : "btn-halo !py-2.5 !px-6 !text-sm"}
         >
           Share with a friend
           <ArrowRight className="w-4 h-4 btn-arrow" />

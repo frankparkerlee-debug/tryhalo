@@ -23,7 +23,7 @@ export default function ContactPage() {
         <div
           className="absolute top-[10%] right-[10%] w-[350px] h-[350px] rounded-full pointer-events-none"
           style={{
-            background: "#C8A96E",
+            background: "#6B7B6E",
             filter: "blur(150px)",
             opacity: 0.1,
           }}
@@ -55,8 +55,8 @@ export default function ContactPage() {
                 </h2>
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full border border-halo-gold/30 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-4 h-4 text-halo-gold" />
+                    <div className="w-10 h-10 rounded-full border border-[#E5E4E0]/30 flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-4 h-4 text-[#6B7B6E]" />
                     </div>
                     <div>
                       <p className="font-medium text-halo-charcoal mb-1">
@@ -64,15 +64,15 @@ export default function ContactPage() {
                       </p>
                       <a
                         href="mailto:hello@tryhalo.co"
-                        className="text-sm text-halo-gold hover:underline"
+                        className="text-sm text-[#6B7B6E] hover:underline"
                       >
                         hello@tryhalo.co
                       </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full border border-halo-gold/30 flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-4 h-4 text-halo-gold" />
+                    <div className="w-10 h-10 rounded-full border border-[#E5E4E0]/30 flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-4 h-4 text-[#6B7B6E]" />
                     </div>
                     <div>
                       <p className="font-medium text-halo-charcoal mb-1">
@@ -105,7 +105,7 @@ export default function ContactPage() {
 
                 {submitted ? (
                   <div className="text-center py-12">
-                    <p className="text-halo-gold font-semibold text-lg mb-2">
+                    <p className="text-[#6B7B6E] font-semibold text-lg mb-2">
                       Message sent.
                     </p>
                     <p className="text-sm text-halo-charcoal/60">
@@ -127,7 +127,7 @@ export default function ContactPage() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="w-full px-4 py-3 rounded-xl border border-halo-charcoal/10 bg-white text-sm text-halo-charcoal outline-none focus:border-halo-gold transition-colors"
+                        className="w-full px-4 py-3 rounded-xl border border-halo-charcoal/10 bg-white text-sm text-halo-charcoal outline-none focus:border-[#E5E4E0] transition-colors"
                         placeholder="Your name"
                       />
                     </div>
@@ -144,7 +144,7 @@ export default function ContactPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="w-full px-4 py-3 rounded-xl border border-halo-charcoal/10 bg-white text-sm text-halo-charcoal outline-none focus:border-halo-gold transition-colors"
+                        className="w-full px-4 py-3 rounded-xl border border-halo-charcoal/10 bg-white text-sm text-halo-charcoal outline-none focus:border-[#E5E4E0] transition-colors"
                         placeholder="your@email.com"
                       />
                     </div>
@@ -161,7 +161,7 @@ export default function ContactPage() {
                         onChange={(e) => setMessage(e.target.value)}
                         required
                         rows={5}
-                        className="w-full px-4 py-3 rounded-xl border border-halo-charcoal/10 bg-white text-sm text-halo-charcoal outline-none focus:border-halo-gold transition-colors resize-none"
+                        className="w-full px-4 py-3 rounded-xl border border-halo-charcoal/10 bg-white text-sm text-halo-charcoal outline-none focus:border-[#E5E4E0] transition-colors resize-none"
                         placeholder="How can we help?"
                       />
                     </div>

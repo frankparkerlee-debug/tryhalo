@@ -22,7 +22,7 @@ export default function Hero({
       <div
         className="absolute top-[10%] right-[10%] w-[350px] h-[350px] rounded-full pointer-events-none"
         style={{
-          background: "#C8A96E",
+          background: "#6B7B6E",
           filter: "blur(150px)",
           opacity: 0.1,
         }}
@@ -41,7 +41,7 @@ export default function Hero({
         <p className="mt-8 text-sm text-white/35 flex items-center justify-center gap-3 flex-wrap">
           {trustParts.map((part, i) => (
             <span key={i} className="flex items-center gap-3">
-              {i > 0 && <span className="w-1 h-1 rounded-full bg-halo-gold" />}
+              {i > 0 && <span className="w-1 h-1 rounded-full bg-white/30" />}
               {part}
             </span>
           ))}

@@ -145,7 +145,7 @@ export default function HipaaPage() {
             <ul className="list-disc pl-5 space-y-2 text-sm text-halo-charcoal/70">
               <li>
                 <strong>Halo Health Inc.</strong> &mdash; Contact our Privacy Officer at{" "}
-                <a href="mailto:privacy@tryhalo.co" className="text-halo-gold hover:underline">
+                <a href="mailto:privacy@tryhalo.co" className="text-[#6B7B6E] hover:underline">
                   privacy@tryhalo.co
                 </a>
               </li>
@@ -183,7 +183,7 @@ export default function HipaaPage() {
               Privacy Officer
               <br />
               Email:{" "}
-              <a href="mailto:privacy@tryhalo.co" className="text-halo-gold hover:underline">
+              <a href="mailto:privacy@tryhalo.co" className="text-[#6B7B6E] hover:underline">
                 privacy@tryhalo.co
               </a>
             </p>

@@ -107,7 +107,7 @@ export default function PricingPage() {
         <div
           className="absolute top-[10%] right-[10%] w-[350px] h-[350px] rounded-full pointer-events-none"
           style={{
-            background: "#C8A96E",
+            background: "#6B7B6E",
             filter: "blur(150px)",
             opacity: 0.1,
           }}
@@ -228,7 +228,7 @@ export default function PricingPage() {
                   key={item}
                   className="aos-child flex items-center gap-3 p-4 rounded-xl bg-white/[0.04] border border-white/[0.06]"
                 >
-                  <Check className="w-4 h-4 text-halo-gold flex-shrink-0" />
+                  <Check className="w-4 h-4 text-[#6B7B6E] flex-shrink-0" />
                   <span className="text-sm text-white/70">{item}</span>
                 </div>
               ))}
@@ -236,7 +236,7 @@ export default function PricingPage() {
           </AnimateOnScroll>
 
           <AnimateOnScroll>
-            <div className="text-center p-6 rounded-2xl bg-halo-gold/10 border border-halo-gold/20">
+            <div className="text-center p-6 rounded-2xl bg-[#6B7B6E]/10 border border-[#E5E4E0]/20">
               <p className="text-white font-medium mb-1">
                 Medications are included.
               </p>

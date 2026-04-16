@@ -405,26 +405,26 @@ export default function QuizPage() {
   const optionCard = (selected: boolean) =>
     `relative cursor-pointer rounded-2xl px-6 py-5 text-left transition-all duration-300 border ${
       selected
-        ? 'border-[#C8A96E] bg-[#C8A96E]/10 shadow-[0_0_20px_rgba(200,169,110,0.15)]'
+        ? 'border-[#1C1C1E] bg-[#1C1C1E]/10 shadow-[0_0_20px_rgba(28,28,30,0.1)]'
         : 'border-white/[0.08] bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.06]'
     }`;
 
   const checkboxCard = (selected: boolean) =>
     `relative cursor-pointer rounded-xl px-5 py-4 text-left transition-all duration-300 border flex items-center gap-3 ${
       selected
-        ? 'border-[#C8A96E] bg-[#C8A96E]/10'
+        ? 'border-[#1C1C1E] bg-[#1C1C1E]/10'
         : 'border-white/[0.08] bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.06]'
     }`;
 
   const checkbox = (selected: boolean) =>
     `w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border transition-all duration-200 ${
       selected
-        ? 'bg-[#C8A96E] border-[#C8A96E]'
+        ? 'bg-[#1C1C1E] border-[#1C1C1E]'
         : 'border-white/30 bg-transparent'
     }`;
 
   const continueBtn =
-    'inline-flex items-center gap-2 mt-8 px-8 py-3.5 rounded-full bg-[#C8A96E] text-[#1a1a1a] font-semibold text-sm transition-all duration-300 hover:bg-[#d4b67a] hover:shadow-[0_0_30px_rgba(200,169,110,0.35)]';
+    'inline-flex items-center gap-2 mt-8 px-8 py-3.5 rounded-full bg-[#F8F7F4] text-[#1C1C1E] font-semibold text-sm transition-all duration-300 hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]';
 
   /* ---- Animation classes ---- */
   const stepAnim = animating
@@ -452,7 +452,7 @@ export default function QuizPage() {
       {/* Background decoration */}
       {step < 8 && (
         <>
-          <div className="absolute top-[10%] right-[-5%] w-[300px] h-[300px] rounded-full bg-[#C8A96E] blur-[180px] opacity-[0.06] pointer-events-none" />
+          <div className="absolute top-[10%] right-[-5%] w-[300px] h-[300px] rounded-full bg-[#6B7B6E] blur-[180px] opacity-[0.06] pointer-events-none" />
           <div className="absolute bottom-[20%] left-[-5%] w-[250px] h-[250px] rounded-full bg-[#7A8B6F] blur-[150px] opacity-[0.04] pointer-events-none" />
         </>
       )}
@@ -462,7 +462,7 @@ export default function QuizPage() {
           {/* Progress bar */}
           <div className="h-1 bg-white/[0.06]">
             <div
-              className="h-full bg-[#C8A96E] transition-all duration-500 ease-out"
+              className="h-full bg-white/40 transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -644,7 +644,7 @@ export default function QuizPage() {
                     onChange={(e) => setMedicationDetails(e.target.value)}
                     placeholder="List your current medications..."
                     rows={3}
-                    className="w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white text-sm px-4 py-3 placeholder:text-white/30 outline-none focus:border-[#C8A96E] transition-colors resize-none"
+                    className="w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white text-sm px-4 py-3 placeholder:text-white/30 outline-none focus:border-white/30 transition-colors resize-none"
                   />
                   <button onClick={goNext} className={continueBtn}>
                     Continue
@@ -695,7 +695,7 @@ export default function QuizPage() {
           {step === 7 && (
             <div className="text-center flex flex-col items-center justify-center">
               <div
-                className="w-20 h-20 rounded-full border-2 border-[#C8A96E] mb-8"
+                className="w-20 h-20 rounded-full border-2 border-white/30 mb-8"
                 style={{
                   animation: 'spin 3s linear infinite, ring-pulse 4s ease-in-out infinite',
                 }}
@@ -723,7 +723,7 @@ export default function QuizPage() {
                     Back
                   </button>
                   <Link href="/" className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full border-[1.5px] border-[#C8A96E]" />
+                    <span className="w-5 h-5 rounded-full border-[1.5px] border-[#1C1C1E]" />
                     <span className="font-serif text-lg font-bold text-[#2D2D2D]">
                       Halo
                     </span>
@@ -739,8 +739,8 @@ export default function QuizPage() {
 
                 {/* PRIMARY RECOMMENDATION */}
                 {primaryRec && (
-                  <div className="rounded-2xl border border-[#C8A96E]/30 bg-white p-8 mb-6 shadow-sm">
-                    <p className="text-xs font-semibold text-[#C8A96E] uppercase tracking-widest mb-4">
+                  <div className="rounded-2xl border border-[#E5E4E0] bg-white p-8 mb-6 shadow-sm">
+                    <p className="text-xs font-semibold text-[#6B7B6E] uppercase tracking-widest mb-4">
                       Recommended for you
                     </p>
                     <h2 className="font-serif text-2xl font-bold text-[#2D2D2D] mb-1">
@@ -758,7 +758,7 @@ export default function QuizPage() {
                       <span className="text-[#2D2D2D]/30 line-through text-sm">
                         {programs[primaryRec].price}
                       </span>
-                      <span className="text-[#C8A96E] font-bold text-xl">
+                      <span className="text-[#1C1C1E] font-bold text-xl">
                         {programs[primaryRec].foundingPrice}
                       </span>
                       <span className="text-[#2D2D2D]/40 text-xs">founding price</span>
@@ -784,7 +784,7 @@ export default function QuizPage() {
                     {/* CTA */}
                     <Link
                       href={programs[primaryRec].href}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#C8A96E] text-[#1a1a1a] font-semibold text-sm transition-all duration-300 hover:bg-[#d4b67a] hover:shadow-[0_0_30px_rgba(200,169,110,0.35)]"
+                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#1C1C1E] text-[#F8F7F4] font-semibold text-sm transition-all duration-300 hover:bg-[#333] hover:shadow-[0_0_30px_rgba(0,0,0,0.15)]"
                     >
                       Claim Your Founding Spot
                       <ArrowRight className="w-4 h-4" />
@@ -803,9 +803,9 @@ export default function QuizPage() {
                         <Link
                           key={key}
                           href={programs[key].href}
-                          className="rounded-xl border border-[#2D2D2D]/10 bg-white p-6 hover:border-[#C8A96E]/30 transition-all duration-300 hover:shadow-sm group"
+                          className="rounded-xl border border-[#2D2D2D]/10 bg-white p-6 hover:border-[#2D2D2D]/20 transition-all duration-300 hover:shadow-sm group"
                         >
-                          <h3 className="font-serif text-lg font-bold text-[#2D2D2D] mb-1 group-hover:text-[#C8A96E] transition-colors">
+                          <h3 className="font-serif text-lg font-bold text-[#2D2D2D] mb-1 group-hover:text-[#2D2D2D]/70 transition-colors">
                             {programs[key].name}
                           </h3>
                           <p className="text-[#2D2D2D]/40 text-xs mb-3">
@@ -815,11 +815,11 @@ export default function QuizPage() {
                             <span className="text-[#2D2D2D]/30 line-through text-xs">
                               {programs[key].price}
                             </span>
-                            <span className="text-[#C8A96E] font-semibold">
+                            <span className="text-[#1C1C1E] font-semibold">
                               {programs[key].foundingPrice}
                             </span>
                           </div>
-                          <span className="inline-flex items-center gap-1 text-sm text-[#C8A96E] font-medium">
+                          <span className="inline-flex items-center gap-1 text-sm text-[#6B7B6E] font-medium">
                             Learn more <ArrowRight className="w-3.5 h-3.5" />
                           </span>
                         </Link>
@@ -853,7 +853,7 @@ export default function QuizPage() {
                           </p>
                           <a
                             href="/#founding-circle"
-                            className="inline-flex items-center gap-1 text-sm text-[#C8A96E] font-medium hover:underline"
+                            className="inline-flex items-center gap-1 text-sm text-[#6B7B6E] font-medium hover:underline"
                           >
                             Join the waitlist <ArrowRight className="w-3.5 h-3.5" />
                           </a>

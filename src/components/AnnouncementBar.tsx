@@ -9,7 +9,7 @@ export default function AnnouncementBar() {
   if (dismissed) return null;
 
   return (
-    <div className="relative bg-[#C8A96E] text-[#2D2D2D] z-40">
+    <div className="relative bg-[#1C1C1E] text-[#F8F7F4] z-40">
       <div className="max-w-6xl mx-auto px-6 py-2 flex items-center justify-center relative">
         <a
           href="#founding-circle"

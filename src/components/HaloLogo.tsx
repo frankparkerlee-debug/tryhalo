@@ -19,7 +19,7 @@ export default function HaloLogo({
   className = "",
 }: HaloLogoProps) {
   const s = sizes[size];
-  const textColor = variant === "dark" ? "#ffffff" : "#2D2D2D";
+  const textColor = variant === "dark" ? "#ffffff" : "#1C1C1E";
 
   return (
     <span
@@ -54,8 +54,8 @@ export default function HaloLogo({
       {showText && (
         <span
           style={{
-            fontFamily: "'Manrope', sans-serif",
-            fontWeight: 800,
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 700,
             fontSize: s.text,
             color: textColor,
             letterSpacing: "0.02em",

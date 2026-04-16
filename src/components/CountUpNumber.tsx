@@ -73,7 +73,7 @@ export default function CountUpNumber({
       ref={ref}
       className={
         className ||
-        "text-5xl md:text-6xl font-bold text-halo-gold tracking-tight"
+        "text-5xl md:text-6xl font-bold text-[#1C1C1E] tracking-tight"
       }
     >
       {count}
