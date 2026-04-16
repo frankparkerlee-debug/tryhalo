@@ -53,12 +53,14 @@ function RestorationOverlay({
   accentColor,
   atmosphereTint,
 }: RestorationProps) {
-  // Scattered positions suggesting facets returning simultaneously.
+  // Positions chosen to hug the corners/edges and stay clear of the central
+  // subject area (face, shoulders, chest). HRT image: woman center-right,
+  // so chips live top-left, top-right (above head), bottom-left, bottom-right.
   const positions = [
-    "top-5 right-5 md:top-6 md:right-8",
-    "top-[38%] right-4 md:right-6",
-    "bottom-[28%] right-10 md:right-12",
-    "top-8 left-5 md:top-10 md:left-6",
+    "top-4 left-4 md:top-5 md:left-5",       // top-left corner
+    "top-4 right-4 md:top-5 md:right-5",     // top-right corner
+    "bottom-4 left-4 md:bottom-5 md:left-5", // bottom-left corner
+    "bottom-4 right-4 md:bottom-5 md:right-5", // bottom-right corner
   ];
 
   const chipBg = computeChipBg(atmosphereTint, 30);
@@ -135,10 +137,10 @@ function PerformanceOverlay({
         </div>
       )}
 
-      {/* Secondary chip — smaller, right side, offset vertically from primary */}
+      {/* Secondary chip — bottom-left, well clear of the subject area */}
       {rest[0] && (
         <div
-          className="absolute top-[22%] right-5 md:right-8 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
+          className="absolute bottom-4 left-4 md:bottom-5 md:left-5 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
           style={{
             background: chipBgLight,
             borderColor: "rgba(255, 255, 255, 0.55)",
@@ -157,10 +159,10 @@ function PerformanceOverlay({
         </div>
       )}
 
-      {/* Third chip — bottom-right, reinforces */}
+      {/* Third chip — top-right corner, clear of the subject */}
       {rest[1] && (
         <div
-          className="absolute bottom-6 right-6 md:bottom-8 md:right-8 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
+          className="absolute top-4 right-4 md:top-5 md:right-5 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
           style={{
             background: chipBgLight,
             borderColor: "rgba(255, 255, 255, 0.55)",

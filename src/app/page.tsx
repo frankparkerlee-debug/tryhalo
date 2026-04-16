@@ -552,10 +552,22 @@ export default function Home() {
           1b · FULL-BLEED — The Halo Difference (cinematic editorial)
           ═══════════════════════════════════════════════ */}
       <section className="full-bleed-cinematic bg-[#1A1A1F]">
-        {/* Cinematic background image — capped at max-width for wide screens */}
+        {/* Cinematic background — video if available, falls back to static image */}
         <div className="full-bleed-cinematic-image">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/halo-difference.jpg" alt="" draggable={false} />
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/halo-difference.jpg"
+            className="w-full h-full object-cover"
+            aria-hidden="true"
+          >
+            <source src="/halo-difference.mp4" type="video/mp4" />
+            <source src="/halo-difference.webm" type="video/webm" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/halo-difference.jpg" alt="" draggable={false} />
+          </video>
         </div>
         {/* Gradient scrim for text legibility */}
         <div className="full-bleed-cinematic-scrim" />
