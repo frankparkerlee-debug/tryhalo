@@ -448,6 +448,7 @@ export default function Home() {
                               <AnchorDataOverlay
                                 {...program.overlay}
                                 accentColor={program.accent}
+                                atmosphereTint={program.cardBg}
                               />
                             )}
                           </>
