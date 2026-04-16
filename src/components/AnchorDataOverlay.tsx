@@ -53,15 +53,19 @@ function RestorationOverlay({
   accentColor,
   atmosphereTint,
 }: RestorationProps) {
-  // Positions chosen to hug the corners/edges and stay clear of the central
-  // subject area (face, shoulders, chest). HRT image: woman center-right,
-  // so chips live top-left, top-right (above head), bottom-left, bottom-right.
+  // Desktop (≥ md): 4 chips in four corners
+  // Mobile (< md):  2 chips on a diagonal — top-left + bottom-right only —
+  //                 to avoid crowding the small card and covering the face.
   const positions = [
-    "top-4 left-4 md:top-5 md:left-5",       // top-left corner
-    "top-4 right-4 md:top-5 md:right-5",     // top-right corner
-    "bottom-4 left-4 md:bottom-5 md:left-5", // bottom-left corner
-    "bottom-4 right-4 md:bottom-5 md:right-5", // bottom-right corner
+    "top-3 left-3 md:top-5 md:left-5",
+    "md:top-5 md:right-5 md:block hidden top-3 right-3", // hidden on mobile
+    "md:bottom-5 md:left-5 md:block hidden bottom-3 left-3", // hidden on mobile
+    "bottom-3 right-3 md:bottom-5 md:right-5",
   ];
+
+  // Only render chips 0 and 3 on mobile (diagonal pair).
+  // The middle two chips are hidden on mobile via their className.
+  const mobileHiddenClass = ["", "hidden md:inline-flex", "hidden md:inline-flex", ""];
 
   const chipBg = computeChipBg(atmosphereTint, 30);
 
@@ -73,20 +77,20 @@ function RestorationOverlay({
       {chips.slice(0, 4).map((chip, i) => (
         <div
           key={chip.label}
-          className={`absolute ${positions[i]} rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2`}
+          className={`absolute ${positions[i]} ${mobileHiddenClass[i]} rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-2 py-1 md:px-3 md:py-1.5 items-center gap-1.5 md:gap-2 inline-flex`}
           style={{
             background: chipBg,
             borderColor: "rgba(255, 255, 255, 0.55)",
           }}
         >
           <span
-            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full flex-shrink-0"
             style={{ background: chip.accent || accentColor }}
           />
-          <span className="text-[10px] font-semibold text-halo-charcoal/80 whitespace-nowrap">
+          <span className="text-[9px] md:text-[10px] font-semibold text-halo-charcoal/80 whitespace-nowrap">
             {chip.label}
           </span>
-          <span className="text-[10px] text-halo-charcoal/60 whitespace-nowrap">
+          <span className="text-[9px] md:text-[10px] text-halo-charcoal/60 whitespace-nowrap">
             {chip.value}
           </span>
         </div>
@@ -112,35 +116,34 @@ function PerformanceOverlay({
       className="absolute inset-0 pointer-events-none z-10 select-none"
       aria-hidden="true"
     >
-      {/* Primary chip — bigger, featured, top-left to anchor the eye */}
+      {/* Primary chip — featured, top-left. Smaller and tighter on mobile. */}
       {primary && (
         <div
-          className="absolute top-5 left-5 md:top-7 md:left-7 rounded-2xl backdrop-blur-md border shadow-[0_10px_28px_rgba(0,0,0,0.1)] px-4 py-3 flex flex-col"
+          className="absolute top-3 left-3 md:top-7 md:left-7 rounded-xl md:rounded-2xl backdrop-blur-md border shadow-[0_10px_28px_rgba(0,0,0,0.1)] px-2.5 py-1.5 md:px-4 md:py-3 flex flex-col"
           style={{
             background: chipBgStrong,
             borderColor: "rgba(255, 255, 255, 0.6)",
-            minWidth: "132px",
           }}
         >
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
             <span
-              className="w-2 h-2 rounded-full"
+              className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full"
               style={{ background: primary.accent || accentColor }}
             />
-            <span className="text-[9px] uppercase tracking-wider text-halo-charcoal/55 font-bold">
+            <span className="text-[8px] md:text-[9px] uppercase tracking-wider text-halo-charcoal/55 font-bold">
               {primary.label}
             </span>
           </div>
-          <span className="text-base font-bold text-halo-charcoal leading-tight tracking-tight">
+          <span className="text-[11px] md:text-base font-bold text-halo-charcoal leading-tight tracking-tight">
             {primary.value}
           </span>
         </div>
       )}
 
-      {/* Secondary chip — bottom-left, well clear of the subject area */}
+      {/* Secondary chip — bottom-left. Hidden on mobile to prevent crowding. */}
       {rest[0] && (
         <div
-          className="absolute bottom-4 left-4 md:bottom-5 md:left-5 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
+          className="absolute bottom-4 left-4 md:bottom-5 md:left-5 hidden md:inline-flex rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 items-center gap-2"
           style={{
             background: chipBgLight,
             borderColor: "rgba(255, 255, 255, 0.55)",
@@ -159,23 +162,23 @@ function PerformanceOverlay({
         </div>
       )}
 
-      {/* Third chip — top-right corner, clear of the subject */}
+      {/* Third chip — top-right / bottom-right. Visible on both mobile and desktop but compact on mobile. */}
       {rest[1] && (
         <div
-          className="absolute top-4 right-4 md:top-5 md:right-5 rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-3 py-1.5 inline-flex items-center gap-2"
+          className="absolute bottom-3 right-3 md:top-5 md:right-5 md:bottom-auto rounded-full backdrop-blur-sm border shadow-[0_6px_18px_rgba(0,0,0,0.06)] px-2 py-1 md:px-3 md:py-1.5 inline-flex items-center gap-1.5 md:gap-2"
           style={{
             background: chipBgLight,
             borderColor: "rgba(255, 255, 255, 0.55)",
           }}
         >
           <span
-            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full flex-shrink-0"
             style={{ background: rest[1].accent || accentColor }}
           />
-          <span className="text-[10px] font-semibold text-halo-charcoal/80 whitespace-nowrap">
+          <span className="text-[9px] md:text-[10px] font-semibold text-halo-charcoal/80 whitespace-nowrap">
             {rest[1].label}
           </span>
-          <span className="text-[10px] text-halo-charcoal/60 whitespace-nowrap">
+          <span className="text-[9px] md:text-[10px] text-halo-charcoal/60 whitespace-nowrap">
             {rest[1].value}
           </span>
         </div>

@@ -1119,38 +1119,48 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
-/* Mobile banner — square, cropped tight around the pill, sits to the right */
+/* Mobile banner — square, pill centered in frame at ~85% of the square */
 .support-card-banner {
-  flex: 0 0 88px;
-  width: 88px;
-  height: 88px;
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
   overflow: hidden;
   position: relative;
+  border-radius: 0.5rem;
+  margin: 0.5rem;
+  align-self: center;
 }
 
 .support-card-banner img {
   width: 100%;
   height: 100%;
+  /* The pill lives in the right third of the 21:9 banner image.
+     With a square crop we need to recenter on it. The combination of
+     object-fit:cover + object-position: 80% center + scale 1.15
+     puts the pill at ~85% of the square, centered. */
   object-fit: cover;
-  object-position: center;
-  transform: scale(1.4); /* Zooms in on the pill, trimming the wide banner edges */
+  object-position: 80% center;
+  transform: scale(1.15);
   transition: transform 600ms ease;
 }
 
 .support-card:hover .support-card-banner img {
-  transform: scale(1.5);
+  transform: scale(1.2);
 }
 
 /* Fallback: no image */
 .support-card-banner-fallback {
-  flex: 0 0 88px;
-  width: 88px;
-  height: 88px;
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  border-radius: 0.5rem;
+  margin: 0.5rem;
+  align-self: center;
 }
 
 /* Content area — takes remaining space, centered vertically */
