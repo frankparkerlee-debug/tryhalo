@@ -18,6 +18,7 @@ import {
   Activity,
   Stethoscope,
   GraduationCap,
+  Droplet,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -77,6 +78,7 @@ const faqItems = [
 ];
 
 const programs = [
+  // ─── ANCHOR PROGRAMS ─────────────────────────
   {
     name: "Hormone Therapy",
     outcome: "Feel like yourself again",
@@ -84,13 +86,16 @@ const programs = [
     label: "Physician-prescribed",
     compounds: "Estradiol \u00B7 Progesterone \u00B7 Testosterone",
     price: "$149/mo",
-    foundingPrice: "$129/mo",
+    startingPrice: "from $149/mo",
+    monthly: "$149/mo",
+    quarterly: "$179/mo",
     href: "/renew",
     colorClass: "",
     color: "#D4836B",
     cardBg: "#F5E6E0",
     accent: "#D4836B",
     icon: Heart,
+    tier: "anchor",
     safety: "Hormone therapy may increase risk of blood clots, stroke, and certain cancers. Not suitable during pregnancy. Requires ongoing lab monitoring.",
   },
   {
@@ -100,46 +105,94 @@ const programs = [
     label: "Physician-prescribed",
     compounds: "Testosterone Cypionate \u00B7 HCG \u00B7 Anastrozole",
     price: "$149/mo",
-    foundingPrice: "$129/mo",
+    startingPrice: "from $149/mo",
+    monthly: "$149/mo",
+    quarterly: "$179/mo",
     href: "/vital",
     colorClass: "",
     color: "#5A7394",
     cardBg: "#E3E8EE",
     accent: "#5A7394",
     icon: Zap,
+    tier: "anchor",
     safety: "TRT may affect fertility and is not appropriate for men planning conception. May increase red blood cell count. Requires regular lab monitoring.",
+  },
+  // ─── SUPPORTING PROGRAMS ─────────────────────
+  {
+    name: "GLP-1 Weight Management",
+    outcome: "Sustainable weight loss",
+    desc: "Physician-supervised GLP-1 protocol with labs and follow-up.",
+    label: "GLP-1 therapy",
+    compounds: "Semaglutide \u00B7 Tirzepatide",
+    price: "$179/mo",
+    startingPrice: "from $179/mo",
+    monthly: "$179/mo",
+    quarterly: "$229/mo",
+    href: "/weight-loss",
+    colorClass: "",
+    color: "#B8974E",
+    cardBg: "#EDE8DC",
+    accent: "#B8974E",
+    icon: Activity,
+    tier: "support",
+    safety: "GLP-1 medications may cause nausea, vomiting, diarrhea, or pancreatitis. Not for personal or family history of MTC or MEN 2. Requires lab monitoring.",
   },
   {
     name: "Peptide Therapy",
     outcome: "Recover like you used to",
-    desc: "Deeper sleep, faster recovery, and better body composition.",
+    desc: "Deeper sleep, faster recovery, better body composition.",
     label: "Growth hormone peptides",
     compounds: "Sermorelin",
-    price: "$229/mo",
-    foundingPrice: "$179/mo",
+    price: "$149/mo",
+    startingPrice: "from $149/mo",
+    monthly: "$149/mo",
+    quarterly: "$179/mo",
     href: "/restore",
     colorClass: "",
     color: "#6B8F68",
     cardBg: "#E4EBE3",
     accent: "#6B8F68",
     icon: Moon,
-    safety: "Peptide therapy is prescribed off-label. Not FDA-approved for anti-aging. May cause injection site reactions, headache, or flushing. Medical supervision required.",
+    tier: "support",
+    safety: "Peptide therapy is prescribed off-label. Not FDA-approved for anti-aging. May cause injection site reactions, headache, or flushing.",
   },
   {
     name: "NAD+ Therapy",
     outcome: "Unlock steady energy",
-    desc: "The kind of energy that lasts all day \u2014 no crashes.",
+    desc: "Cellular energy that lasts all day \u2014 no crashes.",
     label: "Cellular therapy",
-    compounds: "NAD+ Injection \u00B7 Glutathione",
-    price: "$229/mo",
-    foundingPrice: "$179/mo",
+    compounds: "NAD+ Injection \u00B7 Oral \u00B7 Nasal",
+    price: "$149/mo",
+    startingPrice: "from $149/mo",
+    monthly: "$149/mo",
+    quarterly: "$179/mo",
     href: "/vitality",
     colorClass: "",
     color: "#7B6B8F",
     cardBg: "#E8E3ED",
     accent: "#7B6B8F",
     icon: Brain,
-    safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment. Medical supervision required.",
+    tier: "support",
+    safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment.",
+  },
+  {
+    name: "Vitality Injections",
+    outcome: "Targeted wellness support",
+    desc: "B12, Glutathione, Methylene Blue, Lipo-C, L-Carnitine.",
+    label: "Wellness add-ons",
+    compounds: "B12 MIC \u00B7 Glutathione \u00B7 Methylene Blue \u00B7 Lipo-C",
+    price: "$109/mo",
+    startingPrice: "from $109/mo",
+    monthly: "$109/mo",
+    quarterly: "$129/mo",
+    href: "/vitality-injections",
+    colorClass: "",
+    color: "#6B8F68",
+    cardBg: "#EAEBE5",
+    accent: "#6B8F68",
+    icon: Droplet,
+    tier: "support",
+    safety: "Vitality injections are compounded and not FDA-approved for specific health claims. May cause injection site reactions.",
   },
 ];
 
@@ -171,14 +224,6 @@ const providers = [
 ];
 
 const comingSoonPrograms = [
-  {
-    name: "Weight Management",
-    label: "GLP-1 therapy",
-    color: "#B8974E",
-    cardBg: "#EDE8DC",
-    accent: "#B8974E",
-    icon: Activity,
-  },
   {
     name: "Sexual Wellness",
     label: "Intimacy & desire",
@@ -260,20 +305,20 @@ const trustBadges = [
 
 const foundingBenefits = [
   {
-    title: "Lock in your rate \u2014 $129-179/mo for life",
-    desc: "Pricing that never goes up, no matter what",
+    title: "Lock in $149/mo for life",
+    desc: "Founding pricing on hormone therapy, TRT, peptides, and NAD+ — never goes up",
   },
   {
-    title: "Free labs \u2014 know exactly where you stand",
-    desc: "Your first hormone panel included ($300 value)",
+    title: "Free baseline labs",
+    desc: "Your first comprehensive hormone panel included ($300 value)",
   },
   {
-    title: "Skip the waitlist \u2014 start feeling better faster",
-    desc: "Priority onboarding for founding members",
+    title: "Priority onboarding",
+    desc: "Skip the waitlist and start your protocol in days, not weeks",
   },
   {
-    title: "First access \u2014 to new programs as we grow",
-    desc: "GLP-1, sexual wellness, and more",
+    title: "First access to new programs",
+    desc: "Sexual wellness and future protocols, before they launch publicly",
   },
 ];
 
@@ -355,60 +400,77 @@ export default function Home() {
             {heroHeadline.line2}
           </h1>
 
-          {/* Hero grid — compact, Hims-style */}
+          {/* Hero grid — anchor programs get the spotlight */}
           <div className="space-y-3">
-            {/* Row 1: 2 featured program cards */}
+            {/* Row 1: 2 ANCHOR program cards (HRT + TRT) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {personalizedPrograms.slice(0, 2).map((program) => {
-                const Icon = program.icon;
-                return (
-                  <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
-                    <div className="product-card-image">
-                      <Icon className="w-10 h-10 opacity-15" style={{ color: program.accent }} />
-                    </div>
-                    <div className="product-card-info">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-sm md:text-base font-semibold text-halo-charcoal">{program.outcome}</h3>
-                          <p className="text-xs text-halo-charcoal/40">{program.name} &middot; {program.foundingPrice}</p>
-                        </div>
-                        <ArrowRight className="w-4 h-4 text-halo-charcoal/20 group-hover:text-halo-charcoal/50 transition-colors" />
+              {personalizedPrograms
+                .filter((p) => p.tier === "anchor")
+                .slice(0, 2)
+                .map((program) => {
+                  const Icon = program.icon;
+                  return (
+                    <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
+                      <div className="product-card-image">
+                        <Icon className="w-10 h-10 opacity-15" style={{ color: program.accent }} />
                       </div>
-                    </div>
-                  </Link>
-                );
-              })}
+                      <div className="product-card-info">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-sm md:text-base font-semibold text-halo-charcoal">{program.outcome}</h3>
+                            <p className="text-xs text-halo-charcoal/40">{program.name} &middot; {program.startingPrice}</p>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-halo-charcoal/20 group-hover:text-halo-charcoal/50 transition-colors" />
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
             </div>
 
-            {/* Row 2: All other programs + coming soon as a single inline strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {personalizedPrograms.slice(2).map((program) => {
-                const Icon = program.icon;
-                return (
-                  <Link key={program.name} href={program.href} className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors group">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: program.cardBg }}>
-                      <Icon className="w-3.5 h-3.5" style={{ color: program.accent }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-halo-charcoal truncate">{program.outcome}</p>
-                      <p className="text-[10px] text-halo-charcoal/35">{program.foundingPrice}</p>
-                    </div>
-                    <ArrowRight className="w-3 h-3 text-halo-charcoal/15 flex-shrink-0" />
-                  </Link>
-                );
-              })}
+            {/* Row 2: PRIMARY SUPPORT programs — GLP-1, Peptide, NAD+ */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              {personalizedPrograms
+                .filter((p) => p.tier === "support" && p.name !== "Vitality Injections")
+                .map((program) => {
+                  const Icon = program.icon;
+                  return (
+                    <Link key={program.name} href={program.href} className="flex items-center gap-3 p-3.5 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors group">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: program.cardBg }}>
+                        <Icon className="w-4 h-4" style={{ color: program.accent }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-halo-charcoal truncate">{program.outcome}</p>
+                        <p className="text-[11px] text-halo-charcoal/40">{program.name.replace(" Therapy", "").replace(" Weight Management", "")} &middot; {program.startingPrice}</p>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/15 flex-shrink-0" />
+                    </Link>
+                  );
+                })}
+            </div>
+
+            {/* Row 3: DEPRIORITIZED — Vitality add-ons + Coming Soon — small, muted */}
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <span className="text-[10px] uppercase tracking-wider text-halo-charcoal/35 font-semibold mr-2">Also available</span>
+              {personalizedPrograms
+                .filter((p) => p.name === "Vitality Injections")
+                .map((program) => {
+                  const Icon = program.icon;
+                  return (
+                    <Link key={program.name} href={program.href} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors group">
+                      <Icon className="w-3 h-3" style={{ color: program.accent }} />
+                      <span className="text-[11px] font-medium text-halo-charcoal/70">{program.name}</span>
+                      <span className="text-[10px] text-halo-charcoal/35">{program.startingPrice}</span>
+                    </Link>
+                  );
+                })}
               {comingSoonPrograms.map((p) => {
                 const Icon = p.icon;
                 return (
-                  <a key={p.name} href="#founding-circle" className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: p.cardBg }}>
-                      <Icon className="w-3.5 h-3.5" style={{ color: p.accent }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-halo-charcoal truncate">{p.name}</p>
-                      <p className="text-[10px] text-halo-charcoal/35">{p.label}</p>
-                    </div>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/25 flex-shrink-0">Soon</span>
+                  <a key={p.name} href="#founding-circle" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-halo-border hover:border-halo-charcoal/15 transition-colors">
+                    <Icon className="w-3 h-3" style={{ color: p.accent }} />
+                    <span className="text-[11px] font-medium text-halo-charcoal/70">{p.name}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/30">Soon</span>
                   </a>
                 );
               })}
