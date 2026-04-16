@@ -425,8 +425,8 @@ export default function Home() {
 
           {/* Hero grid — anchor programs get the spotlight */}
           <div className="space-y-3">
-            {/* Row 1: 2 ANCHOR program cards (HRT + TRT) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Row 1: ANCHOR program cards — mobile: horizontal swipe carousel, desktop: 2-col grid */}
+            <div className="anchor-row">
               {personalizedPrograms
                 .filter((p) => p.tier === "anchor")
                 .slice(0, 2)
@@ -434,7 +434,7 @@ export default function Home() {
                   const Icon = program.icon;
                   const hasImage = Boolean(program.image);
                   return (
-                    <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
+                    <Link key={program.name} href={program.href} className="anchor-card product-card group" style={{ background: program.cardBg }}>
                       <div className="product-card-image relative">
                         {hasImage ? (
                           <>
@@ -470,6 +470,17 @@ export default function Home() {
                     </Link>
                   );
                 })}
+            </div>
+
+            {/* Mobile-only swipe hint */}
+            <div className="flex sm:hidden flex-col items-center gap-1.5 mt-1">
+              <div className="flex gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-halo-charcoal/40" />
+                <span className="w-1.5 h-1.5 rounded-full bg-halo-charcoal/15" />
+              </div>
+              <span className="text-[10px] uppercase tracking-[0.15em] text-halo-charcoal/35 font-medium">
+                Swipe to see more
+              </span>
             </div>
 
             {/* Row 2: PRIMARY SUPPORT programs — stacked banner + content */}
