@@ -43,10 +43,28 @@ interface RestorationProps extends SharedProps {
 
 type AnchorDataOverlayProps = PerformanceProps | RestorationProps;
 
-/* ─── PERFORMANCE — Integrated arc + single metric ──────────── */
+/* ─── PERFORMANCE — Line graph with real data points ────────── */
 
-const ARC_PATH =
-  "M 0 190 Q 120 170, 220 130 T 380 70 T 540 30";
+// 12 data points (90-day testosterone progression) — polyline, no smoothing.
+// Starts low-left around y=210 (baseline), climbs to y=30 at the top-right.
+const PERFORMANCE_POINTS: Array<[number, number]> = [
+  [0, 210],
+  [45, 205],
+  [90, 190],
+  [135, 175],
+  [180, 160],
+  [225, 140],
+  [270, 115],
+  [315, 105],
+  [360, 85],
+  [405, 70],
+  [450, 55],
+  [495, 40],
+  [540, 30],
+];
+
+const PERFORMANCE_POLYLINE = PERFORMANCE_POINTS.map(([x, y]) => `${x},${y}`).join(" ");
+const PERFORMANCE_AREA_PATH = `M ${PERFORMANCE_POLYLINE.replace(/ /g, " L ")} L 540 260 L 0 260 Z`;
 
 const POSITION_CLASSES: Record<Position, string> = {
   "top-left": "top-4 left-4 md:top-5 md:left-5",
@@ -70,7 +88,7 @@ function PerformanceOverlay({
 
   return (
     <>
-      {/* Arcing performance trajectory — glowing light trail */}
+      {/* Line graph: polyline connecting 90-day data points */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-[1]"
         viewBox="0 0 540 260"
@@ -78,43 +96,63 @@ function PerformanceOverlay({
         aria-hidden="true"
       >
         <defs>
-          {/* Gradient: faint on the left, strong on the right (implying progress) */}
-          <linearGradient id="perf-arc-grad" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0" />
-            <stop offset="45%" stopColor={accentColor} stopOpacity="0.4" />
-            <stop offset="100%" stopColor={accentColor} stopOpacity="0.95" />
+          {/* Fill gradient under the line — fades from accent to transparent */}
+          <linearGradient id="perf-area-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={accentColor} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
           </linearGradient>
-          {/* Soft bloom around the line — makes it feel atmospheric, not UI */}
-          <filter id="perf-bloom" x="-10%" y="-10%" width="120%" height="120%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
+          {/* Line stroke gradient — faint on the left, strong on the right */}
+          <linearGradient id="perf-line-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={accentColor} stopOpacity="0.35" />
+            <stop offset="100%" stopColor={accentColor} stopOpacity="1" />
+          </linearGradient>
         </defs>
 
-        {/* Soft underglow layer */}
-        <path
-          d={ARC_PATH}
-          stroke={accentColor}
-          strokeOpacity="0.25"
-          strokeWidth="8"
-          strokeLinecap="round"
+        {/* Horizontal grid reference lines — subtle baseline context */}
+        {[60, 130, 200].map((y) => (
+          <line
+            key={y}
+            x1="0"
+            y1={y}
+            x2="540"
+            y2={y}
+            stroke={accentColor}
+            strokeOpacity="0.08"
+            strokeWidth="0.75"
+            strokeDasharray="2 4"
+          />
+        ))}
+
+        {/* Area fill under the polyline */}
+        <path d={PERFORMANCE_AREA_PATH} fill="url(#perf-area-grad)" />
+
+        {/* The line graph itself — straight segments, no smoothing */}
+        <polyline
+          points={PERFORMANCE_POLYLINE}
           fill="none"
-          filter="url(#perf-bloom)"
-        />
-        {/* Primary line */}
-        <path
-          d={ARC_PATH}
-          stroke="url(#perf-arc-grad)"
-          strokeWidth="2.25"
+          stroke="url(#perf-line-grad)"
+          strokeWidth="2"
+          strokeLinejoin="round"
           strokeLinecap="round"
-          fill="none"
         />
-        {/* Peak marker — subtle double dot */}
+
+        {/* Data point nodes — every 3rd point visible so it reads as a real chart */}
+        {PERFORMANCE_POINTS.filter((_, i) => i % 3 === 0).map(([x, y], i) => (
+          <g key={`pt-${i}`}>
+            <circle
+              cx={x}
+              cy={y}
+              r="3"
+              fill="white"
+              stroke={accentColor}
+              strokeWidth="1.5"
+            />
+          </g>
+        ))}
+
+        {/* Prominent current-value marker at the final point */}
         <circle cx="540" cy="30" r="4" fill={accentColor} />
-        <circle cx="540" cy="30" r="10" fill={accentColor} fillOpacity="0.2" />
+        <circle cx="540" cy="30" r="9" fill={accentColor} fillOpacity="0.25" />
       </svg>
 
       {/* Single tinted metric card */}
@@ -200,37 +238,57 @@ function RestorationOverlay({
         </div>
       ))}
 
-      {/* Soft settling wave along the bottom — like a rhythm returning */}
+      {/* Baseline line chart — emotional regulation settling into rhythm */}
       <svg
-        className="absolute bottom-0 left-0 w-full h-20 opacity-80"
+        className="absolute bottom-0 left-0 w-full h-20 opacity-85"
         viewBox="0 0 540 100"
         preserveAspectRatio="none"
       >
         <defs>
-          <linearGradient id="rest-wave-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0" />
-            <stop offset="100%" stopColor={accentColor} stopOpacity="0.22" />
+          <linearGradient id="rest-area-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={accentColor} stopOpacity="0.22" />
+            <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
           </linearGradient>
-          <filter id="rest-bloom" x="-5%" y="-5%" width="110%" height="110%">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
+          <linearGradient id="rest-line-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={accentColor} stopOpacity="0.45" />
+            <stop offset="100%" stopColor={accentColor} stopOpacity="0.85" />
+          </linearGradient>
         </defs>
+
+        {/* Area fill */}
         <path
-          d="M 0 60 Q 135 40, 270 50 T 540 45 L 540 100 L 0 100 Z"
-          fill="url(#rest-wave-grad)"
+          d="M 0,70 L 45,65 L 90,58 L 135,62 L 180,52 L 225,48 L 270,50 L 315,45 L 360,42 L 405,44 L 450,40 L 495,38 L 540,35 L 540 100 L 0 100 Z"
+          fill="url(#rest-area-grad)"
         />
-        <path
-          d="M 0 60 Q 135 40, 270 50 T 540 45"
-          stroke={accentColor}
-          strokeOpacity="0.4"
-          strokeWidth="1.25"
+
+        {/* Line graph — polyline, no smoothing */}
+        <polyline
+          points="0,70 45,65 90,58 135,62 180,52 225,48 270,50 315,45 360,42 405,44 450,40 495,38 540,35"
+          stroke="url(#rest-line-grad)"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          strokeLinecap="round"
           fill="none"
-          filter="url(#rest-bloom)"
         />
+
+        {/* Data points at key measurements */}
+        {[
+          [0, 70],
+          [135, 62],
+          [270, 50],
+          [405, 44],
+          [540, 35],
+        ].map(([x, y], i) => (
+          <circle
+            key={`rest-pt-${i}`}
+            cx={x}
+            cy={y}
+            r="2.25"
+            fill="white"
+            stroke={accentColor}
+            strokeWidth="1.25"
+          />
+        ))}
       </svg>
     </div>
   );
