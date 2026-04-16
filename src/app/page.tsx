@@ -3,14 +3,8 @@
 import {
   ArrowRight,
   Shield,
-  FlaskConical,
   Lock,
-  Building2,
-  Truck,
-  ClipboardList,
-  TestTube2,
-  Video,
-  Package,
+  ClipboardCheck,
   Zap,
   Heart,
   Moon,
@@ -19,6 +13,11 @@ import {
   Stethoscope,
   GraduationCap,
   Droplet,
+  FileHeart,
+  TrendingUp,
+  BadgeCheck,
+  Microscope,
+  FlaskRound,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -34,47 +33,162 @@ import { usePersonalization } from "@/hooks/usePersonalization";
 /* ─── DATA ────────────────────────────────────────────────────── */
 
 const faqItems = [
+  // ─── GENERAL ───────────────────────────────────
+  {
+    question: "What is Halo?",
+    answer:
+      "Halo is a physician-led hormone optimization and wellness platform built for high-performing adults in their 40s and 50s. We offer testosterone replacement therapy (TRT) for men, hormone replacement therapy (HRT) for women, GLP-1 weight management, peptide therapy, and NAD+ — all delivered through 100% online consultations with board-certified physicians, at-home lab draws, and a US-licensed compounding pharmacy.",
+    category: "General",
+  },
+  {
+    question: "How is Halo different from Hims, Ro, or Hone?",
+    answer:
+      "Most telehealth brands sell one-size-fits-all protocols optimized for the 25-to-40 demographic. Halo is built specifically for the 40-to-55 professional who wants to reverse aging, not just manage symptoms. Every plan is personalized by a board-certified physician based on comprehensive lab work, not a chatbot. Pricing is transparent. Protocols are adjusted quarterly based on your results, not a standard template.",
+    category: "General",
+  },
+  {
+    question: "How does the Halo process work?",
+    answer:
+      "1) Take our 2-minute quiz to match you to the right program. 2) Complete at-home labs through Quest or Labcorp — free for founding members. 3) Meet your physician on a video visit to review your results and build your plan. 4) Medications ship from our partner pharmacy within 3-5 business days. Follow-ups happen via secure messaging, with video visits any time you want.",
+    category: "General",
+  },
   {
     question: "How quickly will I see results?",
     answer:
-      "Most members notice improvements in energy, sleep, and mood within 2-4 weeks. Body composition changes typically develop over 2-3 months. Your provider monitors your progress and adjusts your plan as needed.",
+      "Most members report improvements in energy, sleep quality, and mood within 2 to 4 weeks. Body composition changes, muscle recovery, and libido improvements typically develop over 2 to 3 months. Your physician monitors biomarkers through repeat labs at 90 days and adjusts your protocol if needed. Individual results vary based on age, baseline levels, and program adherence.",
     category: "General",
   },
   {
-    question: "What does Halo cost?",
+    question: "Who is Halo for?",
     answer:
-      "Programs range from $129 to $249 per month. Medications, labs, provider visits, and shipping are all included. No hidden fees. Founding members lock in a reduced rate for life.",
+      "Halo is designed for adults 35-65 who want physician-led hormone optimization and wellness protocols. Our core demographic is 40-55 year old professionals who notice their energy, sleep, body composition, or cognitive sharpness declining and want a serious, medically-supervised approach — not supplements or generic TRT clinics. We are not for anyone under 18, pregnant, or with certain active cancers or cardiovascular conditions.",
     category: "General",
   },
   {
-    question: "What programs are available at launch?",
+    question: "Can I cancel anytime?",
     answer:
-      "We are launching with programs for hormone balance, testosterone optimization, peptide therapy for recovery and sleep, and NAD+ for sustained energy. Weight management and sexual wellness programs are coming soon. Founding members get first access to everything.",
+      "Yes. Halo has no long-term contracts, no cancellation fees, and no hidden commitments. You can pause or cancel your membership directly from your account dashboard. Your founding member pricing stays locked in as long as your membership remains active.",
     category: "General",
   },
+
+  // ─── PROGRAMS ──────────────────────────────────
   {
-    question: "How do consultations work?",
+    question: "What is testosterone replacement therapy (TRT) and how does it work?",
     answer:
-      "Your first visit is a video call with your provider. They review your labs, talk about how you have been feeling, and build a plan around your goals. After that, most follow-ups are handled through messaging. Video visits are always available when you want one.",
-    category: "General",
+      "Testosterone replacement therapy is a physician-prescribed protocol for men with clinically low testosterone levels. Halo's TRT protocol uses testosterone cypionate (injectable), HCG to preserve testicular function and fertility, and anastrozole to manage estrogen conversion. Your physician customizes dosing based on your baseline labs and adjusts quarterly. Most men experience improved energy, recovery, libido, body composition, and cognitive function within 4 to 8 weeks.",
+    category: "Programs",
   },
   {
-    question: "Why is bloodwork required?",
+    question: "What is hormone replacement therapy (HRT) for women?",
     answer:
-      "Your labs tell us what is actually going on inside, not just what you are feeling on the surface. That data is how your provider builds a plan that is right for you. We order through Quest and Labcorp with thousands of locations. Founding members get their first panel free.",
-    category: "General",
+      "HRT addresses the hormonal decline women experience in perimenopause and menopause. Halo's HRT protocol uses bioidentical estradiol, progesterone, and low-dose testosterone based on your individual symptoms and lab work. Most women report improvements in hot flashes, sleep quality, mood stability, mental clarity, libido, and body composition within 2 to 6 weeks. Protocols are FDA-approved bioidentical hormones compounded by a licensed US pharmacy.",
+    category: "Programs",
   },
   {
-    question: "Is this covered by insurance?",
+    question: "Does TRT affect fertility?",
     answer:
-      "Halo programs are not typically covered by insurance. However, some lab work and medications may be eligible depending on your plan. We provide documentation you can submit to your insurer.",
-    category: "General",
+      "Traditional TRT can suppress natural testosterone production and reduce sperm count. That is why Halo's TRT protocol includes HCG (human chorionic gonadotropin) — an adjunct medication that maintains testicular function and preserves fertility for men who may want to conceive in the future. If fertility is a priority, talk to your physician during your intake — we can also discuss enclomiphene as an alternative.",
+    category: "Programs",
   },
   {
-    question: "What if I want to cancel?",
+    question: "What GLP-1 medications does Halo offer?",
     answer:
-      "Cancel anytime from your account. No contracts, no cancellation fees. Your founding member rate stays locked in as long as your membership is active.",
-    category: "General",
+      "Halo offers compounded semaglutide and tirzepatide, the active ingredients in brand-name Wegovy, Ozempic, Mounjaro, and Zepbound. Compounded GLP-1 is produced by a licensed US compounding pharmacy and is pharmaceutically equivalent to the branded versions. Your physician titrates your dose up gradually over several months to minimize side effects and maximize weight loss. Most members lose 15-20% of body weight over 12 months.",
+    category: "Programs",
+  },
+  {
+    question: "What are peptides and is peptide therapy safe?",
+    answer:
+      "Peptides are short chains of amino acids that signal your body to produce specific responses — like growth hormone release, tissue repair, or cellular recovery. Halo's primary peptide is sermorelin, a growth hormone releasing hormone (GHRH) analog that stimulates your pituitary to produce more of your own growth hormone. Peptide therapy is prescribed off-label and is not FDA-approved for anti-aging, but is widely used by physicians for sleep, recovery, and body composition support. All protocols are physician-supervised and monitored through repeat labs.",
+    category: "Programs",
+  },
+  {
+    question: "What does NAD+ therapy do?",
+    answer:
+      "NAD+ (nicotinamide adenine dinucleotide) is a coenzyme essential to cellular energy production and DNA repair. NAD+ levels decline significantly with age. Halo offers NAD+ as an injectable, oral, or nasal protocol — depending on your lifestyle and preference. Members report sustained energy, improved focus, and better recovery within 2 to 3 weeks. NAD+ is prescribed off-label for longevity and cellular support and is not FDA-approved as a treatment for any specific condition.",
+    category: "Programs",
+  },
+
+  // ─── PRICING ───────────────────────────────────
+  {
+    question: "How much does Halo cost?",
+    answer:
+      "Halo programs start at $109/mo for Vitality Injections and $149/mo for our core anchor programs (HRT, TRT, NAD+, Peptide Therapy) on our 52-week plan. GLP-1 Weight Management is $179/mo. Every plan includes physician consultations, compounded or branded medications, lab ordering, ongoing adjustments, and shipping. No hidden fees. Pay monthly, quarterly, every 6 months, or annually — longer terms save more.",
+    category: "Pricing",
+  },
+  {
+    question: "What is included in my membership?",
+    answer:
+      "Everything needed to run your protocol: unlimited physician messaging, video visits as needed, prescribed medications shipped monthly or quarterly, at-home lab ordering through Quest and Labcorp, protocol adjustments based on your labs, and US-based member support. Founding members also get their baseline hormone panel free (a $300 value) and locked-in pricing for life.",
+    category: "Pricing",
+  },
+  {
+    question: "Does Halo take insurance?",
+    answer:
+      "Halo operates outside of insurance to keep pricing transparent and avoid insurer-driven protocol restrictions. Most hormone optimization and compounded medications are not covered by insurance anyway. We provide itemized receipts you can submit to your insurer for possible lab reimbursement, and most members pay with HSA or FSA funds, which are fully accepted.",
+    category: "Pricing",
+  },
+  {
+    question: "Can I use my HSA or FSA?",
+    answer:
+      "Yes. Halo accepts HSA and FSA cards for all membership fees, medications, and lab work. This is a pre-tax benefit that can reduce your effective cost by 20-40% depending on your tax bracket.",
+    category: "Pricing",
+  },
+  {
+    question: "Are there any hidden fees?",
+    answer:
+      "No. Your monthly or quarterly membership fee covers everything: physician visits, messaging, medications, lab orders, protocol adjustments, and shipping. The only additional cost is if you require lab work beyond your included panels (very rare), or specialty medications outside your program.",
+    category: "Pricing",
+  },
+  {
+    question: "What is the founding member pricing?",
+    answer:
+      "The first 999 members lock in our lowest pricing ($149/mo across anchor programs) for the entire life of their membership, regardless of future price increases. Founding members also receive their baseline comprehensive hormone panel free (normally $300), priority onboarding, and first access to new programs as we launch them.",
+    category: "Pricing",
+  },
+
+  // ─── MEDICAL ───────────────────────────────────
+  {
+    question: "Are Halo physicians real and board-certified?",
+    answer:
+      "Yes. Every physician on the Halo platform is a US-licensed MD or DO, board-certified in their specialty (endocrinology, internal medicine, family medicine, or sports medicine), credentialed through our partner OpenLoop Health, and licensed in your state. Your physician reviews your labs, builds your personalized protocol, and adjusts it based on your results. No chatbots, no generic templates.",
+    category: "Medical",
+  },
+  {
+    question: "Where do Halo medications come from?",
+    answer:
+      "All Halo medications ship from a licensed US compounding pharmacy operating under DEA registration and USP standards. Compounded medications are custom-mixed for each patient based on their physician's prescription — the same way specialty pharmacies have operated for decades. Your medications arrive in labeled sterile vials or pens with clear dosing instructions.",
+    category: "Medical",
+  },
+  {
+    question: "What biomarkers does Halo test?",
+    answer:
+      "Your baseline hormone panel includes total and free testosterone, estradiol, progesterone, SHBG, DHEA-S, IGF-1, complete metabolic panel, lipid panel, thyroid panel (TSH, free T3, free T4), CBC, PSA (men), and vitamin D. Follow-up panels focus on the biomarkers most relevant to your specific protocol. We retest at 90 days and then every 6 months to track progress.",
+    category: "Medical",
+  },
+  {
+    question: "What are the side effects of TRT or HRT?",
+    answer:
+      "Common TRT side effects include acne, increased red blood cell count (polycythemia), water retention, and in rare cases sleep apnea worsening. TRT may affect fertility if HCG is not used. Common HRT side effects include breast tenderness, spotting, mood changes, and minor weight fluctuations. HRT may slightly increase blood clot risk and certain cancer risks — your physician will review your personal and family history to determine if you are a candidate. All protocols require ongoing lab monitoring.",
+    category: "Medical",
+  },
+  {
+    question: "Do I need to do lab work before starting?",
+    answer:
+      "Yes. Halo never prescribes hormones or optimization medications without first reviewing your labs. This is both medically required and what separates us from clinics that rush prescriptions without data. You will visit a local Quest or Labcorp (thousands of locations) for a quick blood draw. Results return in 2-5 business days, then you meet your physician to build your plan. Founding members get their first panel free.",
+    category: "Medical",
+  },
+  {
+    question: "Is compounded medication FDA-approved?",
+    answer:
+      "Compounded medications are not FDA-approved as products because they are custom-made for each patient. However, the active ingredients (bioidentical estradiol, testosterone, semaglutide, etc.) are FDA-approved, and the compounding pharmacy is state-licensed, DEA-registered, and operates under USP 797 standards. This is the same model used for decades for personalized hormone replacement, pediatric medications, and specialty formulations.",
+    category: "Medical",
+  },
+  {
+    question: "What if I have a bad reaction or side effect?",
+    answer:
+      "Message your physician through the Halo platform — typical response time is under 4 hours during business hours. For urgent concerns, video visits can be scheduled same-day or next-day. For true medical emergencies, always call 911 or go to your nearest ER first, then notify your physician. Your physician can adjust dosing, switch medications, or discontinue treatment immediately.",
+    category: "Medical",
   },
 ];
 
@@ -194,7 +308,7 @@ const programs = [
     cardBg: "#E8E3ED",
     accent: "#7B6B8F",
     icon: Brain,
-    image: "/support-nad.png",
+    image: "/support-nad.jpg",
     tier: "support",
     safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment.",
   },
@@ -260,30 +374,30 @@ const comingSoonPrograms = [
 const steps = [
   {
     num: "01",
-    title: "Tell us about you",
-    desc: "A few questions about your goals, symptoms, and health history.",
-    icon: ClipboardList,
-    color: "#6B8F68",
-  },
-  {
-    num: "02",
-    title: "Get your baseline",
-    desc: "Quick lab visit to see what\u2019s actually going on inside.",
-    icon: TestTube2,
+    title: "Take the quiz",
+    desc: "Two minutes. Tell us about your goals, symptoms, and history.",
+    icon: ClipboardCheck,
     color: "#D4836B",
   },
   {
-    num: "03",
+    num: "02",
     title: "Meet your provider",
-    desc: "A real conversation about what\u2019s possible for you.",
-    icon: Video,
+    desc: "Video visit with a board-certified physician who reviews your labs and health.",
+    icon: Stethoscope,
     color: "#5A7394",
   },
   {
+    num: "03",
+    title: "Get your plan",
+    desc: "A protocol designed around your biology \u2014 shipped direct, adjusted as you go.",
+    icon: FileHeart,
+    color: "#7B6B8F",
+  },
+  {
     num: "04",
-    title: "Start feeling it",
-    desc: "Your plan arrives. Most members notice changes in 2\u20134 weeks.",
-    icon: Package,
+    title: "Feel better",
+    desc: "Most members notice changes in 2\u20134 weeks. Your physician monitors and fine-tunes.",
+    icon: TrendingUp,
     color: "#6B8F68",
   },
 ];
@@ -319,11 +433,11 @@ const testimonials = [
 ];
 
 const trustBadges = [
-  { label: "Licensed Providers", icon: Shield },
-  { label: "HPLC Tested", icon: FlaskConical },
-  { label: "HIPAA Compliant", icon: Lock },
-  { label: "US Pharmacies", icon: Building2 },
-  { label: "Free Shipping", icon: Truck },
+  { label: "Board-certified physicians", icon: Stethoscope },
+  { label: "US-licensed pharmacy", icon: FlaskRound },
+  { label: "USP compounding standards", icon: Microscope },
+  { label: "HIPAA-secure", icon: Lock },
+  { label: "No insurance needed", icon: BadgeCheck },
 ];
 
 const foundingBenefits = [
@@ -443,6 +557,9 @@ export default function Home() {
                               src={program.image}
                               alt={`${program.name} — ${program.outcome}`}
                               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                              loading="eager"
+                              fetchPriority="high"
+                              decoding="async"
                               draggable={false}
                             />
                             {/* Code-built glassmorphic data overlay — pixel-perfect, never rendered by AI */}
@@ -495,7 +612,7 @@ export default function Home() {
                       {program.image ? (
                         <div className="support-card-banner">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={program.image} alt="" draggable={false} />
+                          <img src={program.image} alt="" loading="lazy" decoding="async" draggable={false} />
                         </div>
                       ) : (
                         <div
@@ -559,6 +676,7 @@ export default function Home() {
             loop
             muted
             playsInline
+            preload="metadata"
             poster="/halo-difference.jpg"
             className="w-full h-full object-cover"
             aria-hidden="true"
@@ -566,7 +684,7 @@ export default function Home() {
             <source src="/halo-difference.mp4" type="video/mp4" />
             <source src="/halo-difference.webm" type="video/webm" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/halo-difference.jpg" alt="" draggable={false} />
+            <img src="/halo-difference.jpg" alt="" loading="lazy" decoding="async" draggable={false} />
           </video>
         </div>
         {/* Gradient scrim for text legibility */}
@@ -594,11 +712,11 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════
           2 · MANIFESTO — Statement + trust bridge
           ═══════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-6 section-light relative">
+      <section className="py-16 md:py-24 px-6 section-light relative">
         <div className="max-w-4xl mx-auto">
           <AnimateOnScroll>
             {/* Category pills bridge */}
-            <div className="flex items-center justify-center gap-2 mb-12 flex-wrap">
+            <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
               {["Hormones", "Testosterone", "Peptides", "NAD+", "Recovery"].map((pill) => (
                 <span key={pill} className="category-pill text-xs">{pill}</span>
               ))}
@@ -616,7 +734,7 @@ export default function Home() {
               from knowing your body is working with you, not against you.
             </p>
 
-            <div className="mt-10 text-center">
+            <div className="mt-6 text-center">
               <Link
                 href="/quiz"
                 className="inline-flex items-center gap-2 text-sm font-medium text-halo-charcoal/50 hover:text-halo-charcoal transition-colors border-b border-halo-charcoal/10 hover:border-halo-charcoal/30 pb-0.5"
@@ -628,13 +746,13 @@ export default function Home() {
 
           {/* Trust badges strip */}
           <AnimateOnScroll>
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 mt-16 pt-10 border-t border-halo-charcoal/[0.06]">
+            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-10 pt-8 border-t border-halo-charcoal/[0.06]">
               {trustBadges.map((badge) => (
                 <div key={badge.label} className="trust-badge">
                   <div className="trust-badge-icon">
-                    <badge.icon className="w-5 h-5 text-[#C8A96E]" />
+                    <badge.icon className="w-5 h-5 text-[#C8A96E]" strokeWidth={1.75} />
                   </div>
-                  <span className="text-xs font-medium text-halo-charcoal/45 whitespace-nowrap">{badge.label}</span>
+                  <span className="text-xs font-medium text-halo-charcoal/50 whitespace-nowrap">{badge.label}</span>
                 </div>
               ))}
             </div>

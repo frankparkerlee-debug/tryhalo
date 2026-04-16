@@ -23,105 +23,131 @@ interface PersonalizationState {
   utmCampaign: string | null;
 }
 
+const INITIAL_STATE: PersonalizationState = {
+  persona: "neutral",
+  hasCompletedQuiz: false,
+  isFoundingMember: false,
+  isReturnVisitor: false,
+  primaryProgram: null,
+  quizData: null,
+  utmCampaign: null,
+};
+
 /**
  * Client-side personalization hook.
  *
- * Data sources (priority order):
- * 1. Quiz answers saved in localStorage (`halo_quiz`)
- * 2. UTM params from ad campaigns (`?utm_campaign=trt-men`)
- * 3. Founding Circle signup (`halo_signup_email`)
- * 4. Return visitor detection (`halo_visited`)
- *
- * Determines persona (male/female/neutral) and which program to feature.
+ * PERFORMANCE: All localStorage + URL parsing work is deferred using
+ * requestIdleCallback so it runs *after* the initial paint. The hook
+ * returns the neutral state synchronously and upgrades once the browser
+ * is idle — navigation feels instant, personalization appears seamlessly.
  */
 export function usePersonalization(): PersonalizationState {
-  const [state, setState] = useState<PersonalizationState>({
-    persona: "neutral",
-    hasCompletedQuiz: false,
-    isFoundingMember: false,
-    isReturnVisitor: false,
-    primaryProgram: null,
-    quizData: null,
-    utmCampaign: null,
-  });
+  const [state, setState] = useState<PersonalizationState>(INITIAL_STATE);
 
   useEffect(() => {
-    let persona: PersonaType = "neutral";
-    let hasCompletedQuiz = false;
-    let isFoundingMember = false;
-    let isReturnVisitor = false;
-    let primaryProgram: string | null = null;
-    let quizData: QuizData | null = null;
-    let utmCampaign: string | null = null;
+    if (typeof window === "undefined") return;
 
-    // 1. Check quiz data (highest priority — they told us directly)
-    try {
-      const raw = localStorage.getItem("halo_quiz");
-      if (raw) {
-        quizData = JSON.parse(raw);
-        hasCompletedQuiz = true;
+    const compute = () => {
+      let persona: PersonaType = "neutral";
+      let hasCompletedQuiz = false;
+      let isFoundingMember = false;
+      let isReturnVisitor = false;
+      let primaryProgram: string | null = null;
+      let quizData: QuizData | null = null;
+      let utmCampaign: string | null = null;
 
-        if (quizData?.gender === "Man") persona = "male";
-        else if (quizData?.gender === "Woman") persona = "female";
+      try {
+        // Batch all reads up front so we only hit localStorage once per key
+        const rawQuiz = localStorage.getItem("halo_quiz");
+        const rawUtm = localStorage.getItem("halo_utm");
+        const rawSignup = localStorage.getItem("halo_signup_email");
+        const rawVisited = localStorage.getItem("halo_visited");
 
-        primaryProgram = quizData?.primaryRec || null;
-      }
-    } catch {}
-
-    // 2. Check UTM params (second priority — they came from a targeted ad)
-    try {
-      const params = new URLSearchParams(window.location.search);
-      utmCampaign = params.get("utm_campaign");
-
-      // If no quiz data, infer persona from UTM
-      if (!hasCompletedQuiz && utmCampaign) {
-        const campaign = utmCampaign.toLowerCase();
-
-        if (campaign.includes("trt") || campaign.includes("testosterone") || campaign.includes("men")) {
-          persona = "male";
-          primaryProgram = primaryProgram || "testosterone";
-        } else if (campaign.includes("hrt") || campaign.includes("hormone") || campaign.includes("women")) {
-          persona = "female";
-          primaryProgram = primaryProgram || "hormoneTherapy";
-        } else if (campaign.includes("peptide") || campaign.includes("recovery")) {
-          primaryProgram = primaryProgram || "peptideTherapy";
-        } else if (campaign.includes("nad") || campaign.includes("energy")) {
-          primaryProgram = primaryProgram || "nadTherapy";
-        } else if (campaign.includes("weight") || campaign.includes("glp")) {
-          primaryProgram = primaryProgram || "weightLoss";
+        if (rawQuiz) {
+          try {
+            quizData = JSON.parse(rawQuiz);
+            hasCompletedQuiz = true;
+            if (quizData?.gender === "Man") persona = "male";
+            else if (quizData?.gender === "Woman") persona = "female";
+            primaryProgram = quizData?.primaryRec || null;
+          } catch {}
         }
+
+        // URL param UTM takes precedence over stored UTM
+        const params = new URLSearchParams(window.location.search);
+        const urlUtm = params.get("utm_campaign");
+        utmCampaign = urlUtm || rawUtm;
+
+        if (urlUtm) {
+          // Persist for future visits (fire-and-forget)
+          try {
+            localStorage.setItem("halo_utm", urlUtm);
+          } catch {}
+        }
+
+        if (!hasCompletedQuiz && utmCampaign) {
+          const campaign = utmCampaign.toLowerCase();
+          if (campaign.includes("trt") || campaign.includes("testosterone") || campaign.includes("men")) {
+            persona = "male";
+            primaryProgram = primaryProgram || "testosterone";
+          } else if (campaign.includes("hrt") || campaign.includes("hormone") || campaign.includes("women")) {
+            persona = "female";
+            primaryProgram = primaryProgram || "hormoneTherapy";
+          } else if (campaign.includes("peptide") || campaign.includes("recovery")) {
+            primaryProgram = primaryProgram || "peptideTherapy";
+          } else if (campaign.includes("nad") || campaign.includes("energy")) {
+            primaryProgram = primaryProgram || "nadTherapy";
+          } else if (campaign.includes("weight") || campaign.includes("glp")) {
+            primaryProgram = primaryProgram || "weightLoss";
+          }
+        }
+
+        isFoundingMember = !!rawSignup;
+        isReturnVisitor = !!rawVisited;
+
+        // Mark this visit (fire-and-forget — doesn't affect state)
+        try {
+          localStorage.setItem("halo_visited", new Date().toISOString());
+        } catch {}
+      } catch {
+        // If localStorage is disabled (private mode, etc.), stay with neutral defaults
       }
 
-      // Save UTM to localStorage for subsequent visits
-      if (utmCampaign) {
-        localStorage.setItem("halo_utm", utmCampaign);
-      } else {
-        // Check if they had a UTM on a previous visit
-        utmCampaign = localStorage.getItem("halo_utm");
-      }
-    } catch {}
+      setState({
+        persona,
+        hasCompletedQuiz,
+        isFoundingMember,
+        isReturnVisitor,
+        primaryProgram,
+        quizData,
+        utmCampaign,
+      });
+    };
 
-    // 3. Check founding member status
-    try {
-      isFoundingMember = !!localStorage.getItem("halo_signup_email");
-    } catch {}
+    // Defer to idle time so the initial paint is never blocked.
+    // This is the key fix: personalization no longer delays navigation.
+    const rIC = (
+      window as Window &
+        typeof globalThis & {
+          requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+          cancelIdleCallback?: (id: number) => void;
+        }
+    ).requestIdleCallback;
 
-    // 4. Check return visitor
-    try {
-      isReturnVisitor = !!localStorage.getItem("halo_visited");
-      // Mark this visit
-      localStorage.setItem("halo_visited", new Date().toISOString());
-    } catch {}
+    if (rIC) {
+      const id = rIC(compute, { timeout: 2000 });
+      return () => {
+        const cIC = (
+          window as Window &
+            typeof globalThis & { cancelIdleCallback?: (id: number) => void }
+        ).cancelIdleCallback;
+        if (cIC) cIC(id);
+      };
+    }
 
-    setState({
-      persona,
-      hasCompletedQuiz,
-      isFoundingMember,
-      isReturnVisitor,
-      primaryProgram,
-      quizData,
-      utmCampaign,
-    });
+    // Safari fallback — use setTimeout to yield back to the browser
+    const t = setTimeout(compute, 0);
+    return () => clearTimeout(t);
   }, []);
 
   return state;

@@ -20,11 +20,10 @@ export default function FAQ({ items, categories }: FAQProps) {
 
   const cats = categories || ["General", "Programs", "Pricing", "Medical"];
 
-  // For now, all items show under "General" tab
-  const filteredItems =
-    activeCategory === "General"
-      ? items
-      : items.filter((item) => item.category === activeCategory);
+  // Filter items by category. Items without a category default to "General".
+  const filteredItems = items.filter(
+    (item) => (item.category || "General") === activeCategory
+  );
 
   return (
     <div className="max-w-3xl mx-auto">

@@ -11,6 +11,7 @@ export default function FoundingCircleForm({
   variant = "light",
 }: FoundingCircleFormProps) {
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<
     "idle" | "submitting" | "success" | "duplicate" | "error"
@@ -29,6 +30,15 @@ export default function FoundingCircleForm({
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  // Light phone validation: 10+ digits, allowing spaces, dashes, parens, dots.
+  // Empty is allowed since phone is optional.
+  const validatePhone = (phone: string) => {
+    const trimmed = phone.trim();
+    if (!trimmed) return true;
+    const digits = trimmed.replace(/\D/g, "");
+    return digits.length >= 10;
   };
 
   const handleSubmit = useCallback(
@@ -54,6 +64,12 @@ export default function FoundingCircleForm({
         return;
       }
 
+      if (!validatePhone(phone)) {
+        setErrorMessage("Please enter a valid phone number (10+ digits).");
+        setStatus("error");
+        return;
+      }
+
       // Check for duplicate
       const saved = localStorage.getItem("halo_signup_email");
       if (saved) {
@@ -67,10 +83,13 @@ export default function FoundingCircleForm({
       // Simulate submission with debounce delay
       setTimeout(() => {
         localStorage.setItem("halo_signup_email", email.trim());
+        if (phone.trim()) {
+          localStorage.setItem("halo_signup_phone", phone.trim());
+        }
         setStatus("success");
       }, 800);
     },
-    [email, honeypot]
+    [email, phone, honeypot]
   );
 
   if (status === "duplicate") {
@@ -117,8 +136,12 @@ export default function FoundingCircleForm({
     );
   }
 
+  const inputBaseClass = isDark
+    ? "w-full px-5 py-3.5 bg-white/5 border border-white/15 focus:border-white/40 focus:outline-none rounded-xl text-sm text-white placeholder:text-white/35 transition-colors"
+    : "w-full px-5 py-3.5 bg-white border border-[#E5E4E0] focus:border-halo-charcoal/30 focus:outline-none rounded-xl text-sm text-halo-charcoal placeholder:text-halo-charcoal/35 transition-colors";
+
   return (
-    <form onSubmit={handleSubmit} className={isDark ? "founding-form-dark" : "founding-form"}>
+    <form onSubmit={handleSubmit} className="space-y-2.5 w-full">
       {/* Honeypot — hidden from real users */}
       <input
         type="text"
@@ -138,28 +161,52 @@ export default function FoundingCircleForm({
       />
       <input
         type="email"
-        placeholder="your best email"
+        inputMode="email"
+        autoComplete="email"
+        placeholder="Email"
+        aria-label="Email"
         value={email}
         onChange={(e) => {
           setEmail(e.target.value);
           if (status === "error") setStatus("idle");
         }}
+        className={inputBaseClass}
+      />
+      <input
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        placeholder="Phone (optional)"
+        aria-label="Phone number (optional)"
+        value={phone}
+        onChange={(e) => {
+          setPhone(e.target.value);
+          if (status === "error") setStatus("idle");
+        }}
+        className={inputBaseClass}
       />
       <button
         type="submit"
         disabled={status === "submitting"}
-        className={status === "submitting" ? "opacity-60 cursor-wait" : ""}
+        className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all ${
+          isDark
+            ? "bg-white text-[#1C1C1E] hover:bg-white/90"
+            : "bg-[#1C1C1E] text-white hover:bg-[#333]"
+        } ${status === "submitting" ? "opacity-60 cursor-wait" : ""}`}
       >
         {status === "submitting" ? "Joining..." : "Claim My Spot"}
         {status !== "submitting" && (
-          <ArrowRight className="w-4 h-4 btn-arrow" />
+          <ArrowRight className="w-4 h-4" />
         )}
       </button>
       {status === "error" && (
-        <p className="absolute -bottom-7 left-0 text-xs text-red-500 pl-4">
+        <p className={`text-xs pl-1 ${isDark ? "text-red-300" : "text-red-500"}`}>
           {errorMessage}
         </p>
       )}
+      <p className={`text-[10px] text-center pt-1 ${isDark ? "text-white/35" : "text-halo-charcoal/40"}`}>
+        By submitting, you agree to receive occasional updates from Halo. Unsubscribe anytime.
+      </p>
     </form>
   );
 }
