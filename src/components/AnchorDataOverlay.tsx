@@ -192,7 +192,7 @@ function PerformanceOverlay({
   );
 }
 
-/* ─── RESTORATION — Distributed chips + settling wave ───────── */
+/* ─── RESTORATION — Distributed chips only ────────────────── */
 
 function RestorationOverlay({
   chips,
@@ -238,58 +238,6 @@ function RestorationOverlay({
         </div>
       ))}
 
-      {/* Baseline line chart — emotional regulation settling into rhythm */}
-      <svg
-        className="absolute bottom-0 left-0 w-full h-20 opacity-85"
-        viewBox="0 0 540 100"
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <linearGradient id="rest-area-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0.22" />
-            <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="rest-line-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor={accentColor} stopOpacity="0.45" />
-            <stop offset="100%" stopColor={accentColor} stopOpacity="0.85" />
-          </linearGradient>
-        </defs>
-
-        {/* Area fill */}
-        <path
-          d="M 0,70 L 45,65 L 90,58 L 135,62 L 180,52 L 225,48 L 270,50 L 315,45 L 360,42 L 405,44 L 450,40 L 495,38 L 540,35 L 540 100 L 0 100 Z"
-          fill="url(#rest-area-grad)"
-        />
-
-        {/* Line graph — polyline, no smoothing */}
-        <polyline
-          points="0,70 45,65 90,58 135,62 180,52 225,48 270,50 315,45 360,42 405,44 450,40 495,38 540,35"
-          stroke="url(#rest-line-grad)"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          fill="none"
-        />
-
-        {/* Data points at key measurements */}
-        {[
-          [0, 70],
-          [135, 62],
-          [270, 50],
-          [405, 44],
-          [540, 35],
-        ].map(([x, y], i) => (
-          <circle
-            key={`rest-pt-${i}`}
-            cx={x}
-            cy={y}
-            r="2.25"
-            fill="white"
-            stroke={accentColor}
-            strokeWidth="1.25"
-          />
-        ))}
-      </svg>
     </div>
   );
 }
