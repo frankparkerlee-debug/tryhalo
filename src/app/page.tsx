@@ -2,7 +2,6 @@
 
 import {
   ArrowRight,
-  Check,
   Shield,
   FlaskConical,
   Lock,
@@ -19,7 +18,6 @@ import {
   Activity,
   Stethoscope,
   GraduationCap,
-  AlertCircle,
   Smartphone,
 } from "lucide-react";
 import Link from "next/link";
@@ -90,7 +88,9 @@ const programs = [
     foundingPrice: "$129/mo",
     href: "/renew",
     colorClass: "",
-    color: "#E8927C",
+    color: "#D4836B",
+    cardBg: "#F5E6E0",
+    accent: "#D4836B",
     icon: Heart,
     safety: "Hormone therapy may increase risk of blood clots, stroke, and certain cancers. Not suitable during pregnancy. Requires ongoing lab monitoring.",
   },
@@ -104,7 +104,9 @@ const programs = [
     foundingPrice: "$129/mo",
     href: "/vital",
     colorClass: "",
-    color: "#4A6FA5",
+    color: "#5A7394",
+    cardBg: "#E3E8EE",
+    accent: "#5A7394",
     icon: Zap,
     safety: "TRT may affect fertility and is not appropriate for men planning conception. May increase red blood cell count. Requires regular lab monitoring.",
   },
@@ -118,7 +120,9 @@ const programs = [
     foundingPrice: "$179/mo",
     href: "/restore",
     colorClass: "",
-    color: "#7A8B6F",
+    color: "#6B8F68",
+    cardBg: "#E4EBE3",
+    accent: "#6B8F68",
     icon: Moon,
     safety: "Peptide therapy is prescribed off-label. Not FDA-approved for anti-aging. May cause injection site reactions, headache, or flushing. Medical supervision required.",
   },
@@ -132,7 +136,9 @@ const programs = [
     foundingPrice: "$179/mo",
     href: "/vitality",
     colorClass: "",
-    color: "#8B7FA5",
+    color: "#7B6B8F",
+    cardBg: "#E8E3ED",
+    accent: "#7B6B8F",
     icon: Brain,
     safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment. Medical supervision required.",
   },
@@ -145,7 +151,7 @@ const providers = [
     specialty: "Endocrinology & Hormone Optimization",
     credentials: "Board-certified endocrinologist. 12+ years in hormone therapy. Previously at Mount Sinai.",
     initials: "SC",
-    color: "#E8927C",
+    color: "#D4836B",
   },
   {
     name: "Dr. James Rivera, DO",
@@ -153,7 +159,7 @@ const providers = [
     specialty: "Men\u2019s Health & Performance Medicine",
     credentials: "Board-certified in family medicine. Fellowship in sports medicine. 10+ years in TRT protocols.",
     initials: "JR",
-    color: "#4A6FA5",
+    color: "#5A7394",
   },
   {
     name: "Dr. Priya Patel, MD",
@@ -161,7 +167,7 @@ const providers = [
     specialty: "Integrative & Regenerative Medicine",
     credentials: "Board-certified internist. Peptide therapy and NAD+ specialist. Published researcher.",
     initials: "PP",
-    color: "#8B7FA5",
+    color: "#7B6B8F",
   },
 ];
 
@@ -169,13 +175,17 @@ const comingSoonPrograms = [
   {
     name: "Weight Management",
     label: "GLP-1 therapy",
-    color: "#6B7B6E",
+    color: "#B8974E",
+    cardBg: "#EDE8DC",
+    accent: "#B8974E",
     icon: Activity,
   },
   {
     name: "Sexual Wellness",
     label: "Intimacy & desire",
-    color: "#C97A7A",
+    color: "#B87878",
+    cardBg: "#EDDFDF",
+    accent: "#B87878",
     icon: Heart,
   },
 ];
@@ -186,28 +196,28 @@ const steps = [
     title: "Tell us about you",
     desc: "A few questions about your goals, symptoms, and health history.",
     icon: ClipboardList,
-    color: "#6B7B6E",
+    color: "#6B8F68",
   },
   {
     num: "02",
     title: "Get your baseline",
     desc: "Quick lab visit to see what\u2019s actually going on inside.",
     icon: TestTube2,
-    color: "#E8927C",
+    color: "#D4836B",
   },
   {
     num: "03",
     title: "Meet your provider",
     desc: "A real conversation about what\u2019s possible for you.",
     icon: Video,
-    color: "#4A6FA5",
+    color: "#5A7394",
   },
   {
     num: "04",
     title: "Start feeling it",
     desc: "Your plan arrives. Most members notice changes in 2\u20134 weeks.",
     icon: Package,
-    color: "#7A8B6F",
+    color: "#6B8F68",
   },
 ];
 
@@ -219,7 +229,7 @@ const testimonials = [
     role: "Founding Member",
     program: "Hormone Therapy",
     initials: "SM",
-    color: "#E8927C",
+    color: "#D4836B",
   },
   {
     quote:
@@ -228,7 +238,7 @@ const testimonials = [
     role: "Founding Member",
     program: "Testosterone Therapy",
     initials: "JK",
-    color: "#4A6FA5",
+    color: "#5A7394",
   },
   {
     quote:
@@ -237,7 +247,7 @@ const testimonials = [
     role: "Founding Member",
     program: "NAD+ Therapy",
     initials: "MT",
-    color: "#8B7FA5",
+    color: "#7B6B8F",
   },
 ];
 
@@ -332,108 +342,96 @@ export default function Home() {
     return ordered;
   }, [persona]);
 
-  const featured = personalizedPrograms[0];
-  const FeaturedIcon = featured.icon;
-
   return (
     <>
       {/* ═══════════════════════════════════════════════
-          1 · HERO — Full-bleed cinematic overlay
+          1 · HERO — Action Grid (Hims-style)
           ═══════════════════════════════════════════════ */}
-      <section className="relative min-h-screen w-full overflow-hidden">
-        {/* Background — video (when available) or gradient fallback */}
-        <HeroVideo
-          // Uncomment and set path when video is ready:
-          // src="/hero-video.mp4"
-          // poster="/hero-poster.jpg"
-        />
-        {/* Ambient blobs (visible over video or fallback) */}
-        <div className="absolute inset-0 pointer-events-none z-[1]">
-          <div
-            className="absolute top-[10%] right-[10%] w-[600px] h-[600px] rounded-full"
-            style={{ background: "#6B7B6E", filter: "blur(200px)", opacity: 0.1 }}
-          />
-          <div
-            className="absolute bottom-[20%] left-[5%] w-[400px] h-[400px] rounded-full"
-            style={{ background: "#7A8B6F", filter: "blur(160px)", opacity: 0.06 }}
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <HaloLogo size="xl" variant="dark" showText={false} className="opacity-[0.04] scale-[4]" />
+      <section className="px-6 md:px-12 lg:px-20 pt-28 pb-12 section-light">
+        <div className="max-w-7xl mx-auto">
+          {/* Headline — short, direct, serif */}
+          <h1 className="headline-hero text-4xl md:text-5xl lg:text-6xl text-halo-charcoal mb-8">
+            {heroHeadline.line1}
+            <br />
+            {heroHeadline.line2}
+          </h1>
+
+          {/* Hero grid — 2 large featured cards + smaller category cards + coming soon */}
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
+            {/* Top row: 2 large program cards with image areas */}
+            {personalizedPrograms.slice(0, 2).map((program) => {
+              const Icon = program.icon;
+              return (
+                <Link key={program.name} href={program.href} className="product-card group" style={{ background: program.cardBg }}>
+                  <div className="product-card-image">
+                    {/* Image placeholder — replace with real product photo */}
+                    <Icon className="w-16 h-16 opacity-20" style={{ color: program.accent }} />
+                  </div>
+                  <div className="product-card-info">
+                    <h3 className="font-serif text-lg md:text-xl font-bold text-halo-charcoal mb-0.5">{program.outcome}</h3>
+                    <p className="text-xs text-halo-charcoal/40 mb-2">{program.name} &middot; {program.foundingPrice}</p>
+                    <span className="text-xs font-medium" style={{ color: program.accent }}>Get started &rarr;</span>
+                  </div>
+                </Link>
+              );
+            })}
+
+            {/* Bottom row: smaller category links */}
+            {personalizedPrograms.slice(2).map((program) => {
+              const Icon = program.icon;
+              return (
+                <Link key={program.name} href={program.href} className="flex items-center gap-3 p-4 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/20 transition-colors group">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: program.cardBg }}>
+                    <Icon className="w-4 h-4" style={{ color: program.accent }} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-halo-charcoal">{program.outcome}</p>
+                    <p className="text-xs text-halo-charcoal/40">{program.foundingPrice}</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-halo-charcoal/20 group-hover:text-halo-charcoal/60 transition-colors" />
+                </Link>
+              );
+            })}
+
+            {/* Coming soon pills */}
+            {comingSoonPrograms.map((p) => {
+              const Icon = p.icon;
+              return (
+                <a key={p.name} href="#founding-circle" className="flex items-center gap-3 p-4 rounded-xl bg-white border border-halo-border hover:border-halo-charcoal/20 transition-colors">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: p.cardBg || '#F0EFEC' }}>
+                    <Icon className="w-4 h-4" style={{ color: p.accent || '#86868B' }} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-halo-charcoal">{p.name}</p>
+                    <p className="text-xs text-halo-charcoal/40">{p.label}</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/30">Soon</span>
+                </a>
+              );
+            })}
           </div>
         </div>
+      </section>
 
-        {/* Clean — no floating pills */}
-
-        {/* Content — anchored to bottom */}
-        <div className="relative z-10 flex flex-col justify-end min-h-screen px-6 md:px-12 lg:px-20 pb-16 md:pb-20 pt-32">
-          <AnimateOnScroll>
-            <div className="max-w-2xl">
-              <div className="mb-5">
-                <span className="label-accent">Launching Summer 2026</span>
-              </div>
-
-              <h1 className="headline-hero text-4xl md:text-6xl lg:text-7xl mb-5 text-white">
-                {heroHeadline.line1}
-                <br />
-                <span className="text-white/80">{heroHeadline.line2.split(" ")[0]}</span>{" "}
-                {heroHeadline.line2.split(" ").slice(1).join(" ")}
-              </h1>
-
-              <p className="text-lg md:text-xl text-white/40 max-w-md mb-8 leading-relaxed">
-                More energy than you&rsquo;ve had in years. Sleep that actually
-                restores. Physician-led wellness designed around your biology.
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-start gap-4 mb-4">
-                <Link href="/quiz" className="btn-filled">
-                  Take the quiz &mdash; 2 min
-                  <ArrowRight className="w-4 h-4 btn-arrow" />
-                </Link>
-                <a href="#how-it-works" className="inline-flex items-center gap-2 text-sm text-white/30 hover:text-white/60 transition-colors py-3">
-                  See how it works &darr;
-                </a>
-              </div>
-
-              {/* Pricing transparency */}
-              <p className="text-sm text-white/25 mb-6">
-                Programs from <span className="text-white/60 font-semibold">$129/mo</span>{" "}
-                <span className="text-white/15">&mdash; labs, meds, visits, shipping included</span>
-              </p>
-
-              {/* Inline avatar stack + trust */}
-              <div className="flex items-center gap-5 flex-wrap">
-                <div className="flex items-center gap-3">
-                  <div className="avatar-stack">
-                    <div className="avatar-stack-item" style={{ background: "#E8927C" }}>S</div>
-                    <div className="avatar-stack-item" style={{ background: "#4A6FA5" }}>J</div>
-                    <div className="avatar-stack-item" style={{ background: "#7A8B6F" }}>M</div>
-                    <div className="avatar-stack-count">+644</div>
-                  </div>
-                  <span className="text-sm text-white/25">647+ on the waitlist</span>
-                </div>
-                <span className="hidden sm:inline text-white/10">|</span>
-                <span className="inline-flex items-center gap-1.5 text-sm text-white/25">
-                  <Check className="w-3.5 h-3.5 text-white/40" /> Everything included
-                </span>
-              </div>
-            </div>
-          </AnimateOnScroll>
-
-          {/* Stats overlaid at bottom-right (desktop only) */}
-          <div className="absolute bottom-20 right-12 lg:right-20 hidden lg:flex items-end gap-10">
-            <AnimateOnScroll>
-              <div className="text-right">
-                <p className="stat-large text-4xl text-white/80">352</p>
-                <p className="text-xs text-white/25 mt-1">spots remaining</p>
-              </div>
-            </AnimateOnScroll>
-            <AnimateOnScroll>
-              <div className="text-right">
-                <p className="stat-large text-4xl text-white/80">6</p>
-                <p className="text-xs text-white/25 mt-1">programs launching</p>
-              </div>
-            </AnimateOnScroll>
-          </div>
+      {/* ═══════════════════════════════════════════════
+          1b · FULL-BLEED PRODUCT ART
+          ═══════════════════════════════════════════════ */}
+      <section className="full-bleed-product bg-[#2A2520]">
+        {/* Product image placeholder — this will be the dramatic diagonal vial shot */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <HaloLogo size="xl" variant="dark" showText={false} className="opacity-[0.06] scale-[4]" />
+        </div>
+        <div className="relative z-10 text-center max-w-2xl mx-auto px-6 py-20">
+          <p className="label-accent mb-4">Physician-led protocols</p>
+          <h2 className="headline-section text-3xl md:text-5xl text-white mb-4">
+            Not a supplement.
+            <br />
+            A clinical protocol.
+          </h2>
+          <p className="text-white/40 mb-8">Board-certified physicians design your protocol around your labs, your biology, your goals.</p>
+          <Link href="/quiz" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#1C1C1E] font-semibold text-sm hover:bg-white/90 transition-colors">
+            Get started <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
@@ -478,7 +476,7 @@ export default function Home() {
               {trustBadges.map((badge) => (
                 <div key={badge.label} className="trust-badge">
                   <div className="trust-badge-icon">
-                    <badge.icon className="w-5 h-5 text-[#6B7B6E]" />
+                    <badge.icon className="w-5 h-5 text-[#C8A96E]" />
                   </div>
                   <span className="text-xs font-medium text-halo-charcoal/45 whitespace-nowrap">{badge.label}</span>
                 </div>
@@ -491,210 +489,7 @@ export default function Home() {
       <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
-          3 · PROGRAMS — Asymmetric bento grid
-          ═══════════════════════════════════════════════ */}
-      <section id="programs" className="py-20 md:py-24 px-6 section-light">
-        <div className="max-w-7xl mx-auto">
-          {/* Left-aligned header */}
-          <AnimateOnScroll>
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
-              <div>
-                <p className="label-accent mb-3">Programs</p>
-                <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal">
-                  What are you ready
-                  <br className="hidden md:block" /> to change?
-                </h2>
-              </div>
-              <Link href="/quiz" className="inline-flex items-center gap-2 text-sm font-medium text-[#6B7B6E] hover:text-halo-charcoal transition-colors">
-                Find your program <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </AnimateOnScroll>
-
-          {/* Bento grid — asymmetric */}
-          <AnimateOnScroll stagger>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:grid-rows-[280px_280px]">
-
-              {/* FEATURED: Hormone Therapy — spans 2 cols, 2 rows */}
-              <Link
-                href={featured.href}
-                className={`aos-child bento-card group ${featured.colorClass} lg:col-span-2 lg:row-span-2`}
-              >
-                <div className="bento-card-inner min-h-[320px] lg:min-h-full">
-                  {/* Image placeholder top area */}
-                  <div className="absolute top-0 left-0 right-0 h-[55%] flex items-center justify-center opacity-30">
-                    <FeaturedIcon className="w-24 h-24 text-halo-charcoal/20" />
-                  </div>
-                  <div className="flex items-center justify-between mb-auto relative z-10">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/35 backdrop-blur-sm">
-                      <FeaturedIcon className="w-5 h-5 text-halo-charcoal/70" />
-                    </div>
-                    <span className="text-[10px] font-medium px-2.5 py-1 rounded-full bg-white/60 backdrop-blur-sm text-halo-charcoal/60" style={{ animation: "none" }}>
-                      {featured.label}
-                    </span>
-                  </div>
-                  <div className="mt-auto relative z-10">
-                    <h3 className="font-serif text-3xl lg:text-4xl font-bold text-halo-charcoal mb-2 group-hover:translate-x-1 transition-transform duration-300">
-                      {featured.outcome}
-                    </h3>
-                    <p className="text-sm text-halo-charcoal/55 mb-1">{featured.name}</p>
-                    <p className="text-xs text-halo-charcoal/40 mb-6">{featured.desc}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold text-halo-charcoal">{featured.foundingPrice}</span>
-                        <span className="text-sm text-halo-charcoal/30 line-through">{featured.price}</span>
-                      </div>
-                      <span className="w-12 h-12 rounded-full bg-white/50 flex items-center justify-center group-hover:bg-white/80 transition-colors">
-                        <ArrowRight className="w-5 h-5 text-halo-charcoal/60" />
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-halo-charcoal/20 mt-4 pt-3 border-t border-halo-charcoal/[0.06]">
-                      {featured.compounds}
-                    </p>
-                    <p className="text-[9px] text-halo-charcoal/20 mt-2 flex items-start gap-1">
-                      <AlertCircle className="w-2.5 h-2.5 mt-0.5 flex-shrink-0" />
-                      <span>{featured.safety}</span>
-                    </p>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Second program — 1 col, row 1 */}
-              {(() => {
-                const p = personalizedPrograms[1];
-                const Icon = p.icon;
-                return (
-                  <Link key={p.name} href={p.href} className={`aos-child bento-card group ${p.colorClass}`}>
-                    <div className="bento-card-inner min-h-[260px]">
-                      <div className="flex items-center justify-between mb-auto">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/35 backdrop-blur-sm">
-                          <Icon className="w-4 h-4 text-halo-charcoal/70" />
-                        </div>
-                      </div>
-                      <div className="mt-auto">
-                        <h3 className="font-serif text-xl font-bold text-halo-charcoal mb-1 group-hover:translate-x-1 transition-transform duration-300">
-                          {p.outcome}
-                        </h3>
-                        <p className="text-xs text-halo-charcoal/50 mb-3">{p.name}</p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="text-lg font-bold text-halo-charcoal">{p.foundingPrice}</span>
-                            <span className="text-xs text-halo-charcoal/25 line-through">{p.price}</span>
-                          </div>
-                          <span className="w-9 h-9 rounded-full bg-white/40 flex items-center justify-center group-hover:bg-white/70 transition-colors">
-                            <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/50" />
-                          </span>
-                        </div>
-                        <p className="text-[8px] text-halo-charcoal/15 mt-2 leading-tight flex items-start gap-1">
-                          <AlertCircle className="w-2 h-2 mt-0.5 flex-shrink-0" />
-                          <span>Safety info</span>
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })()}
-
-              {/* Third program — 1 col, row 2 */}
-              {(() => {
-                const p = personalizedPrograms[2];
-                const Icon = p.icon;
-                return (
-                  <Link key={p.name} href={p.href} className={`aos-child bento-card group ${p.colorClass}`}>
-                    <div className="bento-card-inner min-h-[260px]">
-                      <div className="flex items-center justify-between mb-auto">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/35 backdrop-blur-sm">
-                          <Icon className="w-4 h-4 text-halo-charcoal/70" />
-                        </div>
-                      </div>
-                      <div className="mt-auto">
-                        <h3 className="font-serif text-xl font-bold text-halo-charcoal mb-1 group-hover:translate-x-1 transition-transform duration-300">
-                          {p.outcome}
-                        </h3>
-                        <p className="text-xs text-halo-charcoal/50 mb-3">{p.name}</p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="text-lg font-bold text-halo-charcoal">{p.foundingPrice}</span>
-                            <span className="text-xs text-halo-charcoal/25 line-through">{p.price}</span>
-                          </div>
-                          <span className="w-9 h-9 rounded-full bg-white/40 flex items-center justify-center group-hover:bg-white/70 transition-colors">
-                            <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/50" />
-                          </span>
-                        </div>
-                        <p className="text-[8px] text-halo-charcoal/15 mt-2 leading-tight flex items-start gap-1">
-                          <AlertCircle className="w-2 h-2 mt-0.5 flex-shrink-0" />
-                          <span>Safety info</span>
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })()}
-
-              {/* Fourth program — 1 col, row 2 */}
-              {(() => {
-                const p = personalizedPrograms[3];
-                const Icon = p.icon;
-                return (
-                  <Link key={p.name} href={p.href} className={`aos-child bento-card group ${p.colorClass}`}>
-                    <div className="bento-card-inner min-h-[260px]">
-                      <div className="flex items-center justify-between mb-auto">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/35 backdrop-blur-sm">
-                          <Icon className="w-4 h-4 text-halo-charcoal/70" />
-                        </div>
-                      </div>
-                      <div className="mt-auto">
-                        <h3 className="font-serif text-xl font-bold text-halo-charcoal mb-1 group-hover:translate-x-1 transition-transform duration-300">
-                          {p.outcome}
-                        </h3>
-                        <p className="text-xs text-halo-charcoal/50 mb-3">{p.name}</p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="text-lg font-bold text-halo-charcoal">{p.foundingPrice}</span>
-                            <span className="text-xs text-halo-charcoal/25 line-through">{p.price}</span>
-                          </div>
-                          <span className="w-9 h-9 rounded-full bg-white/40 flex items-center justify-center group-hover:bg-white/70 transition-colors">
-                            <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/50" />
-                          </span>
-                        </div>
-                        <p className="text-[8px] text-halo-charcoal/15 mt-2 leading-tight flex items-start gap-1">
-                          <AlertCircle className="w-2 h-2 mt-0.5 flex-shrink-0" />
-                          <span>Safety info</span>
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })()}
-            </div>
-          </AnimateOnScroll>
-
-          {/* Coming soon — slim strip */}
-          <AnimateOnScroll>
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
-              {comingSoonPrograms.map((p) => {
-                const Icon = p.icon;
-                return (
-                  <a
-                    key={p.name}
-                    href="#founding-circle"
-                    className="group inline-flex items-center gap-3 px-5 py-3 rounded-full border border-halo-charcoal/[0.06] bg-white hover:border-halo-charcoal/20 transition-all"
-                  >
-                    <Icon className="w-4 h-4" style={{ color: p.color }} />
-                    <span className="text-sm font-medium text-halo-charcoal group-hover:text-halo-charcoal/70 transition-colors">{p.name}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/35">Soon</span>
-                  </a>
-                );
-              })}
-            </div>
-          </AnimateOnScroll>
-        </div>
-      </section>
-
-      <div className="section-divider" />
-
-      {/* ═══════════════════════════════════════════════
-          4 · HOW IT WORKS — Split layout + overlapping cards
+          3 · HOW IT WORKS — Split layout + overlapping cards
           ═══════════════════════════════════════════════ */}
       <section id="how-it-works" className="section-dark overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[650px]">
@@ -749,7 +544,7 @@ export default function Home() {
                   {/* Video call area */}
                   <div className="mx-2.5 rounded-xl overflow-hidden" style={{ background: "linear-gradient(145deg, #152535 0%, #0d1a28 100%)" }}>
                     <div className="h-[52%] min-h-[200px] flex flex-col items-center justify-center relative">
-                      <div className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: "#4A6FA5" }}>
+                      <div className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: "#5A7394" }}>
                         DR
                       </div>
                       <p className="text-white text-[10px] mt-2 font-medium">Dr. Rivera, DO</p>
@@ -863,7 +658,7 @@ export default function Home() {
                 <p className="label-accent mb-3">Why They Joined</p>
                 <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal">What founding members are looking for</h2>
               </div>
-              <a href="#founding-circle" className="inline-flex items-center gap-2 text-sm font-medium text-[#6B7B6E] hover:text-halo-charcoal transition-colors">
+              <a href="#founding-circle" className="inline-flex items-center gap-2 text-sm font-medium text-[#C8A96E] hover:text-halo-charcoal transition-colors">
                 Join them <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -1011,7 +806,7 @@ export default function Home() {
             {/* Ambient gold glow */}
             <div
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-              style={{ background: "#6B7B6E", filter: "blur(200px)", opacity: 0.08 }}
+              style={{ background: "#C8A96E", filter: "blur(200px)", opacity: 0.08 }}
             />
             {/* Large halo logo watermark */}
             <div className="absolute inset-0 flex items-center justify-center">
@@ -1133,9 +928,9 @@ export default function Home() {
             {/* Avatar stack social proof */}
             <div className="flex items-center justify-center gap-3 mt-10">
               <div className="avatar-stack">
-                <div className="avatar-stack-item" style={{ background: "#E8927C" }}>S</div>
-                <div className="avatar-stack-item" style={{ background: "#4A6FA5" }}>J</div>
-                <div className="avatar-stack-item" style={{ background: "#8B7FA5" }}>M</div>
+                <div className="avatar-stack-item" style={{ background: "#D4836B" }}>S</div>
+                <div className="avatar-stack-item" style={{ background: "#5A7394" }}>J</div>
+                <div className="avatar-stack-item" style={{ background: "#7B6B8F" }}>M</div>
                 <div className="avatar-stack-count">+644</div>
               </div>
               <p className="text-sm text-white/20">Join 647+ on the waitlist</p>
