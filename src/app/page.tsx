@@ -134,7 +134,6 @@ const programs = [
     cardBg: "#EDE8DC",
     accent: "#B8974E",
     icon: Activity,
-    image: "/support-glp1.jpg",
     tier: "support",
     safety: "GLP-1 medications may cause nausea, vomiting, diarrhea, or pancreatitis. Not for personal or family history of MTC or MEN 2. Requires lab monitoring.",
   },
@@ -154,7 +153,6 @@ const programs = [
     cardBg: "#E4EBE3",
     accent: "#6B8F68",
     icon: Moon,
-    image: "/support-peptide.jpg",
     tier: "support",
     safety: "Peptide therapy is prescribed off-label. Not FDA-approved for anti-aging. May cause injection site reactions, headache, or flushing.",
   },
@@ -441,26 +439,30 @@ export default function Home() {
                 })}
             </div>
 
-            {/* Row 2: PRIMARY SUPPORT programs — slim banner cards with image backgrounds */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            {/* Row 2: PRIMARY SUPPORT programs — stacked banner + content */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {personalizedPrograms
                 .filter((p) => p.tier === "support" && p.name !== "Vitality Injections")
                 .map((program) => {
                   const Icon = program.icon;
                   return (
                     <Link key={program.name} href={program.href} className="support-card group">
-                      {/* Banner background image */}
-                      {program.image && (
-                        <div className="support-card-bg" style={{ background: program.cardBg }}>
+                      {/* Banner — uses image if available, otherwise color-world fallback with icon */}
+                      {program.image ? (
+                        <div className="support-card-banner">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={program.image} alt="" draggable={false} />
                         </div>
-                      )}
-                      {/* Foreground content */}
-                      <div className="support-card-content flex items-center gap-3 p-3.5 backdrop-blur-[2px] bg-white/55">
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: program.cardBg }}>
-                          <Icon className="w-4 h-4" style={{ color: program.accent }} />
+                      ) : (
+                        <div
+                          className="support-card-banner-fallback"
+                          style={{ background: program.cardBg }}
+                        >
+                          <Icon className="w-8 h-8 opacity-20" style={{ color: program.accent }} />
                         </div>
+                      )}
+                      {/* Content row */}
+                      <div className="support-card-content">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-halo-charcoal truncate">{program.outcome}</p>
                           <p className="text-[11px] text-halo-charcoal/50">{program.name.replace(" Therapy", "").replace(" Weight Management", "")} &middot; {program.startingPrice}</p>

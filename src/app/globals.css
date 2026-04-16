@@ -1044,7 +1044,7 @@ body {
   padding: 1.25rem;
 }
 
-/* Support-tier card — slim horizontal banner behind text */
+/* Support-tier card — stacked image + content */
 .support-card {
   position: relative;
   overflow: hidden;
@@ -1052,35 +1052,52 @@ body {
   background: #ffffff;
   border: 1px solid #E5E4E0;
   transition: all 300ms ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .support-card:hover {
   border-color: rgba(28, 28, 30, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
-.support-card-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+/* Banner image area — dedicated, properly sized */
+.support-card-banner {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  position: relative;
 }
 
-.support-card-bg img {
+.support-card-banner img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.55;
-  transition: opacity 400ms ease, transform 600ms ease;
+  transition: transform 600ms ease;
 }
 
-.support-card:hover .support-card-bg img {
-  opacity: 0.75;
+.support-card:hover .support-card-banner img {
   transform: scale(1.04);
 }
 
-.support-card-content {
+/* Fallback: no image — show a color-world tile with a soft icon */
+.support-card-banner-fallback {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+}
+
+/* Content area under the banner */
+.support-card-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
 }
 
 /* Full-bleed section with cinematic image */
