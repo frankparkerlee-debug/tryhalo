@@ -694,14 +694,12 @@ export default function Home() {
         <div className="relative z-10 text-center max-w-3xl mx-auto px-6 py-28 md:py-36">
           <p className="label-accent mb-6">The Halo Difference</p>
           <h2 className="headline-section text-3xl md:text-5xl lg:text-6xl text-white mb-6 leading-[1.1]">
-            Physician-led.
+            Aging well used to be genetics.
             <br />
-            Tracked in your labs.
-            <br />
-            Felt in your life.
+            Now it&rsquo;s a choice.
           </h2>
           <p className="text-white/60 text-sm md:text-base max-w-xl mx-auto mb-10">
-            Every Halo protocol is designed by a board-certified physician and tuned to your biology.
+            Every Halo protocol is tuned to your biology, adjusted to your results, and built to keep working for you.
           </p>
           <Link href="/quiz" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#1C1C1E] font-semibold text-sm hover:bg-white/90 transition-colors">
             Begin your journey <ArrowRight className="w-4 h-4" />
