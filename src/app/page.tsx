@@ -694,9 +694,11 @@ export default function Home() {
         <div className="relative z-10 text-center max-w-3xl mx-auto px-6 py-28 md:py-36">
           <p className="label-accent mb-6">The Halo Difference</p>
           <h2 className="headline-section text-3xl md:text-5xl lg:text-6xl text-white mb-6 leading-[1.1]">
-            Aging well used to be genetics.
+            <span className="text-white/55 font-light italic">Aging well used to be </span>
+            <span className="text-white/75 italic">genetics.</span>
             <br />
-            Now it&rsquo;s a choice.
+            <span className="text-white">Now it&rsquo;s a </span>
+            <span className="text-[#C8A96E]">choice.</span>
           </h2>
           <p className="text-white/60 text-sm md:text-base max-w-xl mx-auto mb-10">
             Every Halo protocol is tuned to your biology, adjusted to your results, and built to keep working for you.
@@ -742,17 +744,26 @@ export default function Home() {
             </div>
           </AnimateOnScroll>
 
-          {/* Trust badges strip */}
+          {/* Trust strip — inline credentials row with subtle dividers */}
           <AnimateOnScroll>
-            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mt-10 pt-8 border-t border-halo-charcoal/[0.06]">
-              {trustBadges.map((badge) => (
-                <div key={badge.label} className="trust-badge">
-                  <div className="trust-badge-icon">
-                    <badge.icon className="w-5 h-5 text-[#C8A96E]" strokeWidth={1.75} />
+            <div className="mt-10 pt-8 border-t border-halo-charcoal/[0.06]">
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:gap-x-8">
+                {trustBadges.map((badge, i) => (
+                  <div key={badge.label} className="flex items-center gap-2.5">
+                    <badge.icon
+                      className="w-3.5 h-3.5 text-[#C8A96E] flex-shrink-0"
+                      strokeWidth={2}
+                    />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-halo-charcoal/60 whitespace-nowrap">
+                      {badge.label}
+                    </span>
+                    {/* Subtle divider between items (not after the last one) */}
+                    {i < trustBadges.length - 1 && (
+                      <span className="hidden md:inline-block w-px h-3 bg-halo-charcoal/15 ml-6" />
+                    )}
                   </div>
-                  <span className="text-xs font-medium text-halo-charcoal/50 whitespace-nowrap">{badge.label}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </AnimateOnScroll>
         </div>
@@ -766,7 +777,7 @@ export default function Home() {
       <section id="how-it-works" className="py-20 md:py-28 px-6 section-light">
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-14">
+            <div className="text-center mb-16">
               <p className="label-accent mb-3">How It Works</p>
               <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal">
                 From curious to feeling different.
@@ -774,35 +785,57 @@ export default function Home() {
             </div>
           </AnimateOnScroll>
 
+          {/* Connected timeline — horizontal rail on desktop, vertical on mobile */}
           <AnimateOnScroll stagger>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
-              {steps.map((step) => {
-                const Icon = step.icon;
-                return (
-                  <div key={step.num} className="aos-child text-center">
-                    <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                      style={{ background: `${step.color}15`, border: `1px solid ${step.color}20` }}
-                    >
-                      <Icon className="w-5 h-5" style={{ color: step.color }} />
+            <div className="relative">
+              {/* Horizontal connector line — spans between step numbers on desktop */}
+              <div className="hidden md:block absolute top-6 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-halo-charcoal/15 to-transparent" />
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6 relative">
+                {steps.map((step) => {
+                  const Icon = step.icon;
+                  return (
+                    <div key={step.num} className="aos-child relative flex md:flex-col items-start md:items-center gap-4 md:gap-0 text-left md:text-center">
+                      {/* Large numbered milestone marker */}
+                      <div className="relative flex-shrink-0 md:mb-6">
+                        <div
+                          className="w-12 h-12 rounded-full flex items-center justify-center font-serif text-lg font-bold"
+                          style={{
+                            background: "#FFFFFF",
+                            border: `1.5px solid ${step.color}`,
+                            color: step.color,
+                          }}
+                        >
+                          {step.num}
+                        </div>
+                        {/* Soft colored halo behind the circle */}
+                        <div
+                          className="absolute inset-0 rounded-full -z-10 blur-md"
+                          style={{ background: `${step.color}20` }}
+                        />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 md:px-2">
+                        <div className="flex items-center gap-2 md:justify-center mb-1.5">
+                          <Icon className="w-4 h-4" style={{ color: step.color }} strokeWidth={2} />
+                          <h3 className="text-sm md:text-base font-semibold text-halo-charcoal tracking-tight">{step.title}</h3>
+                        </div>
+                        <p className="text-xs md:text-[13px] text-halo-charcoal/50 leading-relaxed max-w-xs md:mx-auto">{step.desc}</p>
+                      </div>
                     </div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: step.color }}>
-                      Step {step.num}
-                    </p>
-                    <h3 className="text-sm font-semibold text-halo-charcoal mb-1">{step.title}</h3>
-                    <p className="text-xs text-halo-charcoal/40 leading-relaxed">{step.desc}</p>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </AnimateOnScroll>
 
           <AnimateOnScroll>
-            <div className="text-center mt-12">
+            <div className="text-center mt-16">
               <Link href="/quiz" className="btn-filled !text-sm">
                 Take the quiz &mdash; 2 min <ArrowRight className="w-3.5 h-3.5 btn-arrow" />
               </Link>
-              <p className="text-xs text-halo-charcoal/25 mt-3">No commitment until your first consultation.</p>
+              <p className="text-xs text-halo-charcoal/30 mt-3">No commitment until your first consultation.</p>
             </div>
           </AnimateOnScroll>
         </div>
