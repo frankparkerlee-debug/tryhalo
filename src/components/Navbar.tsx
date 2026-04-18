@@ -6,10 +6,10 @@ import { Menu, X } from "lucide-react";
 import HaloLogo from "./HaloLogo";
 
 const navLinks = [
-  { label: "Hormone Therapy", href: "/renew" },
-  { label: "Testosterone", href: "/vital" },
-  { label: "Peptide Therapy", href: "/restore" },
-  { label: "NAD+", href: "/vitality" },
+  { label: "Hormone Therapy", href: "/hormone-therapy" },
+  { label: "Testosterone", href: "/testosterone-therapy" },
+  { label: "Peptide Therapy", href: "/peptide-therapy" },
+  { label: "NAD+", href: "/nad-therapy" },
   { label: "Weight Loss", href: "/#founding-circle" },
   { label: "Quiz", href: "/quiz" },
 ];

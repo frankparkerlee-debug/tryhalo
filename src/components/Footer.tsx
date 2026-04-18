@@ -5,10 +5,10 @@ const footerColumns = [
   {
     title: "Programs",
     links: [
-      { label: "Hormone Therapy", href: "/renew" },
-      { label: "Testosterone", href: "/vital" },
-      { label: "Peptide Therapy", href: "/restore" },
-      { label: "NAD+ Therapy", href: "/vitality" },
+      { label: "Hormone Therapy", href: "/hormone-therapy" },
+      { label: "Testosterone", href: "/testosterone-therapy" },
+      { label: "Peptide Therapy", href: "/peptide-therapy" },
+      { label: "NAD+ Therapy", href: "/nad-therapy" },
       { label: "Weight Loss", href: "/#founding-circle", comingSoon: true },
       { label: "Sexual Wellness", href: "/#founding-circle", comingSoon: true },
     ],

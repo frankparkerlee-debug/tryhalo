@@ -16,7 +16,7 @@ const programs = [
     compounds: "Estradiol, Progesterone, Testosterone",
     standardPrice: "$149",
     foundingPrice: "$129",
-    href: "/renew",
+    href: "/hormone-therapy",
     available: true,
   },
   {
@@ -25,7 +25,7 @@ const programs = [
     compounds: "Testosterone Cypionate, HCG, Anastrozole",
     standardPrice: "$149",
     foundingPrice: "$129",
-    href: "/vital",
+    href: "/testosterone-therapy",
     available: true,
   },
   {
@@ -34,7 +34,7 @@ const programs = [
     compounds: "Sermorelin",
     standardPrice: "$229",
     foundingPrice: "$179",
-    href: "/restore",
+    href: "/peptide-therapy",
     available: true,
   },
   {
@@ -43,7 +43,7 @@ const programs = [
     compounds: "NAD+ Injection, Glutathione",
     standardPrice: "$229",
     foundingPrice: "$179",
-    href: "/vitality",
+    href: "/nad-therapy",
     available: true,
   },
   {
