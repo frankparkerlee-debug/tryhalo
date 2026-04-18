@@ -1257,7 +1257,7 @@ export default function HormoneTherapyPage() {
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
                 Four compounds.{" "}
                 <span className="italic text-halo-charcoal/70">
-                  Shaped by your bloodwork.
+                  Matched to you.
                 </span>
               </h2>
               <p className="text-[15px] md:text-base text-halo-charcoal/55 max-w-xl mx-auto mt-5 leading-relaxed">
