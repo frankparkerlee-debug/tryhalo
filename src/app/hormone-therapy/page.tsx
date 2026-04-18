@@ -873,6 +873,7 @@ export default function HormoneTherapyPage() {
               alt=""
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover"
+              style={{ objectPosition: "center 25%" }}
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
@@ -888,10 +889,10 @@ export default function HormoneTherapyPage() {
             />
 
             {/* Mobile-only CTA overlay on the image */}
-            <div className="md:hidden absolute bottom-4 left-4 right-4 z-10">
+            <div className="md:hidden absolute bottom-5 left-0 right-0 z-10 flex justify-center px-4">
               <Link
                 href="/quiz?from=hrt"
-                className="flex items-center justify-center gap-2 w-full px-6 py-3.5 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
                 style={{
                   backgroundColor: PERSONA,
                 }}
@@ -988,11 +989,11 @@ export default function HormoneTherapyPage() {
               protocols. Bioidentical compounds. Delivered to your door.
             </p>
 
-            {/* Dual CTA */}
+            {/* Dual CTA — primary hidden on mobile (already on hero image) */}
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
                 href="/quiz?from=hrt"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+                className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                 style={{
                   backgroundColor: PERSONA,
                   boxShadow: `0 8px 28px ${PERSONA}45`,

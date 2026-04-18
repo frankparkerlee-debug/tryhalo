@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { MessageCircle, X, Send, ArrowRight } from "lucide-react";
 import HaloLogo from "./HaloLogo";
 
@@ -22,6 +23,7 @@ export default function ChatWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -46,7 +48,7 @@ export default function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
+        body: JSON.stringify({ messages: newMessages, pathname }),
       });
 
       const data = await res.json();
@@ -163,7 +165,7 @@ export default function ChatWidget() {
                       fetch("/api/chat", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ messages: [...messages, userMsg] }),
+                        body: JSON.stringify({ messages: [...messages, userMsg], pathname }),
                       })
                         .then((r) => r.json())
                         .then((data) =>
