@@ -2,9 +2,6 @@
 
 import {
   ArrowRight,
-  Shield,
-  Lock,
-  ClipboardCheck,
   Zap,
   Heart,
   Moon,
@@ -13,14 +10,9 @@ import {
   Stethoscope,
   GraduationCap,
   Droplet,
-  FileHeart,
-  TrendingUp,
-  BadgeCheck,
-  Microscope,
-  FlaskRound,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import FoundingCircleForm from "@/components/FoundingCircleForm";
 import CountUpNumber from "@/components/CountUpNumber";
@@ -28,6 +20,8 @@ import FAQ from "@/components/FAQ";
 import HaloLogo from "@/components/HaloLogo";
 import HeroVideo from "@/components/HeroVideo";
 import AnchorDataOverlay from "@/components/AnchorDataOverlay";
+import HaloPattern from "@/components/HaloPattern";
+import HaloMarquee from "@/components/HaloMarquee";
 import { usePersonalization } from "@/hooks/usePersonalization";
 
 /* ─── DATA ────────────────────────────────────────────────────── */
@@ -113,7 +107,7 @@ const faqItems = [
   {
     question: "How much does Halo cost?",
     answer:
-      "Halo programs start at $109/mo for Vitality Injections and $149/mo for our core anchor programs (HRT, TRT, NAD+, Peptide Therapy) on our 52-week plan. GLP-1 Weight Management is $179/mo. Every plan includes physician consultations, compounded or branded medications, lab ordering, ongoing adjustments, and shipping. No hidden fees. Pay monthly, quarterly, every 6 months, or annually — longer terms save more.",
+      "Halo programs start at $109/mo for Vitamin Injections and $149/mo for our core anchor programs (HRT, TRT, NAD+, Peptide Therapy) on our 52-week plan. GLP-1 Weight Management is $179/mo. Every plan includes physician consultations, compounded or branded medications, lab ordering, ongoing adjustments, and shipping. No hidden fees. Pay monthly, quarterly, every 6 months, or annually — longer terms save more.",
     category: "Pricing",
   },
   {
@@ -204,7 +198,7 @@ const programs = [
     startingPrice: "from $149/mo",
     monthly: "$149/mo",
     quarterly: "$179/mo",
-    href: "/renew",
+    href: "/hormone-therapy",
     colorClass: "",
     color: "#D4836B",
     cardBg: "#F5E6E0",
@@ -233,7 +227,7 @@ const programs = [
     startingPrice: "from $149/mo",
     monthly: "$149/mo",
     quarterly: "$179/mo",
-    href: "/vital",
+    href: "/testosterone-therapy",
     colorClass: "",
     color: "#5A7394",
     cardBg: "#E3E8EE",
@@ -282,7 +276,7 @@ const programs = [
     startingPrice: "from $149/mo",
     monthly: "$149/mo",
     quarterly: "$179/mo",
-    href: "/restore",
+    href: "/peptide-therapy",
     colorClass: "",
     color: "#6B8F68",
     cardBg: "#E4EBE3",
@@ -302,7 +296,7 @@ const programs = [
     startingPrice: "from $149/mo",
     monthly: "$149/mo",
     quarterly: "$179/mo",
-    href: "/vitality",
+    href: "/nad-therapy",
     colorClass: "",
     color: "#7B6B8F",
     cardBg: "#E8E3ED",
@@ -313,7 +307,7 @@ const programs = [
     safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment.",
   },
   {
-    name: "Vitality Injections",
+    name: "Vitamin Injections",
     outcome: "Targeted wellness support",
     desc: "B12, Glutathione, Methylene Blue, Lipo-C, L-Carnitine.",
     label: "Wellness add-ons",
@@ -322,41 +316,44 @@ const programs = [
     startingPrice: "from $109/mo",
     monthly: "$109/mo",
     quarterly: "$129/mo",
-    href: "/vitality-injections",
+    href: "/vitamin-injections",
     colorClass: "",
     color: "#6B8F68",
     cardBg: "#EAEBE5",
     accent: "#6B8F68",
     icon: Droplet,
     tier: "support",
-    safety: "Vitality injections are compounded and not FDA-approved for specific health claims. May cause injection site reactions.",
+    safety: "Vitamin injections are compounded and not FDA-approved for specific health claims. May cause injection site reactions.",
   },
 ];
 
 const providers = [
   {
     name: "Dr. Sarah Chen, MD",
-    title: "Medical Director",
-    specialty: "Endocrinology & Hormone Optimization",
-    credentials: "Board-certified endocrinologist. 12+ years in hormone therapy. Previously at Mount Sinai.",
+    title: "Board-Certified Endocrinologist",
+    chips: ["Hormone Therapy", "Menopause"],
+    bio: "Twelve years of clinical experience in hormone optimization and perimenopause care. Previously at Mount Sinai.",
     initials: "SC",
     color: "#D4836B",
+    image: "/providers/sarah-chen.png",
   },
   {
     name: "Dr. James Rivera, DO",
-    title: "Lead Physician",
-    specialty: "Men\u2019s Health & Performance Medicine",
-    credentials: "Board-certified in family medicine. Fellowship in sports medicine. 10+ years in TRT protocols.",
+    title: "Family Medicine Physician",
+    chips: ["Men\u2019s Health", "Sports Medicine"],
+    bio: "Board-certified with a sports medicine fellowship. Ten years of TRT protocol design and men\u2019s performance care.",
     initials: "JR",
     color: "#5A7394",
+    image: "/providers/james-rivera.png",
   },
   {
     name: "Dr. Priya Patel, MD",
-    title: "Clinical Advisor",
-    specialty: "Integrative & Regenerative Medicine",
-    credentials: "Board-certified internist. Peptide therapy and NAD+ specialist. Published researcher.",
+    title: "Board-Certified Internist",
+    chips: ["Peptide Therapy", "NAD+ Therapy"],
+    bio: "Internal medicine specialist with expertise in peptide and NAD+ protocols. Published researcher in regenerative medicine.",
     initials: "PP",
     color: "#7B6B8F",
+    image: "/providers/priya-patel.png",
   },
 ];
 
@@ -374,76 +371,121 @@ const comingSoonPrograms = [
 const steps = [
   {
     num: "01",
-    title: "Take the quiz",
-    desc: "Two minutes. Tell us about your goals, symptoms, and history.",
-    icon: ClipboardCheck,
-    color: "#D4836B",
+    title: "Tell us about you",
+    titleShort: "Quick intake",
+    desc: "A short intake covering symptoms, goals, and history. Nothing invasive \u2014 just enough context for your physician to understand what's going on and what you want to change.",
+    details: [
+      "Symptoms \u2014 energy, sleep, mood, body composition",
+      "Goals \u2014 what you want to feel or see change",
+      "History \u2014 medications, conditions, family context",
+    ],
+    time: "2 minutes",
   },
   {
     num: "02",
-    title: "Meet your provider",
-    desc: "Video visit with a board-certified physician who reviews your labs and health.",
-    icon: Stethoscope,
-    color: "#5A7394",
+    title: "Meet your physician",
+    titleShort: "Video visit",
+    desc: "A 30-minute video visit with a physician who specializes in hormone and longevity care. You'll review your intake together, talk through what's possible, and order the right labs.",
+    details: [
+      "Personal consultation \u2014 not a script-read session",
+      "Hormone-trained physicians \u2014 not generalists",
+      "Lab order if needed \u2014 at-home kit or local draw",
+    ],
+    time: "Within 5 days",
   },
   {
     num: "03",
-    title: "Get your plan",
-    desc: "A protocol designed around your biology \u2014 shipped direct, adjusted as you go.",
-    icon: FileHeart,
-    color: "#7B6B8F",
+    title: "Begin your plan",
+    titleShort: "Your protocol",
+    desc: "Your physician reviews your labs, designs a protocol around your biology, and your medications ship directly \u2014 compounded by a US-licensed pharmacy and discreetly packaged.",
+    details: [
+      "Protocol design \u2014 matched to your labs and goals",
+      "US-licensed pharmacy \u2014 compounded to order",
+      "Discreet shipping \u2014 plain packaging, clear instructions",
+    ],
+    time: "Within 2 weeks",
   },
   {
     num: "04",
-    title: "Feel better",
-    desc: "Most members notice changes in 2\u20134 weeks. Your physician monitors and fine-tunes.",
-    icon: TrendingUp,
-    color: "#6B8F68",
+    title: "Keep going",
+    titleShort: "Ongoing care",
+    desc: "Lab work every 90 days, protocol adjustments as needed, and direct messaging with your care team whenever something feels off. Built to last as long as you do.",
+    details: [
+      "Quarterly labs \u2014 tracking what matters",
+      "Dose adjustments \u2014 based on labs and how you feel",
+      "Direct messaging \u2014 your care team, not a portal",
+    ],
+    time: "Ongoing",
   },
 ];
 
 const testimonials = [
   {
     quote:
-      "I\u2019m tired of crashing at 2pm every day. I want my energy back without relying on caffeine. Halo feels like the right approach \u2014 real physicians, real protocols.",
+      "At 48 I stopped recognizing myself. My sleep, my temper, the way my clothes fit \u2014 all of it drifted. Two doctors looked at my labs and said I was fine. Halo was the first place someone said, \u2018you\u2019re not. Let\u2019s fix it.\u2019",
     name: "Sarah M.",
+    age: 48,
     role: "Founding Member",
     program: "Hormone Therapy",
     initials: "SM",
     color: "#D4836B",
+    image: "/testimonials/sarah.jpg",
+    setting: "At home, morning light",
   },
   {
     quote:
-      "I used to recover in a day. Now it takes a week. I\u2019ve been researching TRT for months \u2014 Halo\u2019s founding pricing made it a no-brainer to lock in.",
+      "I bill fifty hours a week. I don\u2019t have time for something that might work. Halo\u2019s protocol was specific, lab-driven, and my physician replied within three hours the first time I messaged her.",
     name: "James K.",
+    age: 45,
     role: "Founding Member",
-    program: "Testosterone Therapy",
+    program: "Testosterone",
     initials: "JK",
     color: "#5A7394",
+    image: "/testimonials/james.jpg",
+    setting: "Home office, afternoon",
   },
   {
     quote:
-      "The brain fog is killing my productivity. I need something backed by real science, not another supplement stack. Excited to be one of the first in.",
+      "I used to recover from a hard run in a day. Now it takes a week. What I liked about Halo is they didn\u2019t pretend I\u2019m 25 \u2014 they built a plan for where I actually am.",
+    name: "David T.",
+    age: 51,
+    role: "Founding Member",
+    program: "Peptide Therapy",
+    initials: "DT",
+    color: "#7B6B8F",
+    image: "/testimonials/david.jpg",
+    setting: "Trail, golden hour",
+  },
+  {
+    quote:
+      "I\u2019m not interested in \u2018optimizing\u2019 anything. I want to be alive at 75 \u2014 clear-headed, present, with energy for the life I\u2019ve built. Halo is the first place I\u2019ve found that treats that as a real clinical goal, not a slogan.",
     name: "Marcus T.",
+    age: 47,
     role: "Founding Member",
     program: "NAD+ Therapy",
     initials: "MT",
-    color: "#7B6B8F",
+    color: "#6B8F68",
+    image: "/testimonials/marcus.jpg",
+    setting: "Dinner with friends",
   },
-];
-
-const trustBadges = [
-  { label: "Board-certified physicians", icon: Stethoscope },
-  { label: "US-licensed pharmacy", icon: FlaskRound },
-  { label: "USP compounding standards", icon: Microscope },
-  { label: "HIPAA-secure", icon: Lock },
-  { label: "No insurance needed", icon: BadgeCheck },
+  {
+    quote:
+      "After three kids I forgot I was a person with desires. My physician didn\u2019t flinch when I brought it up \u2014 she just listened and ordered the right labs.",
+    name: "Ren\u00E9e D.",
+    age: 42,
+    role: "Founding Member",
+    program: "Hormone Therapy",
+    initials: "RD",
+    color: "#C4867A",
+    image: "/testimonials/renee.jpg",
+    setting: "Beach walk, sunset",
+  },
 ];
 
 const foundingBenefits = [
   {
-    title: "Lock in $149/mo for life",
-    desc: "Founding pricing on hormone therapy, TRT, peptides, and NAD+ — never goes up",
+    title: "Up to 20% off \u2014 for life",
+    desc: "Founding rate on every core program \u2014 hormone therapy, TRT, peptides, NAD+. Your price never goes up.",
   },
   {
     title: "Free baseline labs",
@@ -522,6 +564,9 @@ export default function Home() {
     }
     return ordered;
   }, [persona]);
+
+  // How It Works — accordion: track which step is open (0-based)
+  const [openStep, setOpenStep] = useState<number>(0);
 
   return (
     <>
@@ -603,7 +648,7 @@ export default function Home() {
             {/* Row 2: PRIMARY SUPPORT programs — stacked banner + content */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {personalizedPrograms
-                .filter((p) => p.tier === "support" && p.name !== "Vitality Injections")
+                .filter((p) => p.tier === "support" && p.name !== "Vitamin Injections")
                 .map((program) => {
                   const Icon = program.icon;
                   return (
@@ -635,11 +680,11 @@ export default function Home() {
                 })}
             </div>
 
-            {/* Row 3: DEPRIORITIZED — Vitality add-ons + Coming Soon — small, muted */}
+            {/* Row 3: DEPRIORITIZED — Vitamin injections + Coming Soon — small, muted */}
             <div className="flex flex-wrap items-center gap-2 pt-2">
               <span className="text-[10px] uppercase tracking-wider text-halo-charcoal/35 font-semibold mr-2">Also available</span>
               {personalizedPrograms
-                .filter((p) => p.name === "Vitality Injections")
+                .filter((p) => p.name === "Vitamin Injections")
                 .map((program) => {
                   const Icon = program.icon;
                   return (
@@ -710,18 +755,216 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          2 · MANIFESTO — Statement + trust bridge
+          2 · HOW IT WORKS — Split panel: portrait + accordion
+          Left: warm image with overlaid italic headline
+          Right: four expandable steps (one open at a time)
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light relative">
-        <div className="max-w-4xl mx-auto">
+      <section id="how-it-works" className="py-12 md:py-16 px-6 section-light">
+        <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            {/* Category pills bridge */}
-            <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
-              {["Hormones", "Testosterone", "Peptides", "NAD+", "Recovery"].map((pill) => (
-                <span key={pill} className="category-pill text-xs">{pill}</span>
-              ))}
+            <div className="mb-6 md:mb-8">
+              <p className="label-accent">How It Works</p>
             </div>
+          </AnimateOnScroll>
 
+          <AnimateOnScroll>
+            <div className="grid md:grid-cols-2 rounded-[20px] overflow-hidden border border-halo-charcoal/[0.08] shadow-[0_20px_60px_-30px_rgba(0,0,0,0.12)]">
+
+              {/* ── LEFT: guide.png with overlaid headline ── */}
+              <div className="relative min-h-[320px] md:min-h-0 overflow-hidden bg-[#F5EED8]">
+                {/* Image — fills the panel */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/guide.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                />
+
+                {/* Primary bottom scrim — stronger, covers more of the image */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, transparent 28%, rgba(15, 12, 8, 0.45) 62%, rgba(15, 12, 8, 0.75) 100%)",
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Focused dark pool behind the headline block — stronger contrast for text only */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse 115% 55% at 25% 100%, rgba(15, 12, 8, 0.55) 0%, transparent 60%)",
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Overlaid headline — white with subtle text shadow for legibility */}
+                <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 lg:p-10">
+                  <h2
+                    className="font-serif leading-[1.05] tracking-tight"
+                    style={{ textShadow: "0 2px 24px rgba(0, 0, 0, 0.45)" }}
+                  >
+                    <span className="block text-2xl md:text-[32px] lg:text-[40px] font-light text-white">
+                      Simple to start.
+                    </span>
+                    <span className="block text-2xl md:text-[32px] lg:text-[40px] italic font-light text-white/90">
+                      Built to last.
+                    </span>
+                  </h2>
+                  <div className="flex items-center gap-3 mt-4 md:mt-5">
+                    <span className="w-6 h-px bg-[#C8A96E]" aria-hidden="true" />
+                    <span
+                      className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#E8CB93]"
+                      style={{ textShadow: "0 1px 8px rgba(0, 0, 0, 0.5)" }}
+                    >
+                      Four steps
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── RIGHT: Accordion (one step expanded at a time) ── */}
+              <div className="bg-white flex flex-col">
+                {steps.map((step, i) => {
+                  const isOpen = openStep === i;
+                  return (
+                    <div
+                      key={step.num}
+                      className={`border-b border-halo-charcoal/[0.08] last:border-b-0 transition-colors duration-300 ${
+                        isOpen ? "bg-[#F3EADA]" : "bg-white hover:bg-halo-charcoal/[0.015]"
+                      }`}
+                    >
+                      <button
+                        onClick={() => setOpenStep(isOpen ? -1 : i)}
+                        className="w-full px-5 md:px-7 py-4 md:py-[18px] flex items-center justify-between gap-4 text-left cursor-pointer"
+                        aria-expanded={isOpen}
+                      >
+                        <div className="flex items-baseline gap-4 md:gap-5 flex-1 min-w-0">
+                          <span className="text-[11px] font-semibold tracking-[0.18em] text-[#C8A96E] flex-shrink-0">
+                            {step.num}
+                          </span>
+                          <h3 className="text-base md:text-[17px] font-medium text-halo-charcoal tracking-tight leading-tight">
+                            {step.title}
+                          </h3>
+                        </div>
+
+                        <div className="flex items-center gap-3 md:gap-4 flex-shrink-0">
+                          {/* Time cue — visible when closed, fades when open */}
+                          <span
+                            className={`hidden md:inline text-[10px] font-semibold uppercase tracking-[0.15em] text-halo-charcoal/45 transition-opacity duration-300 ${
+                              isOpen ? "opacity-0" : "opacity-100"
+                            }`}
+                          >
+                            {step.time}
+                          </span>
+
+                          {/* +/× indicator */}
+                          <span
+                            className={`flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full transition-all duration-300 ${
+                              isOpen
+                                ? "rotate-45 bg-halo-charcoal text-white"
+                                : "bg-halo-charcoal/[0.06] text-halo-charcoal/60"
+                            }`}
+                            aria-hidden="true"
+                          >
+                            <svg
+                              width="9"
+                              height="9"
+                              viewBox="0 0 10 10"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5 1V9M1 5H9"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                          </span>
+                        </div>
+                      </button>
+
+                      {/* Expanded content — grid-rows trick for smooth animation */}
+                      <div
+                        className={`grid transition-all duration-500 ease-out ${
+                          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                        }`}
+                      >
+                        <div className="overflow-hidden">
+                          <div className="px-5 md:px-7 pb-5 md:pb-6 pl-[calc(1.25rem+2.25rem)] md:pl-[calc(1.75rem+1.75rem)]">
+                            <p className="text-[14px] text-halo-charcoal/65 leading-relaxed mb-3">
+                              {step.desc}
+                            </p>
+
+                            {/* Detail list */}
+                            {step.details && (
+                              <ul className="flex flex-col gap-1 mb-4">
+                                {step.details.map((detail, j) => (
+                                  <li
+                                    key={j}
+                                    className="flex items-start gap-2 text-[13px] text-halo-charcoal/55 leading-snug"
+                                  >
+                                    <span className="text-[#C8A96E] mt-[1px] select-none" aria-hidden="true">·</span>
+                                    <span>{detail}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            <div className="flex items-center gap-3 pt-1">
+                              <span className="w-6 h-px bg-[#C8A96E]" aria-hidden="true" />
+                              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C8A96E]">
+                                {step.time}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          </AnimateOnScroll>
+
+          {/* Trailing CTA */}
+          <AnimateOnScroll>
+            <div className="text-center mt-10 md:mt-14">
+              <Link href="/quiz" className="btn-filled !text-sm">
+                Begin your journey <ArrowRight className="w-3.5 h-3.5 btn-arrow" />
+              </Link>
+              <p className="text-xs text-halo-charcoal/30 mt-3">No commitment until your first consultation.</p>
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* Halo Marquee — symptom → outcome pairs, horizontal scroll */}
+      <HaloMarquee />
+
+      {/* ═══════════════════════════════════════════════
+          3 · MANIFESTO — Statement before testimonials
+          Halo signature pattern behind the quote
+          ═══════════════════════════════════════════════ */}
+      <section className="py-12 md:py-16 px-6 section-light relative overflow-hidden">
+        {/* Halo signature pattern — reusable component, boosted intensity for this hero placement */}
+        <HaloPattern
+          variant="default"
+          intensity={1.8}
+          className="absolute inset-0 w-full h-full"
+        />
+
+        {/* Content — sits above the pattern */}
+        <div className="max-w-4xl mx-auto relative z-10">
+          <AnimateOnScroll>
             <p className="manifesto-text">
               We believe wellness isn&rsquo;t about{" "}
               <em>perfection</em> &mdash;
@@ -741,101 +984,6 @@ export default function Home() {
               >
                 Begin your wellness journey <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </div>
-          </AnimateOnScroll>
-
-          {/* Trust strip — inline credentials row with subtle dividers */}
-          <AnimateOnScroll>
-            <div className="mt-10 pt-8 border-t border-halo-charcoal/[0.06]">
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:gap-x-8">
-                {trustBadges.map((badge, i) => (
-                  <div key={badge.label} className="flex items-center gap-2.5">
-                    <badge.icon
-                      className="w-3.5 h-3.5 text-[#C8A96E] flex-shrink-0"
-                      strokeWidth={2}
-                    />
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-halo-charcoal/60 whitespace-nowrap">
-                      {badge.label}
-                    </span>
-                    {/* Subtle divider between items (not after the last one) */}
-                    {i < trustBadges.length - 1 && (
-                      <span className="hidden md:inline-block w-px h-3 bg-halo-charcoal/15 ml-6" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </AnimateOnScroll>
-        </div>
-      </section>
-
-      <div className="section-divider" />
-
-      {/* ═══════════════════════════════════════════════
-          3 · HOW IT WORKS — Split layout + overlapping cards
-          ═══════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-20 md:py-28 px-6 section-light">
-        <div className="max-w-6xl mx-auto">
-          <AnimateOnScroll>
-            <div className="text-center mb-16">
-              <p className="label-accent mb-3">How It Works</p>
-              <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal">
-                From curious to feeling different.
-              </h2>
-            </div>
-          </AnimateOnScroll>
-
-          {/* Connected timeline — horizontal rail on desktop, vertical on mobile */}
-          <AnimateOnScroll stagger>
-            <div className="relative">
-              {/* Horizontal connector line — spans between step numbers on desktop */}
-              <div className="hidden md:block absolute top-6 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-halo-charcoal/15 to-transparent" />
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6 relative">
-                {steps.map((step) => {
-                  const Icon = step.icon;
-                  return (
-                    <div key={step.num} className="aos-child relative flex md:flex-col items-start md:items-center gap-4 md:gap-0 text-left md:text-center">
-                      {/* Large numbered milestone marker */}
-                      <div className="relative flex-shrink-0 md:mb-6">
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center font-serif text-lg font-bold"
-                          style={{
-                            background: "#FFFFFF",
-                            border: `1.5px solid ${step.color}`,
-                            color: step.color,
-                          }}
-                        >
-                          {step.num}
-                        </div>
-                        {/* Soft colored halo behind the circle */}
-                        <div
-                          className="absolute inset-0 rounded-full -z-10 blur-md"
-                          style={{ background: `${step.color}20` }}
-                        />
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 md:px-2">
-                        <div className="flex items-center gap-2 md:justify-center mb-1.5">
-                          <Icon className="w-4 h-4" style={{ color: step.color }} strokeWidth={2} />
-                          <h3 className="text-sm md:text-base font-semibold text-halo-charcoal tracking-tight">{step.title}</h3>
-                        </div>
-                        <p className="text-xs md:text-[13px] text-halo-charcoal/50 leading-relaxed max-w-xs md:mx-auto">{step.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </AnimateOnScroll>
-
-          <AnimateOnScroll>
-            <div className="text-center mt-16">
-              <Link href="/quiz" className="btn-filled !text-sm">
-                Take the quiz &mdash; 2 min <ArrowRight className="w-3.5 h-3.5 btn-arrow" />
-              </Link>
-              <p className="text-xs text-halo-charcoal/30 mt-3">No commitment until your first consultation.</p>
             </div>
           </AnimateOnScroll>
         </div>
@@ -928,63 +1076,103 @@ export default function Home() {
       <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
-          5b · YOUR PROVIDERS — Doctor credibility
+          5b · YOUR PROVIDERS — Compact credibility banner
+          Hims-style: small credentials chip card + name/bio below
           ═══════════════════════════════════════════════ */}
-      <section className="py-20 md:py-24 px-6 section-dark relative overflow-hidden">
-        <div className="max-w-6xl mx-auto relative z-10">
+      <section className="py-14 md:py-20 px-6 section-light">
+        <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-14">
-              <p className="label-accent mb-3">Your Medical Team</p>
-              <h2 className="headline-section text-3xl md:text-4xl text-white mb-3">
-                Board-certified physicians.
-                <br className="hidden md:block" />
-                Not algorithms.
+            <div className="text-center mb-10 md:mb-14">
+              <h2 className="headline-section text-2xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
+                <span className="text-[#C8A96E]">Board-certified specialists,</span>
+                <br />
+                matched to{" "}
+                <span className="italic text-halo-charcoal/70">your protocol.</span>
               </h2>
-              <p className="text-sm text-white/30 max-w-xl mx-auto">
-                Every Halo protocol is designed and supervised by licensed physicians
-                specializing in hormone optimization and performance medicine.
+              <p className="text-sm md:text-base text-halo-charcoal/50 max-w-xl mx-auto mt-4 leading-relaxed">
+                Halo&rsquo;s provider network includes endocrinologists, internists,
+                and specialists in hormone and longevity medicine &mdash; so the
+                physician who reviews your labs actually understands them.
               </p>
             </div>
           </AnimateOnScroll>
 
           <AnimateOnScroll stagger>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
               {providers.map((doc) => (
-                <div
-                  key={doc.name}
-                  className="aos-child rounded-2xl bg-white/[0.04] border border-white/[0.06] p-6 hover:border-white/15 transition-colors"
-                >
-                  {/* Avatar */}
-                  <div className="flex items-center gap-4 mb-5">
-                    <div
-                      className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                      style={{ background: doc.color }}
-                    >
-                      {doc.initials}
+                <div key={doc.name} className="aos-child flex flex-col">
+                  {/* Credential card — cream, compact, Hims-style */}
+                  <div className="flex gap-4 rounded-[18px] bg-[#F3EADA] p-3.5 md:p-4 mb-4">
+                    {/* Portrait — warm gradient placeholder, will render <img> when real file lands */}
+                    <div className="relative flex-shrink-0 w-[88px] h-[112px] md:w-[100px] md:h-[128px] rounded-xl overflow-hidden bg-halo-charcoal/5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={doc.image}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => {
+                          // Hide broken img, placeholder gradient shows through
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                      {/* Placeholder gradient + initials (shows if image fails or before load) */}
+                      <div
+                        className="absolute inset-0 flex items-center justify-center -z-[1]"
+                        style={{
+                          background: `linear-gradient(145deg, ${doc.color}33 0%, ${doc.color}80 100%)`,
+                        }}
+                      >
+                        <span
+                          className="font-serif text-[24px] md:text-[28px] italic"
+                          style={{ color: doc.color }}
+                        >
+                          {doc.initials}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">{doc.name}</p>
-                      <p className="text-xs text-white/50">{doc.title}</p>
+
+                    {/* Right side: title + chips */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-halo-charcoal/75 leading-tight mb-3">
+                        {doc.title}
+                      </p>
+                      <div className="flex flex-col gap-1.5">
+                        {doc.chips.map((chip) => (
+                          <div key={chip} className="flex items-center gap-2">
+                            <span
+                              className="w-[3px] h-3 rounded-[1px] flex-shrink-0"
+                              style={{ background: "#C8A96E" }}
+                              aria-hidden="true"
+                            />
+                            <span className="text-[12px] text-halo-charcoal/70 leading-tight">
+                              {chip}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  {/* Specialty */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <Stethoscope className="w-3.5 h-3.5 text-white/25 flex-shrink-0" />
-                    <p className="text-xs text-white/40">{doc.specialty}</p>
-                  </div>
-                  {/* Credentials */}
-                  <div className="flex items-start gap-2">
-                    <GraduationCap className="w-3.5 h-3.5 text-white/25 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-white/30 leading-relaxed">{doc.credentials}</p>
-                  </div>
+
+                  {/* Doctor name + bio — below the card, Hims pattern */}
+                  <p className="text-[15px] font-semibold text-halo-charcoal mb-1.5 leading-tight">
+                    {doc.name}
+                  </p>
+                  <p className="text-[13px] text-halo-charcoal/55 leading-relaxed">
+                    {doc.bio}
+                  </p>
                 </div>
               ))}
             </div>
           </AnimateOnScroll>
 
           <AnimateOnScroll>
-            <p className="text-center text-[10px] text-white/15 mt-8">
-              Provider network powered by OpenLoop Health. All physicians are US-licensed and board-certified.
+            <p className="text-center text-[12px] text-halo-charcoal/45 mt-8 md:mt-10 italic">
+              Representative physicians from Halo&rsquo;s provider network.
+            </p>
+            <p className="text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/30 mt-4">
+              Provider network powered by OpenLoop Health &middot; All physicians
+              US-licensed and board-certified
             </p>
           </AnimateOnScroll>
         </div>
@@ -997,27 +1185,103 @@ export default function Home() {
           ═══════════════════════════════════════════════ */}
       <section id="founding-circle" className="section-dark overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[700px]">
-          {/* LEFT: Visual panel */}
-          <div className="relative min-h-[300px] lg:min-h-[700px] overflow-hidden bg-[#0a0a0a]">
-            {/* Ambient gold glow */}
+          {/* LEFT: Visual panel — the HALO is the Founding Circle */}
+          <div className="relative min-h-[420px] lg:min-h-[700px] overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
+            {/* Subtle ambient warmth — reduced gold presence */}
             <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-              style={{ background: "#C8A96E", filter: "blur(200px)", opacity: 0.08 }}
+              className="absolute inset-0 pointer-events-none"
+              aria-hidden="true"
+              style={{
+                background:
+                  "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(200,169,110,0.14) 0%, rgba(200,169,110,0.04) 45%, transparent 75%)",
+              }}
             />
-            {/* Large halo logo watermark */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <HaloLogo size="xl" variant="dark" showText={false} className="opacity-[0.06] scale-[3.5]" />
-            </div>
 
-            {/* Counter overlaid at bottom-left */}
-            <div className="absolute bottom-10 left-8 lg:left-14 z-10">
-              <CountUpNumber
-                target={647}
-                start={600}
-                duration={2000}
-                className="stat-large text-6xl md:text-7xl lg:text-8xl"
-              />
-              <p className="text-base text-white/20 mt-2">of 999 spots claimed</p>
+            {/* Halo signature pattern — brand mark, core hidden so our counter takes its place */}
+            <HaloPattern
+              variant="default"
+              intensity={2.1}
+              color="#C8A96E"
+              showCore={false}
+              className="absolute inset-0 w-full h-full"
+            />
+
+            {/* Central focal point: progress ring + counter */}
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="relative w-[300px] h-[300px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] flex items-center justify-center">
+
+                {/* Progress ring — gold, because it signals scarcity (the one place gold earns its keep) */}
+                <svg
+                  className="absolute inset-0 w-full h-full"
+                  viewBox="0 0 100 100"
+                  style={{ transform: "rotate(-90deg)" }}
+                  aria-hidden="true"
+                >
+                  {/* Full-circle faint guide */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="48"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    strokeWidth="0.4"
+                  />
+                  {/* Progress arc (64.7% = 647/999) */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="48"
+                    fill="none"
+                    stroke="#C8A96E"
+                    strokeWidth="0.7"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 48 * 0.6477} ${2 * Math.PI * 48}`}
+                    opacity="0.95"
+                  />
+                </svg>
+
+                {/* Counter in the center — cream, not gold. Content stands out; pattern stays atmosphere */}
+                <div className="flex flex-col items-center text-center">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/55 mb-3">
+                    Founding Members
+                  </p>
+                  <CountUpNumber
+                    target={647}
+                    start={600}
+                    duration={2000}
+                    className="font-serif text-[96px] md:text-[128px] lg:text-[148px] font-light text-[#F3EADA] leading-[0.9] tracking-tight"
+                  />
+                  <div
+                    className="w-10 h-px bg-white/25 my-4"
+                    aria-hidden="true"
+                  />
+                  <p className="text-[13px] text-white/55">
+                    of{" "}
+                    <span className="text-white/85 font-semibold">999</span>{" "}
+                    spots claimed
+                  </p>
+                </div>
+              </div>
+
+              {/* Caption below the ring — includes deadline */}
+              <div className="flex flex-col items-center gap-2 mt-6 md:mt-8">
+                <p className="text-[10px] text-white/35 uppercase tracking-[0.28em] font-semibold">
+                  64.7% claimed &middot; 352 remaining
+                </p>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-1 h-1 rounded-full bg-[#C8A96E]"
+                    aria-hidden="true"
+                  />
+                  <p className="text-[11px] text-[#C8A96E] uppercase tracking-[0.28em] font-semibold">
+                    Closes June 1
+                  </p>
+                  <span
+                    className="w-1 h-1 rounded-full bg-[#C8A96E]"
+                    aria-hidden="true"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1025,15 +1289,22 @@ export default function Home() {
           <div className="flex flex-col justify-center px-6 lg:px-16 py-16 lg:py-20">
             <div className="max-w-md">
               <AnimateOnScroll>
-                <div className="mb-5">
+                <div className="mb-5 flex items-center gap-3">
                   <span className="label-rule" />
                   <p className="label-accent">Founding Circle</p>
+                  <span className="text-[#C8A96E]/40 text-xs">&middot;</span>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#C8A96E]">
+                    Ends June 1
+                  </p>
                 </div>
                 <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white mb-5">
                   The first 999 get in at the best price. Permanently.
                 </h2>
                 <p className="text-base text-white/30 mb-8 leading-relaxed">
-                  Lock in founding pricing for life, get your first labs free, and be the first to access every new program we launch.
+                  Lock in founding pricing for life, get your first labs free, and be the first to access every new program we launch.{" "}
+                  <span className="text-white/55 font-medium">
+                    Founding Circle closes June 1, 2026.
+                  </span>
                 </p>
               </AnimateOnScroll>
 

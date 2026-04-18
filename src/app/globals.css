@@ -569,6 +569,82 @@ body {
 }
 
 /* ===========================
+   HALO MARQUEE — horizontal scroll ticker
+   Symptom → outcome pairs, seamless infinite loop
+   =========================== */
+
+@keyframes halo-marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="halo-marquee-scroll"] {
+    animation: none !important;
+  }
+}
+
+/* ===========================
+   HALO SIGNATURE PATTERN — Manifesto backdrop
+   Subtle breathing pulse on the central core
+   =========================== */
+
+.halo-core-pulse {
+  animation: halo-breathe 4.5s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes halo-breathe {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halo-core-pulse {
+    animation: none;
+    opacity: 0.55;
+  }
+}
+
+/* ===========================
+   HOW IT WORKS — Editorial step number
+   Outlined sans-serif numerals, type-forward
+   =========================== */
+
+.step-number {
+  font-family: var(--font-sans);
+  font-size: 38px;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(28, 28, 30, 0.4);
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .step-number {
+    font-size: 68px;
+    -webkit-text-stroke: 1px rgba(28, 28, 30, 0.3);
+    min-width: 80px;
+  }
+}
+
+
+/* ===========================
    PROGRAM CARD — DARK VARIANT
    =========================== */
 
