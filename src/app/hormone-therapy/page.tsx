@@ -85,13 +85,6 @@ const compounds = [
 
 const subjectiveCharts = [
   {
-    title: "Sleep",
-    stat: "82%",
-    claim: "of women report uninterrupted sleep within 4 weeks",
-    lifeImage: "/hrt/life-sleep.png",
-    type: "sleep" as const,
-  },
-  {
     title: "Mood",
     stat: "74%",
     claim: "report reduced irritability and emotional volatility",
@@ -104,6 +97,13 @@ const subjectiveCharts = [
     claim: "report sustained daily energy without afternoon collapse",
     lifeImage: "/hrt/life-energy.png",
     type: "energy" as const,
+  },
+  {
+    title: "Sleep",
+    stat: "82%",
+    claim: "of women report uninterrupted sleep within 4 weeks",
+    lifeImage: "/hrt/life-sleep.png",
+    type: "sleep" as const,
   },
 ];
 
@@ -887,8 +887,22 @@ export default function HormoneTherapyPage() {
               }}
             />
 
-            {/* Format chips — floating on image at bottom */}
-            <div className="absolute bottom-4 md:bottom-8 left-4 right-4 md:right-auto md:left-10 flex flex-wrap gap-2 md:gap-3">
+            {/* Mobile-only CTA overlay on the image */}
+            <div className="md:hidden absolute bottom-4 left-4 right-4 z-10">
+              <Link
+                href="/quiz?from=hrt"
+                className="flex items-center justify-center gap-2 w-full px-6 py-3.5 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+                style={{
+                  backgroundColor: PERSONA,
+                }}
+              >
+                Start my assessment
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Format chips — hidden on mobile to make room for the CTA overlay */}
+            <div className="hidden md:flex absolute bottom-8 left-10 flex-wrap gap-3">
               {treatmentFormats.map((format) => (
                 <div
                   key={format.name}
@@ -1243,7 +1257,7 @@ export default function HormoneTherapyPage() {
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
                 Four compounds.{" "}
                 <span className="italic text-halo-charcoal/70">
-                  Built around your labs.
+                  Shaped by your bloodwork.
                 </span>
               </h2>
               <p className="text-[15px] md:text-base text-halo-charcoal/55 max-w-xl mx-auto mt-5 leading-relaxed">
