@@ -20,9 +20,9 @@ const PERSONA_SOFT = "#E8A798";
    ============================== */
 
 const treatmentFormats = [
-  { name: "Patch", desc: "Twice-weekly transdermal", image: "/hrt/format-patch.jpg" },
-  { name: "Cream", desc: "Daily topical compound", image: "/hrt/format-cream.jpg" },
-  { name: "Pill", desc: "Oral capsule", image: "/hrt/format-pill.jpg" },
+  { name: "Patch", desc: "Twice-weekly transdermal", image: "/hrt/format-patch.png" },
+  { name: "Cream", desc: "Daily topical compound", image: "/hrt/format-cream.png" },
+  { name: "Pill", desc: "Oral capsule", image: "/hrt/format-pill.png" },
 ];
 
 const impactStats = [
@@ -60,25 +60,26 @@ const compounds = [
     name: "Estradiol",
     subtitle: "Transdermal · Oral · Cream",
     desc: "The primary estrogen your body produces less of in perimenopause. Delivered as a patch, cream, or pill based on your needs. Addresses hot flashes, sleep, cognition, and bone health.",
-    image: "/hrt/compound-estradiol.jpg",
+    image: "/hrt/compound-estradiol.png",
   },
   {
     name: "Progesterone",
     subtitle: "Bioidentical micronized",
     desc: "Essential for sleep, mood, and uterine health. Compounded to your specific dose. Most patients take it nightly.",
-    image: "/hrt/compound-progesterone.jpg",
+    image: "/hrt/compound-progesterone.png",
+    objectPosition: "35% center",
   },
   {
     name: "Testosterone",
     subtitle: "For women · Low-dose",
     desc: "Most providers don’t test women’s testosterone. We do. A small dose can transform energy, libido, and body composition — without masculinizing effects.",
-    image: "/hrt/compound-testosterone.jpg",
+    image: "/hrt/compound-testosterone.png",
   },
   {
     name: "DHEA",
     subtitle: "Adrenal support",
     desc: "For women whose cortisol and DHEA levels have shifted with age. Supports energy, mood, and hormonal buffering.",
-    image: "/hrt/compound-dhea.jpg",
+    image: "/hrt/compound-dhea.png",
   },
 ];
 
@@ -87,21 +88,21 @@ const subjectiveCharts = [
     title: "Sleep",
     stat: "82%",
     claim: "of women report uninterrupted sleep within 4 weeks",
-    lifeImage: "/hrt/life-sleep.jpg",
+    lifeImage: "/hrt/life-sleep.png",
     type: "sleep" as const,
   },
   {
     title: "Mood",
     stat: "74%",
     claim: "report reduced irritability and emotional volatility",
-    lifeImage: "/hrt/life-mood.jpg",
+    lifeImage: "/hrt/life-mood.png",
     type: "mood" as const,
   },
   {
     title: "Energy",
     stat: "69%",
     claim: "report sustained daily energy without afternoon collapse",
-    lifeImage: "/hrt/life-energy.jpg",
+    lifeImage: "/hrt/life-energy.png",
     type: "energy" as const,
   },
 ];
@@ -155,18 +156,49 @@ const faqItems = [
 
 // Estrogen bar chart — "Start feeling better in 4-6 weeks"
 function EstrogenChart() {
-  // Natural decline levels (relative, 0-100 scale)
-  const natural = [95, 85, 65, 40, 20, 12];
-  // Stabilized with HRT (therapeutic range)
-  const stabilized = [95, 90, 75, 70, 68, 65];
+  // Data — relative estradiol levels at key ages (0-100 scale)
   const ages = ["25", "35", "42", "48", "55", "60+"];
+  const natural = [95, 82, 60, 38, 20, 12];
+
+  // Chart geometry
+  const W = 620;
+  const H = 320;
+  const px = 56; // padding x
+  const pyTop = 52;
+  const pyBot = 60;
+  const plotW = W - px * 2;
+  const plotH = H - pyTop - pyBot;
+
+  // Convert natural values to x,y points
+  const points = natural.map((val, i) => ({
+    x: px + (i / (natural.length - 1)) * plotW,
+    y: pyTop + ((100 - val) / 100) * plotH,
+    val,
+  }));
+
+  // Therapeutic range band: 55-75 on the 0-100 scale
+  const rangeTop = pyTop + ((100 - 75) / 100) * plotH;
+  const rangeBot = pyTop + ((100 - 55) / 100) * plotH;
+
+  // Smooth cubic bezier curve through points (gentle S-curves between each pair)
+  const smoothPath = points
+    .map((p, i) => {
+      if (i === 0) return `M ${p.x} ${p.y}`;
+      const prev = points[i - 1];
+      const cpx = (prev.x + p.x) / 2;
+      return `C ${cpx} ${prev.y}, ${cpx} ${p.y}, ${p.x} ${p.y}`;
+    })
+    .join(" ");
+
+  // Area fill under the decline curve
+  const areaPath = `${smoothPath} L ${points[points.length - 1].x} ${pyTop + plotH} L ${points[0].x} ${pyTop + plotH} Z`;
 
   return (
     <div className="w-full">
       <p className="font-serif text-[22px] md:text-[28px] text-halo-charcoal leading-tight mb-2 tracking-tight">
-        Start feeling better in{" "}
+        Bring your hormones{" "}
         <span className="italic" style={{ color: PERSONA }}>
-          4–6 weeks.
+          back into balance.
         </span>
       </p>
       <p className="text-[13px] text-halo-charcoal/55 mb-8 max-w-md">
@@ -175,91 +207,157 @@ function EstrogenChart() {
         your body needs now.
       </p>
 
-      <div className="relative bg-white/60 rounded-[20px] border border-halo-charcoal/[0.08] p-6 md:p-8">
-        {/* Legend */}
-        <div className="flex flex-wrap gap-5 mb-6 text-[11px] uppercase tracking-[0.15em] font-semibold">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-sm" style={{ background: "#C8BFAE" }} />
-            <span className="text-halo-charcoal/65">Declining with age</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-sm" style={{ background: PERSONA }} />
-            <span className="text-halo-charcoal/85">Stabilized with HRT</span>
-          </div>
-        </div>
-
+      <div
+        className="relative rounded-[20px] border border-halo-charcoal/[0.08] p-6 md:p-8"
+        style={{
+          background:
+            "linear-gradient(180deg, #FDF9F2 0%, #F5EDDE 100%)",
+        }}
+      >
         {/* Chart */}
         <svg
-          viewBox="0 0 600 280"
+          viewBox={`0 0 ${W} ${H}`}
           className="w-full h-auto"
-          aria-label="Estrogen levels by age, natural decline vs. stabilized with HRT"
+          aria-label="Estrogen levels decline with age — HRT restores to therapeutic range"
         >
-          {/* Baseline */}
-          <line
-            x1="40"
-            y1="240"
-            x2="580"
-            y2="240"
-            stroke="rgba(28,28,30,0.12)"
-            strokeWidth="1"
+          <defs>
+            {/* Subtle gradient fill for the therapeutic range band */}
+            <linearGradient id="range-band" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={PERSONA} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={PERSONA} stopOpacity="0.12" />
+            </linearGradient>
+            {/* Gradient fill below the natural decline curve */}
+            <linearGradient id="decline-fill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#8C7E6E" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#8C7E6E" stopOpacity="0" />
+            </linearGradient>
+            {/* Soft glow for the rose dots */}
+            <filter id="dot-glow">
+              <feGaussianBlur stdDeviation="3" />
+            </filter>
+          </defs>
+
+          {/* ── Horizontal reference grid lines (very subtle) ── */}
+          {[0.25, 0.5, 0.75].map((frac) => {
+            const y = pyTop + plotH * frac;
+            return (
+              <line
+                key={frac}
+                x1={px}
+                y1={y}
+                x2={W - px}
+                y2={y}
+                stroke="rgba(28,28,30,0.04)"
+                strokeWidth="1"
+              />
+            );
+          })}
+
+          {/* ── Therapeutic range band ── */}
+          <rect
+            x={px}
+            y={rangeTop}
+            width={plotW}
+            height={rangeBot - rangeTop}
+            fill="url(#range-band)"
+            rx="3"
           />
 
-          {/* Dashed therapeutic-range line */}
-          <line
-            x1="40"
-            y1="90"
-            x2="580"
-            y2="90"
-            stroke={PERSONA}
-            strokeWidth="1"
-            strokeDasharray="4 4"
-            opacity="0.55"
-          />
+          {/* Range label inside the band */}
           <text
-            x="580"
-            y="83"
+            x={W - px - 8}
+            y={rangeTop + (rangeBot - rangeTop) / 2 + 4}
             textAnchor="end"
-            fontSize="10"
-            fontWeight="600"
+            fontSize="11"
+            fontWeight="700"
+            letterSpacing="2.5"
             fill={PERSONA}
-            letterSpacing="0.12em"
           >
-            THERAPEUTIC RANGE
+            HRT THERAPEUTIC RANGE
           </text>
 
-          {/* Bars */}
+          {/* Subtle left-side indicator dot for the range */}
+          <circle cx={px} cy={(rangeTop + rangeBot) / 2} r="3" fill={PERSONA} opacity="0.8" />
+          <line
+            x1={px + 4}
+            y1={(rangeTop + rangeBot) / 2}
+            x2={px + 18}
+            y2={(rangeTop + rangeBot) / 2}
+            stroke={PERSONA}
+            strokeWidth="1"
+            opacity="0.4"
+          />
+
+          {/* ── Area under decline curve ── */}
+          <path d={areaPath} fill="url(#decline-fill)" />
+
+          {/* ── Natural decline smooth curve ── */}
+          <path
+            d={smoothPath}
+            fill="none"
+            stroke="#6F6355"
+            strokeWidth="2.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* ── Data points on the decline line ── */}
+          {points.map((p, i) => (
+            <g key={i}>
+              {/* outer glow */}
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r="8"
+                fill="#6F6355"
+                opacity="0.12"
+              />
+              {/* filled dot */}
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r="4.5"
+                fill="white"
+                stroke="#6F6355"
+                strokeWidth="2"
+              />
+            </g>
+          ))}
+
+          {/* Natural decline label at the left-most point */}
+          <text
+            x={points[0].x + 14}
+            y={points[0].y - 14}
+            fontSize="11"
+            fontWeight="700"
+            letterSpacing="2"
+            fill="#5A5145"
+          >
+            NATURAL DECLINE
+          </text>
+
+          {/* ── Age axis labels ── */}
           {ages.map((age, i) => {
-            const x = 70 + i * 90;
-            const naturalHeight = (natural[i] / 100) * 180;
-            const stableHeight = (stabilized[i] / 100) * 180;
+            const x = px + (i / (ages.length - 1)) * plotW;
             return (
               <g key={age}>
-                {/* Natural decline bar */}
-                <rect
-                  x={x}
-                  y={240 - naturalHeight}
-                  width="18"
-                  height={naturalHeight}
-                  fill="#C8BFAE"
-                  rx="2"
-                />
-                {/* Stabilized bar */}
-                <rect
-                  x={x + 22}
-                  y={240 - stableHeight}
-                  width="18"
-                  height={stableHeight}
-                  fill={PERSONA}
-                  rx="2"
+                {/* Small tick */}
+                <line
+                  x1={x}
+                  y1={H - pyBot + 4}
+                  x2={x}
+                  y2={H - pyBot + 8}
+                  stroke="rgba(28,28,30,0.2)"
+                  strokeWidth="1"
                 />
                 {/* Age label */}
                 <text
-                  x={x + 20}
-                  y="260"
+                  x={x}
+                  y={H - pyBot + 24}
                   textAnchor="middle"
-                  fontSize="11"
+                  fontSize="12"
                   fontWeight="500"
-                  fill="rgba(28,28,30,0.55)"
+                  fill="rgba(28,28,30,0.65)"
                 >
                   {age}
                 </text>
@@ -267,31 +365,34 @@ function EstrogenChart() {
             );
           })}
 
-          {/* Y-axis label */}
+          {/* AGE axis caption */}
           <text
-            x="40"
-            y="30"
+            x={W / 2}
+            y={H - 12}
+            textAnchor="middle"
             fontSize="10"
             fontWeight="600"
-            fill="rgba(28,28,30,0.55)"
-            letterSpacing="0.12em"
-          >
-            ESTRADIOL LEVEL
-          </text>
-          <text
-            x="40"
-            y="275"
-            fontSize="10"
-            fontWeight="600"
-            fill="rgba(28,28,30,0.55)"
-            letterSpacing="0.12em"
+            letterSpacing="2.5"
+            fill="rgba(28,28,30,0.45)"
           >
             AGE
+          </text>
+
+          {/* Y-axis caption top-left */}
+          <text
+            x={px}
+            y={pyTop - 20}
+            fontSize="10"
+            fontWeight="600"
+            letterSpacing="2.5"
+            fill="rgba(28,28,30,0.55)"
+          >
+            ESTRADIOL LEVEL
           </text>
         </svg>
 
         {/* Footnote */}
-        <p className="text-[11px] italic text-halo-charcoal/45 mt-4 leading-relaxed">
+        <p className="text-[11px] italic text-halo-charcoal/45 mt-5 leading-relaxed">
           Based on clinical reference ranges for serum estradiol. Therapeutic
           targets vary by patient. — ELITE Trial, NEJM (Hodis et al.,
           2016); WHI follow-up, 2017.
@@ -477,43 +578,49 @@ function EnergyChart() {
 
 function CompoundCard({ compound }: { compound: (typeof compounds)[number] }) {
   const [open, setOpen] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   return (
     <div className="rounded-[20px] border border-halo-charcoal/[0.08] bg-white overflow-hidden transition-shadow hover:shadow-[0_10px_40px_-20px_rgba(0,0,0,0.15)]">
-      {/* Product image area — placeholder gradient until real photography */}
+      {/* Product image area — gradient shows through only when image fails */}
       <div
-        className="relative aspect-[4/5] flex items-center justify-center"
+        className="relative aspect-[4/5] flex items-center justify-center overflow-hidden"
         style={{
           background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}40 60%, ${PERSONA}30 100%)`,
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={compound.image}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
-        />
-        {/* Fallback marker visible when image missing */}
-        <div
-          className="flex flex-col items-center gap-2 opacity-40 z-10"
-          aria-hidden="true"
-        >
-          <span
-            className="text-[10px] font-semibold uppercase tracking-[0.25em]"
-            style={{ color: "#5A4A2E" }}
+        {!imageFailed && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={compound.image}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              objectPosition: compound.objectPosition || "center",
+            }}
+            onError={() => setImageFailed(true)}
+          />
+        )}
+        {/* Fallback text — shown ONLY when image fails to load */}
+        {imageFailed && (
+          <div
+            className="flex flex-col items-center gap-2 opacity-40"
+            aria-hidden="true"
           >
-            Halo
-          </span>
-          <span
-            className="font-serif text-[22px] italic"
-            style={{ color: "#5A4A2E" }}
-          >
-            {compound.name}
-          </span>
-        </div>
+            <span
+              className="text-[10px] font-semibold uppercase tracking-[0.25em]"
+              style={{ color: "#5A4A2E" }}
+            >
+              Halo
+            </span>
+            <span
+              className="font-serif text-[22px] italic"
+              style={{ color: "#5A4A2E" }}
+            >
+              {compound.name}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -600,7 +707,7 @@ function HowItWorksAccordion() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/hrt/how-it-works.jpg"
+          src="/hrt/how-it-works.png"
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover"
@@ -689,7 +796,7 @@ function HowItWorksAccordion() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  <div className="px-5 md:px-7 pb-5 md:pb-6 pl-[calc(1.25rem+2.25rem)] md:pl-[calc(1.75rem+1.75rem)]">
+                  <div className="px-5 md:px-7 pb-5 md:pb-6 md:pl-[calc(1.75rem+1.75rem)]">
                     <p className="text-[14px] text-halo-charcoal/65 leading-relaxed mb-3">
                       {step.desc}
                     </p>
@@ -742,10 +849,10 @@ export default function HormoneTherapyPage() {
           1 · HERO — split, active portrait + editorial
           ═══════════════════════════════════════════════ */}
       <section className="relative section-light overflow-hidden">
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] min-h-[640px] lg:min-h-[720px]">
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] md:min-h-[640px] lg:min-h-[720px]">
           {/* LEFT: Portrait with floating format chips */}
           <div
-            className="relative min-h-[420px] lg:min-h-0 overflow-hidden bg-halo-stone"
+            className="relative min-h-[340px] md:min-h-[420px] lg:min-h-0 overflow-hidden bg-halo-stone"
           >
             {/* Placeholder gradient - warm rose atmosphere */}
             <div
@@ -762,7 +869,7 @@ export default function HormoneTherapyPage() {
             {/* Real portrait loads if file present */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/hrt/hero-portrait.jpg"
+              src="/hrt/hero-portrait.png"
               alt=""
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover"
@@ -781,26 +888,36 @@ export default function HormoneTherapyPage() {
             />
 
             {/* Format chips — floating on image at bottom */}
-            <div className="absolute bottom-6 md:bottom-8 left-6 md:left-10 flex gap-3">
+            <div className="absolute bottom-4 md:bottom-8 left-4 right-4 md:right-auto md:left-10 flex flex-wrap gap-2 md:gap-3">
               {treatmentFormats.map((format) => (
                 <div
                   key={format.name}
-                  className="rounded-2xl overflow-hidden backdrop-blur-md bg-white/85 border border-white/50 p-2.5 shadow-[0_6px_24px_-8px_rgba(0,0,0,0.25)]"
-                  style={{ minWidth: 72 }}
+                  className="rounded-2xl overflow-hidden backdrop-blur-md bg-white/85 border border-white/50 p-2 md:p-2.5 shadow-[0_6px_24px_-8px_rgba(0,0,0,0.25)]"
+                  style={{ minWidth: 64 }}
                 >
                   <div
-                    className="w-12 h-12 md:w-14 md:h-14 rounded-lg mb-1.5 flex items-center justify-center"
+                    className="w-10 h-10 md:w-14 md:h-14 rounded-lg mb-1.5 flex items-center justify-center overflow-hidden relative"
                     style={{
                       background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}50 100%)`,
                     }}
                     aria-hidden="true"
                   >
+                    {/* Fallback letter behind the image */}
                     <span
-                      className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+                      className="absolute text-[10px] font-semibold uppercase tracking-[0.1em]"
                       style={{ color: PERSONA }}
                     >
                       {format.name[0]}
                     </span>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={format.image}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
                   </div>
                   <p className="text-[11px] font-semibold text-halo-charcoal text-center leading-tight">
                     {format.name}
@@ -842,7 +959,7 @@ export default function HormoneTherapyPage() {
             </div>
 
             {/* Headline */}
-            <h1 className="headline-hero text-[38px] md:text-[48px] lg:text-[58px] text-halo-charcoal leading-[1.02] tracking-tight mb-5">
+            <h1 className="headline-hero text-[32px] md:text-[48px] lg:text-[58px] text-halo-charcoal leading-[1.05] tracking-tight mb-5">
               You&rsquo;re not{" "}
               <span className="italic" style={{ color: PERSONA }}>
                 imagining this.
@@ -860,7 +977,7 @@ export default function HormoneTherapyPage() {
             {/* Dual CTA */}
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
-                href="/quiz"
+                href="/quiz?from=hrt"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                 style={{
                   backgroundColor: PERSONA,
@@ -871,7 +988,7 @@ export default function HormoneTherapyPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/quiz"
+                href="/quiz?from=hrt"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-sm hover:border-halo-charcoal/40 transition-colors"
               >
                 Is HRT right for me?
@@ -938,7 +1055,7 @@ export default function HormoneTherapyPage() {
                   className="aos-child text-center md:text-left flex flex-col"
                 >
                   <p
-                    className="font-serif text-[56px] md:text-[64px] lg:text-[72px] font-light text-halo-charcoal leading-[0.95] mb-3 tracking-tight"
+                    className="font-serif text-[44px] md:text-[64px] lg:text-[72px] font-light text-halo-charcoal leading-[0.95] mb-3 tracking-tight"
                     style={{ color: PERSONA }}
                   >
                     {stat.numberText}
@@ -965,7 +1082,7 @@ export default function HormoneTherapyPage() {
           ═══════════════════════════════════════════════ */}
       <section className="relative section-light py-0">
         <div
-          className="relative min-h-[520px] md:min-h-[640px] overflow-hidden"
+          className="relative min-h-[380px] md:min-h-[520px] lg:min-h-[640px] overflow-hidden"
           style={{
             background: `
               radial-gradient(ellipse 60% 45% at 60% 50%, rgba(212, 131, 107, 0.3) 0%, transparent 60%),
@@ -976,7 +1093,7 @@ export default function HormoneTherapyPage() {
           {/* Real portrait loads if present */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/hrt/symptoms-portrait.jpg"
+            src="/hrt/symptoms-portrait.png"
             alt=""
             aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover"
@@ -1000,11 +1117,11 @@ export default function HormoneTherapyPage() {
               className="font-serif text-white text-center leading-[0.95] tracking-tight select-none"
               style={{ textShadow: "0 3px 40px rgba(0,0,0,0.35)" }}
             >
-              <span className="block text-[72px] md:text-[120px] lg:text-[160px] font-extralight">
-                Symptoms
+              <span className="block text-[34px] md:text-[56px] lg:text-[72px] font-extralight">
+                It&rsquo;s not in your head.
               </span>
-              <span className="block text-[48px] md:text-[80px] lg:text-[110px] italic font-extralight text-white/85 mt-1">
-                you may feel.
+              <span className="block text-[22px] md:text-[34px] lg:text-[44px] italic font-extralight text-white/85 mt-2">
+                And you&rsquo;re not alone.
               </span>
             </h2>
           </div>
@@ -1014,15 +1131,15 @@ export default function HormoneTherapyPage() {
             {symptomChips.map((chip, i) => {
               // Position around the edges, avoiding center
               const positions = [
-                { top: "12%", left: "8%" },
-                { top: "22%", right: "10%" },
-                { top: "42%", left: "4%" },
-                { top: "38%", right: "6%" },
-                { top: "58%", left: "12%" },
-                { top: "62%", right: "14%" },
-                { top: "78%", left: "8%" },
-                { top: "82%", right: "10%" },
-                { top: "15%", left: "45%" },
+                { top: "14%", left: "20%" },
+                { top: "16%", right: "20%" },
+                { top: "30%", left: "12%" },
+                { top: "30%", right: "12%" },
+                { top: "66%", left: "14%" },
+                { top: "68%", right: "14%" },
+                { top: "82%", left: "22%" },
+                { top: "82%", right: "22%" },
+                { top: "50%", right: "6%" },
               ];
               const pos = positions[i % positions.length];
               return (
@@ -1091,7 +1208,7 @@ export default function HormoneTherapyPage() {
                 yourself.
               </p>
               <Link
-                href="/quiz"
+                href="/quiz?from=hrt"
                 className="inline-flex items-center gap-2 text-sm font-medium border-b pb-0.5 transition-colors hover:opacity-75"
                 style={{
                   color: PERSONA,
@@ -1235,9 +1352,9 @@ export default function HormoneTherapyPage() {
                       >
                         {chart.title}
                       </p>
-                      <div className="flex items-baseline gap-3 mb-5">
+                      <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-3 mb-5">
                         <span
-                          className="font-serif text-[52px] md:text-[64px] font-light leading-none"
+                          className="font-serif text-[44px] md:text-[64px] font-light leading-none"
                           style={{ color: PERSONA }}
                         >
                           {chart.stat}
@@ -1354,17 +1471,17 @@ export default function HormoneTherapyPage() {
 
           <AnimateOnScroll>
             <div className="rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.15)]">
-              <div className="flex items-baseline gap-3 mb-2">
+              <div className="flex items-baseline gap-2 md:gap-3 mb-2 flex-wrap">
                 <span
-                  className="font-serif text-[48px] md:text-[64px] font-light leading-none"
+                  className="font-serif text-[44px] md:text-[64px] font-light leading-none"
                   style={{ color: PERSONA }}
                 >
                   $129
                 </span>
-                <span className="text-[16px] md:text-[18px] text-halo-charcoal/50">
+                <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">
                   /month
                 </span>
-                <span className="text-halo-charcoal/30 line-through text-[14px] ml-2">
+                <span className="text-halo-charcoal/30 line-through text-[13px] md:text-[14px] md:ml-2">
                   $149
                 </span>
               </div>
@@ -1405,7 +1522,7 @@ export default function HormoneTherapyPage() {
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Link
-                  href="/quiz"
+                  href="/quiz?from=hrt"
                   className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95 flex-1"
                   style={{
                     backgroundColor: PERSONA,
@@ -1461,7 +1578,7 @@ export default function HormoneTherapyPage() {
           12 · FINAL CTA — Halo pattern, rose-tinted
           ═══════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden py-20 md:py-28 px-6"
+        className="relative overflow-hidden py-14 md:py-24 lg:py-28 px-6"
         style={{ background: "#1C1817" }}
       >
         <HaloPattern
@@ -1491,7 +1608,7 @@ export default function HormoneTherapyPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
-                href="/quiz"
+                href="/quiz?from=hrt"
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-110"
                 style={{
                   backgroundColor: PERSONA,
@@ -1502,7 +1619,7 @@ export default function HormoneTherapyPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/quiz"
+                href="/quiz?from=hrt"
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full border border-white/25 text-white font-semibold text-sm hover:border-white/50 transition-colors"
               >
                 Is HRT right for me?

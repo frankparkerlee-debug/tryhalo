@@ -573,7 +573,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════
           1 · HERO — Action Grid (Hims-style)
           ═══════════════════════════════════════════════ */}
-      <section className="px-6 md:px-12 lg:px-20 pt-28 pb-12 section-light">
+      <section className="px-6 md:px-12 lg:px-20 pt-20 md:pt-28 pb-12 section-light">
         <div className="max-w-7xl mx-auto">
           {/* Headline — short, direct, serif */}
           <h1 className="headline-hero text-4xl md:text-5xl lg:text-6xl text-halo-charcoal mb-8">
@@ -1184,7 +1184,7 @@ export default function Home() {
           6 · FOUNDING CIRCLE — Full-width split
           ═══════════════════════════════════════════════ */}
       <section id="founding-circle" className="section-dark overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[700px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[700px]">
           {/* LEFT: Visual panel — the HALO is the Founding Circle */}
           <div className="relative min-h-[420px] lg:min-h-[700px] overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
             {/* Subtle ambient warmth — reduced gold presence */}
@@ -1379,7 +1379,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════
           8 · FINAL CTA — Centered with visual depth
           ═══════════════════════════════════════════════ */}
-      <section className="py-28 md:py-36 px-6 section-dark relative overflow-hidden">
+      <section className="py-16 md:py-28 lg:py-36 px-6 section-dark relative overflow-hidden">
         <AnimateOnScroll>
           <div className="max-w-3xl mx-auto text-center relative z-10">
             <h2 className="headline-section text-3xl md:text-5xl lg:text-6xl text-white mb-5">

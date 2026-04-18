@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, Plus, Minus } from "lucide-react";
 import HaloLogo from "@/components/HaloLogo";
 import FoundingCircleForm from "@/components/FoundingCircleForm";
+import HormoneBalanceChart from "@/components/HormoneBalanceChart";
+import { track } from "@/lib/tracking";
 
 /* ==============================
    PROGRAM DATA
@@ -394,8 +397,9 @@ const rationales: Record<number, string> = {
   2: "Hormone needs, lab reference ranges, and therapy protocols vary significantly by age.",
   3: "Your goals shape your protocol. We optimize for what you actually want to change — not a template.",
   4: "Symptoms help your physician pinpoint what's happening physiologically and set measurable benchmarks to track.",
-  5: "Drug interactions matter. Your physician will cross-reference your current medications before prescribing anything.",
-  6: "Certain conditions require extra care. Flagging these helps your physician prepare — it doesn't disqualify you.",
+  // Step 5 is the Science Gate (educational, no "Why we ask" needed)
+  6: "Drug interactions matter. Your physician will cross-reference your current medications before prescribing anything.",
+  7: "Certain conditions require extra care. Flagging these helps your physician prepare — it doesn't disqualify you.",
 };
 
 /* ==============================
@@ -409,15 +413,28 @@ function ageToNum(range: string): number {
 
 /* ==============================
    TOTAL STEPS
+   1: Gender, 2: Age, 3: Goals, 4: Symptoms,
+   5: Science Gate, 6: Medications, 7: Safety,
+   8: Loading, 9: Results
    ============================== */
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 9;
 
 /* ==============================
    QUIZ PAGE
    ============================== */
 
-export default function QuizPage() {
+function QuizPageInner() {
+  /* ---- URL context (?from=hrt | ?from=trt | none) ---- */
+  const searchParams = useSearchParams();
+  const quizContext = useMemo(() => {
+    const from = searchParams?.get("from");
+    if (from === "hrt" || from === "trt" || from === "peptide" || from === "nad") {
+      return from;
+    }
+    return "general";
+  }, [searchParams]);
+
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const [animating, setAnimating] = useState(false);
@@ -632,19 +649,63 @@ export default function QuizPage() {
 
   /* ---- Auto-advance from loading to results ---- */
   useEffect(() => {
-    if (step === 7) {
+    if (step === 8) {
       computeResults();
       const timer = setTimeout(() => {
         setDirection("forward");
         setAnimating(true);
         setTimeout(() => {
-          setStep(8);
+          setStep(9);
           setAnimating(false);
         }, 250);
       }, 2800);
       return () => clearTimeout(timer);
     }
   }, [step, computeResults]);
+
+  /* ---- Track step views + quiz lifecycle ---- */
+  useEffect(() => {
+    if (step === 1 && !gender) {
+      track("quiz_start", { context: quizContext });
+    }
+    track("quiz_step_view", {
+      step,
+      context: quizContext,
+      gender: gender || null,
+      age: age || null,
+    });
+    if (step === 5) {
+      track("quiz_gate_view", {
+        gate: "science_hormones",
+        context: quizContext,
+      });
+    }
+    if (step === 9) {
+      track("quiz_complete", {
+        context: quizContext,
+        gender,
+        age,
+        goals,
+        primaryRec,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  /* ---- Track abandonment ---- */
+  useEffect(() => {
+    const handleUnload = () => {
+      if (step < 9) {
+        track("quiz_abandoned", {
+          step,
+          context: quizContext,
+          gender: gender || null,
+        });
+      }
+    };
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, [step, gender, quizContext]);
 
   /* ==============================
      SHARED UI BUILDING BLOCKS
@@ -781,7 +842,7 @@ export default function QuizPage() {
 
       <div className="min-h-screen w-full flex flex-col bg-halo-stone relative overflow-hidden">
         {/* Soft warm light from top — atmosphere without a pattern */}
-        {step < 8 && (
+        {step < 9 && (
           <div
             className="absolute inset-0 pointer-events-none"
             aria-hidden="true"
@@ -794,7 +855,7 @@ export default function QuizPage() {
 
         {/* ── TOP BAR ── */}
         <header className="relative z-20 flex items-center justify-between px-6 py-5 md:px-8 md:py-6">
-          {step > 1 && step < 8 ? (
+          {step > 1 && step < 9 ? (
             <button
               onClick={goBack}
               className="inline-flex items-center gap-1.5 text-[13px] font-medium text-halo-charcoal/50 hover:text-halo-charcoal transition-colors"
@@ -802,9 +863,9 @@ export default function QuizPage() {
               <ArrowLeft className="w-4 h-4" />
               Back
             </button>
-          ) : step === 8 ? (
+          ) : step === 9 ? (
             <button
-              onClick={() => goTo(6, "back")}
+              onClick={() => goTo(7, "back")}
               className="inline-flex items-center gap-1.5 text-[13px] font-medium text-halo-charcoal/50 hover:text-halo-charcoal transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -827,17 +888,30 @@ export default function QuizPage() {
           <div className="w-16" />
         </header>
 
-        {/* ── PROGRESS DOTS (steps 1–7) ── */}
-        {step < 8 && (
+        {/* ── PROGRESS DOTS ── */}
+        {step < 9 && (
           <div className="relative z-20 flex justify-center pt-1 pb-2">
             <ProgressDots />
+          </div>
+        )}
+
+        {/* ── TRUST STRIP — persistent credibility across all active steps ── */}
+        {step < 9 && (
+          <div className="relative z-20 flex justify-center px-4 pb-2">
+            <p className="text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40 text-center">
+              Board-certified physicians
+              <span className="mx-1.5 md:mx-2 text-halo-charcoal/25">&middot;</span>
+              USP-compounded
+              <span className="mx-1.5 md:mx-2 text-halo-charcoal/25">&middot;</span>
+              HIPAA secure
+            </p>
           </div>
         )}
 
         {/* ── MAIN CONTENT ── */}
         <main
           className={`relative z-10 flex-1 flex flex-col ${
-            step === 8 ? "items-center justify-start" : "items-center justify-center"
+            step === 9 ? "items-center justify-start" : "items-center justify-center"
           } px-6 py-8 md:py-12 w-full`}
         >
           <div
@@ -846,6 +920,18 @@ export default function QuizPage() {
             {/* ============ STEP 1: GENDER ============ */}
             {step === 1 && (
               <div>
+                {/* Context label — shows when quiz is launched from a specific therapy page */}
+                {quizContext !== "general" && (
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-[0.28em] text-center mb-4"
+                    style={{ color: "#C8A96E" }}
+                  >
+                    {quizContext === "hrt" && "Hormone Therapy Assessment"}
+                    {quizContext === "trt" && "Testosterone Therapy Assessment"}
+                    {quizContext === "peptide" && "Peptide Therapy Assessment"}
+                    {quizContext === "nad" && "NAD+ Therapy Assessment"}
+                  </p>
+                )}
                 <QuestionHeadline>
                   Let&rsquo;s find what&rsquo;s{" "}
                   <span className="italic text-halo-charcoal/70">right for you.</span>
@@ -946,8 +1032,159 @@ export default function QuizPage() {
               </div>
             )}
 
-            {/* ============ STEP 5: MEDICATIONS ============ */}
+            {/* ============ STEP 5: SCIENCE GATE ============
+                Integrated editorial frame — photo + chart + stat + headline
+                all in one composition.
+            ============================================== */}
             {step === 5 && (
+              <div className="w-full max-w-3xl mx-auto">
+                {/* Integrated frame */}
+                <div
+                  className="relative overflow-hidden rounded-[20px] border border-halo-charcoal/[0.08] bg-white shadow-[0_10px_40px_-20px_rgba(0,0,0,0.1)] mb-8 md:mb-10"
+                >
+                  {/* Tiny top caption */}
+                  <div className="absolute top-4 left-5 md:left-6 z-20">
+                    <span
+                      className="text-[10px] font-semibold uppercase tracking-[0.25em]"
+                      style={{ color: personaColor }}
+                    >
+                      Before we go further
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-[42%_58%]">
+                    {/* LEFT: Portrait (placeholder gradient until real image) */}
+                    <div
+                      className="relative aspect-[4/5] md:aspect-auto md:min-h-[380px] overflow-hidden"
+                      style={{
+                        background: `
+                          radial-gradient(ellipse 80% 55% at 50% 10%, rgba(255, 220, 195, 0.85) 0%, transparent 60%),
+                          radial-gradient(ellipse 60% 40% at 30% 80%, ${personaColor}30 0%, transparent 55%),
+                          linear-gradient(165deg, #FBEDDE 0%, #ECC4A6 50%, #B87960 100%)
+                        `,
+                      }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/hrt/gate-portrait.png"
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    </div>
+
+                    {/* RIGHT: Chart + Headline + Stat, vertically composed */}
+                    <div className="flex flex-col justify-center p-6 md:p-7 lg:p-8 gap-5 md:gap-6">
+                      {/* Hormone chart — compact */}
+                      <div className="w-full">
+                        <HormoneBalanceChart
+                          compact
+                          hormones={
+                            gender === "Man"
+                              ? [
+                                  { name: "Testosterone", color: personaColor },
+                                  { name: "Cortisol", color: "#8C7E6E" },
+                                ]
+                              : [
+                                  { name: "Estradiol", color: personaColor },
+                                  { name: "Progesterone", color: "#B87060" },
+                                ]
+                          }
+                        />
+                      </div>
+
+                      {/* Headline */}
+                      <h1 className="font-serif text-[22px] md:text-[26px] lg:text-[30px] text-halo-charcoal leading-[1.1] tracking-tight">
+                        It&rsquo;s not the{" "}
+                        <span className="italic" style={{ color: personaColor }}>
+                          decline
+                        </span>
+                        .
+                        <br />
+                        It&rsquo;s the{" "}
+                        <span className="italic" style={{ color: personaColor }}>
+                          disruption
+                        </span>
+                        .
+                      </h1>
+
+                      {/* Speed-to-care — two columns */}
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <div
+                            className="font-serif text-[32px] md:text-[38px] lg:text-[44px] font-light leading-none tracking-tight mb-2"
+                            style={{ color: personaColor }}
+                          >
+                            3 DAYS
+                          </div>
+                          <div
+                            className="w-8 h-px mb-2"
+                            style={{ background: personaColor, opacity: 0.4 }}
+                            aria-hidden="true"
+                          />
+                          <p className="text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.18em] text-halo-charcoal/55 leading-snug">
+                            to see your<br />physician
+                          </p>
+                        </div>
+                        <div>
+                          <div
+                            className="font-serif text-[32px] md:text-[38px] lg:text-[44px] font-light leading-none tracking-tight mb-2"
+                            style={{ color: personaColor }}
+                          >
+                            7 DAYS
+                          </div>
+                          <div
+                            className="w-8 h-px mb-2"
+                            style={{ background: personaColor, opacity: 0.4 }}
+                            aria-hidden="true"
+                          />
+                          <p className="text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.18em] text-halo-charcoal/55 leading-snug">
+                            to your<br />medication
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Body text below the frame */}
+                <p className="text-[14px] md:text-[15px] text-halo-charcoal/65 text-center leading-relaxed mb-5 max-w-md mx-auto">
+                  When hormones fall out of sync, everything they govern
+                  &mdash; sleep, mood, energy, cognition &mdash; falls with
+                  them.
+                </p>
+
+                {/* Credibility line */}
+                <p className="text-center text-[12px] text-halo-charcoal/55 italic mb-2">
+                  Protocols built by board-certified hormone specialists.
+                </p>
+
+                {/* Source footnote */}
+                <p className="text-center text-[10px] text-halo-charcoal/35 italic mb-8">
+                  Based on clinical trials of bioidentical hormone therapy.
+                </p>
+
+                {/* Continue */}
+                <div className="text-center">
+                  <ContinueButton
+                    onClick={() => {
+                      track("quiz_gate_continue", {
+                        gate: "science_hormones",
+                        context: quizContext,
+                      });
+                      goNext();
+                    }}
+                    label="Continue"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ============ STEP 6: MEDICATIONS ============ */}
+            {step === 6 && (
               <div>
                 <QuestionHeadline>
                   Are you currently{" "}
@@ -971,7 +1208,7 @@ export default function QuizPage() {
                     onClick={() => {
                       setTakingMedications("No");
                       setMedicationDetails("");
-                      setTimeout(() => goTo(6, "forward"), 300);
+                      setTimeout(() => goTo(7, "forward"), 300);
                     }}
                     accentColor={personaColor}
                   />
@@ -996,12 +1233,12 @@ export default function QuizPage() {
                     <ContinueButton onClick={goNext} />
                   </div>
                 )}
-                <WhyWeAsk stepNum={5} />
+                <WhyWeAsk stepNum={6} />
               </div>
             )}
 
-            {/* ============ STEP 6: SAFETY ============ */}
-            {step === 6 && (
+            {/* ============ STEP 7: SAFETY ============ */}
+            {step === 7 && (
               <div>
                 <QuestionHeadline>
                   Do any of these{" "}
@@ -1023,16 +1260,16 @@ export default function QuizPage() {
                   ))}
                 </div>
                 <ContinueButton
-                  onClick={() => goTo(7, "forward")}
+                  onClick={() => goTo(8, "forward")}
                   label="See my results"
                   disabled={safetyItems.length === 0}
                 />
-                <WhyWeAsk stepNum={6} />
+                <WhyWeAsk stepNum={7} />
               </div>
             )}
 
-            {/* ============ STEP 7: LOADING ============ */}
-            {step === 7 && (
+            {/* ============ STEP 8: LOADING ============ */}
+            {step === 8 && (
               <div className="text-center flex flex-col items-center justify-center py-12">
                 <div
                   className="relative w-20 h-20 mb-10"
@@ -1066,14 +1303,22 @@ export default function QuizPage() {
                 <p className="font-serif text-2xl md:text-[28px] text-halo-charcoal mb-3 italic">
                   Building your recommendation&hellip;
                 </p>
-                <p className="text-[13px] text-halo-charcoal/45">
-                  647 founding members and counting
-                </p>
+                {/* Credibility anchor — reinforces trust during the wait */}
+                <div className="flex flex-col items-center gap-3 mt-2 max-w-xs">
+                  <p className="text-[12px] text-halo-charcoal/55 leading-relaxed text-center">
+                    Reviewed against Halo&rsquo;s protocol standards &mdash;
+                    designed by board-certified hormone specialists.
+                  </p>
+                  <div className="w-8 h-px bg-halo-charcoal/15" />
+                  <p className="text-[11px] text-halo-charcoal/40">
+                    647 founding members and counting
+                  </p>
+                </div>
               </div>
             )}
 
             {/* ============ STEP 8: RESULTS ============ */}
-            {step === 8 && (
+            {step === 9 && (
               <div className="w-full">
                 <h1 className="font-serif text-[30px] md:text-[38px] leading-[1.1] text-halo-charcoal tracking-tight mb-2 text-center">
                   Based on your answers,
@@ -1284,5 +1529,21 @@ export default function QuizPage() {
         `}</style>
       </div>
     </>
+  );
+}
+
+export default function QuizPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F3ECE0] flex items-center justify-center">
+          <div className="text-halo-charcoal/40 text-sm tracking-[0.2em] uppercase">
+            Loading&hellip;
+          </div>
+        </div>
+      }
+    >
+      <QuizPageInner />
+    </Suspense>
   );
 }

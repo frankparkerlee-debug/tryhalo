@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { ArrowRight } from "lucide-react";
+import { track } from "@/lib/tracking";
 
 interface FoundingCircleFormProps {
   variant?: "light" | "dark";
@@ -45,6 +46,11 @@ export default function FoundingCircleForm({
     (e: React.FormEvent) => {
       e.preventDefault();
 
+      track("founding_signup_attempt", {
+        variant,
+        has_phone: !!phone.trim(),
+      });
+
       // Honeypot check — silently reject bots
       if (honeypot) {
         setStatus("success");
@@ -55,18 +61,21 @@ export default function FoundingCircleForm({
       if (!email.trim()) {
         setErrorMessage("Please enter your email.");
         setStatus("error");
+        track("founding_signup_error", { reason: "missing_email", variant });
         return;
       }
 
       if (!validateEmail(email.trim())) {
         setErrorMessage("Please enter a valid email address.");
         setStatus("error");
+        track("founding_signup_error", { reason: "invalid_email", variant });
         return;
       }
 
       if (!validatePhone(phone)) {
         setErrorMessage("Please enter a valid phone number (10+ digits).");
         setStatus("error");
+        track("founding_signup_error", { reason: "invalid_phone", variant });
         return;
       }
 
@@ -74,6 +83,7 @@ export default function FoundingCircleForm({
       const saved = localStorage.getItem("halo_signup_email");
       if (saved) {
         setStatus("duplicate");
+        track("founding_signup_duplicate", { variant });
         return;
       }
 
@@ -87,9 +97,14 @@ export default function FoundingCircleForm({
           localStorage.setItem("halo_signup_phone", phone.trim());
         }
         setStatus("success");
+        track("founding_signup_success", {
+          variant,
+          has_phone: !!phone.trim(),
+          source: typeof window !== "undefined" ? window.location.pathname : "",
+        });
       }, 800);
     },
-    [email, phone, honeypot]
+    [email, phone, honeypot, variant]
   );
 
   if (status === "duplicate") {

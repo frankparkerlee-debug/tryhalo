@@ -5,6 +5,7 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -163,6 +164,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col font-sans">
+        <GoogleAnalytics />
         <AnnouncementBar />
         <Navbar />
         <main className="flex-1">{children}</main>
