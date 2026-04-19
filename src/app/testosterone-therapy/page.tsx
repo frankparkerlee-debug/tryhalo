@@ -797,10 +797,11 @@ export default function TestosteroneTherapyPage() {
               ))}
             </ul>
 
+            {/* Dual CTA — primary hidden on mobile (already on hero image) */}
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
                 href="/quiz?from=trt"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+                className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                 style={{
                   backgroundColor: PERSONA,
                   boxShadow: `0 8px 28px ${PERSONA}45`,
@@ -844,9 +845,21 @@ export default function TestosteroneTherapyPage() {
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  "linear-gradient(180deg, transparent 70%, rgba(20,25,35,0.18) 100%)",
+                  "linear-gradient(180deg, transparent 70%, rgba(20,25,35,0.35) 100%)",
               }}
             />
+
+            {/* Mobile-only CTA overlay — keeps "Start my assessment" above the fold on phones */}
+            <div className="md:hidden absolute bottom-5 left-0 right-0 z-10 flex justify-center px-4">
+              <Link
+                href="/quiz?from=trt"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
+                style={{ backgroundColor: PERSONA }}
+              >
+                Start my assessment
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
 
