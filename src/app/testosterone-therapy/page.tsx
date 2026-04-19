@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 import { useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
@@ -24,19 +24,38 @@ const treatmentFormats = [
     name: "Injection",
     desc: "Weekly subcutaneous",
     body: "The gold standard. Most precise dosing. Most studied. A small needle, once a week.",
+    price: "$129",
     image: "/trt/format-injection.png",
+    badge: "Most prescribed",
+    bullets: [
+      "Most consistent blood levels",
+      "Once-weekly routine",
+      "Needle-based",
+    ],
   },
   {
     name: "Cream",
     desc: "Daily transdermal",
     body: "Applied to shoulders or upper arms. Smooth levels, no needles. Absorbs in minutes.",
+    price: "$139",
     image: "/trt/format-cream.png",
+    bullets: [
+      "No needles",
+      "Daily application",
+      "Smooth 24-hour delivery",
+    ],
   },
   {
     name: "Pill",
     desc: "Daily oral capsule",
     body: "Simple routine. No needles. A steady daily format that moves with your life.",
+    price: "$149",
     image: "/trt/format-pill.png",
+    bullets: [
+      "No needles",
+      "Pocketable daily capsule",
+      "Fertility-preserving option",
+    ],
   },
 ];
 
@@ -53,21 +72,19 @@ const impactStats = [
   },
   {
     numberText: "5+ yrs",
-    label: "average wait from symptoms to first lab.",
+    label: "average wait from symptom onset to first lab.",
     source: "Endocrine Society Statement, 2020",
   },
 ];
 
-const symptoms = [
-  "Low drive",
-  "Poor recovery",
-  "3pm crash",
-  "Brain fog",
-  "Disrupted sleep",
-  "Weight won't move",
-  "Strength fading",
-  "Mood shifts",
-  "Low libido",
+/* Symptom flip cards — front: what you feel, back: what comes back */
+const symptomFlips = [
+  { before: "Always tired", after: "Sustained energy" },
+  { before: "Lost drive", after: "Motivation back" },
+  { before: "Poor recovery", after: "Faster rebuild" },
+  { before: "Foggy focus", after: "Sharp mind" },
+  { before: "Strength fading", after: "Stronger again" },
+  { before: "Weight won't move", after: "Composition shifts" },
 ];
 
 const outcomes = [
@@ -111,6 +128,70 @@ const trtSteps = [
     day: "Day 11\u201314",
     title: "Delivery",
     desc: "Shipped from a US-licensed 503A pharmacy. Everything in one box.",
+  },
+];
+
+/* Halo vs typical care comparison */
+const comparisonRows = [
+  { label: "Time to first physician visit", halo: "Under 10 days", typical: "4\u20138 weeks" },
+  { label: "Hormone panel depth", halo: "12+ biomarkers", typical: "Total T only" },
+  { label: "Protocol personalization", halo: "Calibrated to your labs", typical: "One-size protocol" },
+  { label: "Follow-up monitoring", halo: "Labs at 90 days", typical: "Annual if requested" },
+  { label: "Physician specialty", halo: "Hormone-trained", typical: "General practice" },
+  { label: "Async physician access", halo: "Included", typical: "Not available" },
+  { label: "Cancellation", halo: "Anytime, no contract", typical: "Referrals + insurance delays" },
+];
+
+/* Full biomarker panel — scrolling marquee */
+const biomarkers = [
+  "Total Testosterone",
+  "Free Testosterone",
+  "SHBG",
+  "Estradiol",
+  "LH",
+  "FSH",
+  "Prolactin",
+  "DHEA-S",
+  "Cortisol",
+  "IGF-1",
+  "HbA1c",
+  "hs-CRP",
+  "Ferritin",
+  "Vitamin D",
+  "TSH",
+  "Free T3",
+  "Free T4",
+  "PSA",
+  "Total Cholesterol",
+  "HDL",
+  "LDL",
+  "Triglycerides",
+  "CBC",
+  "CMP",
+];
+
+/* Physician board — placeholder, swap with real profiles */
+const physicians = [
+  {
+    name: "Dr. A. Chen",
+    credentials: "MD",
+    specialty: "Endocrinology",
+    trained: "Stanford · Johns Hopkins Residency",
+    image: "/trt/physician-1.png",
+  },
+  {
+    name: "Dr. M. Reyes",
+    credentials: "MD, MPH",
+    specialty: "Internal Medicine",
+    trained: "UCSF · Cleveland Clinic Fellowship",
+    image: "/trt/physician-2.png",
+  },
+  {
+    name: "Dr. J. Okafor",
+    credentials: "MD",
+    specialty: "Urology & Men\u2019s Health",
+    trained: "Mayo Clinic · Cornell Residency",
+    image: "/trt/physician-3.png",
   },
 ];
 
@@ -167,6 +248,169 @@ const trtMarqueeItems = [
 ];
 
 /* ==============================
+   BIOMARKER SCROLL — fluid motion element
+   ============================== */
+
+function BiomarkerScroll() {
+  // duplicate list for seamless loop
+  const items = [...biomarkers, ...biomarkers];
+  return (
+    <div
+      className="relative overflow-hidden py-10 md:py-14"
+      style={{ background: "#0F1217" }}
+    >
+      <div className="text-center mb-8 px-6">
+        <p
+          className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-3"
+          style={{ color: PERSONA_SOFT }}
+        >
+          What we test
+        </p>
+        <h3 className="font-serif text-2xl md:text-3xl text-white leading-[1.15] tracking-tight max-w-2xl mx-auto">
+          Every protocol starts with a full hormone panel.{" "}
+          <span className="italic text-white/55">
+            Not total T alone.
+          </span>
+        </h3>
+      </div>
+
+      {/* Scrolling row 1 */}
+      <div className="relative mb-4 marquee-mask">
+        <div className="marquee-track-right flex gap-3 md:gap-4 whitespace-nowrap">
+          {items.map((m, i) => (
+            <span
+              key={`r1-${i}`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[11px] md:text-[12px] font-medium text-white/75 flex-shrink-0"
+              style={{ borderColor: "rgba(141,161,184,0.25)", background: "rgba(74,122,184,0.06)" }}
+            >
+              <span
+                className="w-1 h-1 rounded-full"
+                style={{ background: PERSONA }}
+              />
+              {m}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Scrolling row 2, offset direction */}
+      <div className="relative marquee-mask">
+        <div className="marquee-track-left flex gap-3 md:gap-4 whitespace-nowrap">
+          {items.map((m, i) => (
+            <span
+              key={`r2-${i}`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] md:text-[12px] font-medium flex-shrink-0"
+              style={{
+                background: "rgba(74,122,184,0.12)",
+                color: PERSONA_SOFT,
+              }}
+            >
+              {m}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <style jsx>{`
+        .marquee-mask {
+          mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+        }
+        .marquee-track-right {
+          animation: scroll-right 60s linear infinite;
+          width: max-content;
+        }
+        .marquee-track-left {
+          animation: scroll-left 75s linear infinite;
+          width: max-content;
+        }
+        @keyframes scroll-right {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes scroll-left {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .marquee-track-right,
+          .marquee-track-left {
+            animation: none;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ==============================
+   SYMPTOM FLIP CARDS — interactive reframe
+   ============================== */
+
+function SymptomFlipCards() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+      {symptomFlips.map((s) => (
+        <div
+          key={s.before}
+          className="flip-card relative h-[120px] md:h-[140px] rounded-[16px] cursor-pointer"
+          style={{ perspective: "1000px" }}
+        >
+          <div className="flip-inner relative w-full h-full transition-transform duration-500" style={{ transformStyle: "preserve-3d" }}>
+            {/* Front — symptom */}
+            <div
+              className="flip-front absolute inset-0 flex items-center justify-center rounded-[16px] p-4 border"
+              style={{
+                background: "#FAF8F4",
+                borderColor: "rgba(28,28,30,0.08)",
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+              }}
+            >
+              <div className="text-center">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40 mb-2">
+                  What you feel
+                </p>
+                <p className="font-serif text-[20px] md:text-[22px] text-halo-charcoal leading-tight tracking-tight">
+                  {s.before}
+                </p>
+              </div>
+            </div>
+
+            {/* Back — outcome */}
+            <div
+              className="flip-back absolute inset-0 flex items-center justify-center rounded-[16px] p-4"
+              style={{
+                background: PERSONA,
+                transform: "rotateY(180deg)",
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+              }}
+            >
+              <div className="text-center">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-white/65 mb-2">
+                  With treatment
+                </p>
+                <p className="font-serif italic text-[20px] md:text-[22px] text-white leading-tight tracking-tight">
+                  {s.after}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <style jsx>{`
+        .flip-card:hover .flip-inner,
+        .flip-card:focus-within .flip-inner {
+          transform: rotateY(180deg);
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ==============================
    TESTOSTERONE DECLINE CHART
    ============================== */
 
@@ -210,11 +454,7 @@ function TestosteroneChart() {
           background: "linear-gradient(180deg, #F7FAFC 0%, #E8EFF7 100%)",
         }}
       >
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-auto"
-          aria-label="Testosterone decline with age and therapeutic range"
-        >
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" aria-label="Testosterone decline with age and therapeutic range">
           <defs>
             <linearGradient id="range-band-trt" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0%" stopColor={PERSONA} stopOpacity="0.22" />
@@ -229,83 +469,28 @@ function TestosteroneChart() {
           {[0.25, 0.5, 0.75].map((frac) => {
             const y = pyTop + plotH * frac;
             return (
-              <line
-                key={frac}
-                x1={px}
-                y1={y}
-                x2={W - px}
-                y2={y}
-                stroke="rgba(28,28,30,0.04)"
-                strokeWidth="1"
-              />
+              <line key={frac} x1={px} y1={y} x2={W - px} y2={y} stroke="rgba(28,28,30,0.04)" strokeWidth="1" />
             );
           })}
 
-          <rect
-            x={px}
-            y={rangeTop}
-            width={plotW}
-            height={rangeBot - rangeTop}
-            fill="url(#range-band-trt)"
-            rx="3"
-          />
-
-          <text
-            x={W - px - 8}
-            y={rangeTop + (rangeBot - rangeTop) / 2 + 4}
-            textAnchor="end"
-            fontSize="11"
-            fontWeight="700"
-            letterSpacing="2.5"
-            fill={PERSONA}
-          >
+          <rect x={px} y={rangeTop} width={plotW} height={rangeBot - rangeTop} fill="url(#range-band-trt)" rx="3" />
+          <text x={W - px - 8} y={rangeTop + (rangeBot - rangeTop) / 2 + 4} textAnchor="end" fontSize="11" fontWeight="700" letterSpacing="2.5" fill={PERSONA}>
             TRT THERAPEUTIC RANGE
           </text>
-
           <circle cx={px} cy={(rangeTop + rangeBot) / 2} r="3" fill={PERSONA} opacity="0.8" />
-          <line
-            x1={px + 4}
-            y1={(rangeTop + rangeBot) / 2}
-            x2={px + 18}
-            y2={(rangeTop + rangeBot) / 2}
-            stroke={PERSONA}
-            strokeWidth="1"
-            opacity="0.4"
-          />
+          <line x1={px + 4} y1={(rangeTop + rangeBot) / 2} x2={px + 18} y2={(rangeTop + rangeBot) / 2} stroke={PERSONA} strokeWidth="1" opacity="0.4" />
 
           <path d={areaPath} fill="url(#decline-fill-trt)" />
-
-          <path
-            d={smoothPath}
-            fill="none"
-            stroke="#6F6355"
-            strokeWidth="2.25"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          <path d={smoothPath} fill="none" stroke="#6F6355" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
 
           {points.map((p, i) => (
             <g key={i}>
               <circle cx={p.x} cy={p.y} r="8" fill="#6F6355" opacity="0.12" />
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r="4.5"
-                fill="white"
-                stroke="#6F6355"
-                strokeWidth="2"
-              />
+              <circle cx={p.x} cy={p.y} r="4.5" fill="white" stroke="#6F6355" strokeWidth="2" />
             </g>
           ))}
 
-          <text
-            x={points[0].x + 14}
-            y={points[0].y - 14}
-            fontSize="11"
-            fontWeight="700"
-            letterSpacing="2"
-            fill="#5A5145"
-          >
+          <text x={points[0].x + 14} y={points[0].y - 14} fontSize="11" fontWeight="700" letterSpacing="2" fill="#5A5145">
             NATURAL DECLINE
           </text>
 
@@ -313,56 +498,24 @@ function TestosteroneChart() {
             const x = px + (i / (ages.length - 1)) * plotW;
             return (
               <g key={age}>
-                <line
-                  x1={x}
-                  y1={H - pyBot + 4}
-                  x2={x}
-                  y2={H - pyBot + 8}
-                  stroke="rgba(28,28,30,0.2)"
-                  strokeWidth="1"
-                />
-                <text
-                  x={x}
-                  y={H - pyBot + 24}
-                  textAnchor="middle"
-                  fontSize="12"
-                  fontWeight="500"
-                  fill="rgba(28,28,30,0.65)"
-                >
+                <line x1={x} y1={H - pyBot + 4} x2={x} y2={H - pyBot + 8} stroke="rgba(28,28,30,0.2)" strokeWidth="1" />
+                <text x={x} y={H - pyBot + 24} textAnchor="middle" fontSize="12" fontWeight="500" fill="rgba(28,28,30,0.65)">
                   {age}
                 </text>
               </g>
             );
           })}
 
-          <text
-            x={W / 2}
-            y={H - 12}
-            textAnchor="middle"
-            fontSize="10"
-            fontWeight="600"
-            letterSpacing="2.5"
-            fill="rgba(28,28,30,0.45)"
-          >
+          <text x={W / 2} y={H - 12} textAnchor="middle" fontSize="10" fontWeight="600" letterSpacing="2.5" fill="rgba(28,28,30,0.45)">
             AGE
           </text>
-
-          <text
-            x={px}
-            y={pyTop - 20}
-            fontSize="10"
-            fontWeight="600"
-            letterSpacing="2.5"
-            fill="rgba(28,28,30,0.55)"
-          >
+          <text x={px} y={pyTop - 20} fontSize="10" fontWeight="600" letterSpacing="2.5" fill="rgba(28,28,30,0.55)">
             TOTAL TESTOSTERONE
           </text>
         </svg>
 
         <p className="text-[11px] italic text-halo-charcoal/45 mt-5 leading-relaxed">
-          Clinical reference ranges for total serum testosterone. Therapeutic
-          targets vary by patient. &mdash; Bhasin et al., Endocrine Society
-          Guidelines, 2018.
+          Clinical reference ranges for total serum testosterone. Therapeutic targets vary by patient. &mdash; Bhasin et al., Endocrine Society Guidelines, 2018.
         </p>
       </div>
     </div>
@@ -370,13 +523,28 @@ function TestosteroneChart() {
 }
 
 /* ==============================
-   FORMAT CARD
+   FORMAT CARD — with pricing + bullets + badge
    ============================== */
 
 function FormatCard({ format }: { format: (typeof treatmentFormats)[number] }) {
   const [imageFailed, setImageFailed] = useState(false);
   return (
-    <div className="rounded-[20px] border border-halo-charcoal/[0.08] bg-white overflow-hidden transition-shadow hover:shadow-[0_10px_40px_-20px_rgba(0,0,0,0.15)]">
+    <div className="group relative rounded-[20px] border border-halo-charcoal/[0.08] bg-white overflow-hidden transition-all duration-300 hover:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.22)] hover:-translate-y-1">
+      {/* Badge */}
+      {format.badge && (
+        <span
+          className="absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.18em]"
+          style={{
+            background: PERSONA,
+            color: "white",
+          }}
+        >
+          <span className="w-1 h-1 rounded-full bg-white" />
+          {format.badge}
+        </span>
+      )}
+
+      {/* Image */}
       <div
         className="relative aspect-[4/5] flex items-center justify-center overflow-hidden"
         style={{
@@ -389,7 +557,7 @@ function FormatCard({ format }: { format: (typeof treatmentFormats)[number] }) {
             src={format.image}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             onError={() => setImageFailed(true)}
           />
         )}
@@ -404,16 +572,66 @@ function FormatCard({ format }: { format: (typeof treatmentFormats)[number] }) {
           </div>
         )}
       </div>
+
+      {/* Content */}
       <div className="p-5 md:p-6">
-        <h3 className="font-serif text-[22px] text-halo-charcoal leading-tight tracking-tight mb-1">
-          {format.name}
-        </h3>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-3" style={{ color: PERSONA }}>
+        <div className="flex items-baseline justify-between mb-1">
+          <h3 className="font-serif text-[22px] text-halo-charcoal leading-tight tracking-tight">
+            {format.name}
+          </h3>
+          <div className="flex items-baseline gap-1">
+            <span className="text-[10px] text-halo-charcoal/40 uppercase tracking-[0.15em]">
+              From
+            </span>
+            <span className="font-serif text-[20px] font-light" style={{ color: PERSONA_DEEP }}>
+              {format.price}
+            </span>
+            <span className="text-[10px] text-halo-charcoal/50">
+              /mo
+            </span>
+          </div>
+        </div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-4" style={{ color: PERSONA }}>
           {format.desc}
         </p>
-        <p className="text-[13px] text-halo-charcoal/65 leading-relaxed">
-          {format.body}
-        </p>
+
+        <ul className="space-y-2 mb-5">
+          {format.bullets.map((b) => (
+            <li
+              key={b}
+              className="flex items-start gap-2 text-[13px] text-halo-charcoal/70 leading-snug"
+            >
+              <Check
+                className="w-3.5 h-3.5 flex-shrink-0 mt-[3px]"
+                strokeWidth={2.5}
+                style={{ color: PERSONA }}
+              />
+              {b}
+            </li>
+          ))}
+        </ul>
+
+        <div
+          className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] px-3 py-2 rounded-full mb-5"
+          style={{
+            background: `${PERSONA}10`,
+            color: PERSONA_DEEP,
+          }}
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: PERSONA }}
+          />
+          Full lab panel included
+        </div>
+
+        <Link
+          href="/quiz?from=trt"
+          className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-[13px] hover:border-halo-charcoal/50 transition-colors"
+        >
+          Get started
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
     </div>
   );
@@ -427,7 +645,6 @@ function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
   const [imageFailed, setImageFailed] = useState(false);
   return (
     <div className="flex flex-col">
-      {/* Life-moment image on top */}
       <div
         className="relative aspect-[4/5] rounded-[20px] overflow-hidden mb-6"
         style={{
@@ -446,7 +663,6 @@ function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
         )}
       </div>
 
-      {/* Stat + claim */}
       <div>
         <p
           className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3"
@@ -476,6 +692,128 @@ function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
 }
 
 /* ==============================
+   PHYSICIAN CARD
+   ============================== */
+
+function PhysicianCard({ p }: { p: (typeof physicians)[number] }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  return (
+    <div className="flex flex-col">
+      <div
+        className="relative aspect-[3/4] rounded-[18px] overflow-hidden mb-5 bg-white"
+        style={{
+          border: "1px solid rgba(28,28,30,0.06)",
+        }}
+      >
+        {!imageFailed && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={p.image}
+            alt={`Portrait of ${p.name}`}
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={() => setImageFailed(true)}
+          />
+        )}
+        {imageFailed && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}35 100%)`,
+            }}
+          >
+            <span className="font-serif text-[44px] font-light opacity-40" style={{ color: PERSONA_DEEP }}>
+              {p.name.split(" ").slice(-1)[0].charAt(0)}
+            </span>
+          </div>
+        )}
+      </div>
+      <h3 className="font-serif text-[20px] md:text-[22px] text-halo-charcoal leading-tight tracking-tight mb-1">
+        {p.name}, <span className="text-halo-charcoal/55">{p.credentials}</span>
+      </h3>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: PERSONA }}>
+        {p.specialty}
+      </p>
+      <p className="text-[12px] text-halo-charcoal/55 italic leading-snug">
+        {p.trained}
+      </p>
+    </div>
+  );
+}
+
+/* ==============================
+   COMPARISON TABLE — Halo vs typical
+   ============================== */
+
+function ComparisonTable() {
+  return (
+    <div
+      className="rounded-[22px] overflow-hidden border border-halo-charcoal/[0.08] bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.12)]"
+    >
+      {/* Column headers */}
+      <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-halo-charcoal/[0.08]">
+        <div className="p-4 md:p-5 flex items-center">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">
+            Compare
+          </span>
+        </div>
+        <div
+          className="p-4 md:p-5 flex items-center justify-center text-center"
+          style={{ background: `${PERSONA}10` }}
+        >
+          <div>
+            <p className="font-serif text-[16px] md:text-[18px] leading-tight tracking-tight" style={{ color: PERSONA_DEEP }}>
+              Halo
+            </p>
+            <p className="text-[9px] font-semibold uppercase tracking-[0.22em]" style={{ color: PERSONA }}>
+              Your protocol
+            </p>
+          </div>
+        </div>
+        <div className="p-4 md:p-5 flex items-center justify-center text-center">
+          <div>
+            <p className="font-serif text-[16px] md:text-[18px] text-halo-charcoal/70 leading-tight tracking-tight">
+              Typical care
+            </p>
+            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">
+              PCP / urgent care
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Rows */}
+      {comparisonRows.map((row, i) => (
+        <div
+          key={row.label}
+          className={`grid grid-cols-[1.3fr_1fr_1fr] ${
+            i !== comparisonRows.length - 1 ? "border-b border-halo-charcoal/[0.06]" : ""
+          }`}
+        >
+          <div className="p-4 md:p-5 text-[13px] md:text-[14px] text-halo-charcoal/80 font-medium">
+            {row.label}
+          </div>
+          <div
+            className="p-4 md:p-5 text-center text-[13px] md:text-[14px] font-medium"
+            style={{ background: `${PERSONA}08`, color: PERSONA_DEEP }}
+          >
+            <span className="inline-flex items-center gap-1.5 justify-center">
+              <Check className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} style={{ color: PERSONA }} />
+              {row.halo}
+            </span>
+          </div>
+          <div className="p-4 md:p-5 text-center text-[13px] md:text-[14px] text-halo-charcoal/55">
+            <span className="inline-flex items-center gap-1.5 justify-center">
+              <X className="w-3.5 h-3.5 flex-shrink-0 text-halo-charcoal/30" strokeWidth={2.5} />
+              {row.typical}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ==============================
    PAGE
    ============================== */
 
@@ -483,17 +821,13 @@ export default function TestosteroneTherapyPage() {
   return (
     <>
       {/* ═══════════════════════════════════════════════
-          1 · HERO — Portrait + left content
+          1 · HERO — Portrait + content
           ═══════════════════════════════════════════════ */}
       <section className="relative section-light overflow-hidden">
         <div className="grid lg:grid-cols-[1fr_1.1fr] lg:min-h-[680px]">
-          {/* LEFT: Content */}
           <div className="relative flex flex-col justify-center px-6 md:px-10 lg:px-14 py-12 md:py-16 lg:py-20 order-2 lg:order-1">
             <div className="flex items-center gap-3 mb-6">
-              <span
-                className="text-[10px] font-semibold uppercase tracking-[0.28em]"
-                style={{ color: PERSONA }}
-              >
+              <span className="text-[10px] font-semibold uppercase tracking-[0.28em]" style={{ color: PERSONA }}>
                 Testosterone Therapy
               </span>
             </div>
@@ -508,8 +842,7 @@ export default function TestosteroneTherapyPage() {
             </h1>
 
             <p className="text-[16px] md:text-[17px] text-halo-charcoal/70 leading-relaxed mb-8 max-w-md">
-              Physician-led testosterone optimization. Real labs. Compounded
-              medication. Door to door.
+              Physician-led testosterone optimization. Real labs. Compounded medication. Door to door.
             </p>
 
             <ul className="space-y-2.5 mb-9 max-w-md">
@@ -555,7 +888,6 @@ export default function TestosteroneTherapyPage() {
             </p>
           </div>
 
-          {/* RIGHT: Portrait */}
           <div
             className="relative order-1 lg:order-2 min-h-[400px] md:min-h-[500px] lg:min-h-0 overflow-hidden"
             style={{
@@ -563,7 +895,6 @@ export default function TestosteroneTherapyPage() {
                 "linear-gradient(165deg, #E8EFF6 0%, #C9D9EB 50%, #8BA8C8 100%)",
             }}
           >
-            {/* Portrait loads if file present */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/trt/hero-portrait.png"
@@ -575,8 +906,6 @@ export default function TestosteroneTherapyPage() {
                 e.currentTarget.style.display = "none";
               }}
             />
-
-            {/* Soft bottom scrim for trust-strip legibility */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -602,21 +931,18 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          2 · MARQUEE
+          2 · MARQUEE — symptom → outcome pairs
           ═══════════════════════════════════════════════ */}
       <HaloMarquee items={trtMarqueeItems} />
 
       {/* ═══════════════════════════════════════════════
-          3 · THE TREATMENT GAP
+          3 · THE TREATMENT GAP — stats with inline citations
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                style={{ color: PERSONA }}
-              >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 What hasn&rsquo;t been measured
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
@@ -628,8 +954,7 @@ export default function TestosteroneTherapyPage() {
                 Nobody asks the right question.
               </h2>
               <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
-                You&rsquo;ve been told it&rsquo;s aging. Offered coffee instead
-                of bloodwork. That&rsquo;s not medicine. It&rsquo;s a shrug.
+                You&rsquo;ve been told it&rsquo;s aging. Offered coffee instead of bloodwork. That&rsquo;s not medicine. It&rsquo;s a shrug.
               </p>
             </div>
           </AnimateOnScroll>
@@ -637,20 +962,11 @@ export default function TestosteroneTherapyPage() {
           <AnimateOnScroll stagger>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10 lg:gap-x-10">
               {impactStats.map((stat, i) => (
-                <div
-                  key={i}
-                  className="aos-child text-center md:text-left flex flex-col"
-                >
-                  <p
-                    className="font-serif text-[48px] md:text-[64px] lg:text-[72px] font-light leading-[0.95] mb-3 tracking-tight"
-                    style={{ color: PERSONA }}
-                  >
+                <div key={i} className="aos-child text-center md:text-left flex flex-col">
+                  <p className="font-serif text-[48px] md:text-[64px] lg:text-[72px] font-light leading-[0.95] mb-3 tracking-tight" style={{ color: PERSONA }}>
                     {stat.numberText}
                   </p>
-                  <div
-                    className="w-10 h-px mb-3 md:mx-0 mx-auto"
-                    style={{ background: PERSONA, opacity: 0.4 }}
-                  />
+                  <div className="w-10 h-px mb-3 md:mx-0 mx-auto" style={{ background: PERSONA, opacity: 0.4 }} />
                   <p className="text-[14px] md:text-[15px] text-halo-charcoal/80 leading-snug mb-3">
                     {stat.label}
                   </p>
@@ -665,16 +981,18 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          4 · THE DECLINE
+          4 · BIOMARKER SCROLL — fluid motion, signals depth
+          ═══════════════════════════════════════════════ */}
+      <BiomarkerScroll />
+
+      {/* ═══════════════════════════════════════════════
+          5 · THE DECLINE
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6" style={{ background: "#F7F3EC" }}>
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-10 md:mb-14">
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                style={{ color: PERSONA }}
-              >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 The decline
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
@@ -685,8 +1003,10 @@ export default function TestosteroneTherapyPage() {
                 than libido.
               </h2>
               <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
-                Recovery. Muscle. Focus. Mood. Sleep. Metabolism. When
-                testosterone drops, all of it drops with it.
+                Recovery. Muscle. Focus. Mood. Sleep. Metabolism. When testosterone drops, all of it drops with it.{" "}
+                <span className="italic text-halo-charcoal/45">
+                  Bhasin et al., Endocrine Society, 2018.
+                </span>
               </p>
             </div>
           </AnimateOnScroll>
@@ -697,65 +1017,41 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          5 · SYMPTOMS REFRAME
+          6 · SYMPTOMS — interactive flip cards
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
-            <div className="grid md:grid-cols-[1fr_1fr] gap-10 md:gap-16 items-center">
-              <div>
-                <p
-                  className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-5"
-                  style={{ color: PERSONA }}
-                >
-                  What it feels like
-                </p>
-                <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.08] mb-6">
-                  You&rsquo;re not{" "}
-                  <span className="italic" style={{ color: PERSONA }}>
-                    aging.
-                  </span>
-                  <br />
-                  You&rsquo;re running low.
-                </h2>
-                <p className="text-[15px] md:text-base text-halo-charcoal/70 leading-relaxed max-w-md">
-                  If several of these are familiar, it&rsquo;s time to check
-                  your numbers. Not aging. Not stress. Testosterone.
-                  Measurable.
-                </p>
-              </div>
-              <div>
-                <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
-                  {symptoms.map((s) => (
-                    <li
-                      key={s}
-                      className="flex items-center gap-2.5 text-[14px] md:text-[15px] text-halo-charcoal/85"
-                    >
-                      <span
-                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                        style={{ background: PERSONA }}
-                      />
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <div className="text-center mb-12 md:mb-16">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+                What it feels like
+              </p>
+              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.08] max-w-2xl mx-auto">
+                You&rsquo;re not{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  aging.
+                </span>{" "}
+                You&rsquo;re running low.
+              </h2>
+              <p className="text-[14px] md:text-[15px] text-halo-charcoal/55 max-w-lg mx-auto mt-5 leading-relaxed italic">
+                Hover or tap. See what comes back.
+              </p>
             </div>
+          </AnimateOnScroll>
+          <AnimateOnScroll>
+            <SymptomFlipCards />
           </AnimateOnScroll>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════
-          6 · THREE FORMATS
+          7 · THREE FORMATS — with pricing + bullets + badge
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6" style={{ background: "#F0EBE0" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                style={{ color: PERSONA }}
-              >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 The treatment
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
@@ -765,7 +1061,7 @@ export default function TestosteroneTherapyPage() {
                 </span>
               </h2>
               <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
-                The medicine is the same. Pick the format that fits your life.
+                Same medicine. Pick the format that fits your life. Lab panel included with every format.
               </p>
             </div>
           </AnimateOnScroll>
@@ -783,16 +1079,40 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          7 · 14-DAY TIMELINE
+          8 · COMPARISON TABLE — Halo vs typical care
+          ═══════════════════════════════════════════════ */}
+      <section className="py-16 md:py-24 px-6 section-light" style={{ background: "#FAF8F4" }}>
+        <div className="max-w-5xl mx-auto">
+          <AnimateOnScroll>
+            <div className="text-center mb-12 md:mb-14">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+                The difference
+              </p>
+              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
+                Testosterone done{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  on purpose.
+                </span>
+              </h2>
+              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
+                What you&rsquo;d get at a typical practice vs. what you get at Halo.
+              </p>
+            </div>
+          </AnimateOnScroll>
+          <AnimateOnScroll>
+            <ComparisonTable />
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          9 · 14-DAY TIMELINE
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6" style={{ background: "#1C1817" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                style={{ color: PERSONA_SOFT }}
-              >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA_SOFT }}>
                 Your first 14 days
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white leading-[1.1]">
@@ -820,10 +1140,7 @@ export default function TestosteroneTherapyPage() {
                   >
                     <div className="w-3 h-3 rounded-full" style={{ background: PERSONA }} />
                   </div>
-                  <p
-                    className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-2 text-center md:text-left"
-                    style={{ color: PERSONA_SOFT }}
-                  >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-2 text-center md:text-left" style={{ color: PERSONA_SOFT }}>
                     {step.day}
                   </p>
                   <h3 className="font-serif text-[22px] md:text-[24px] text-white leading-tight tracking-tight mb-3 text-center md:text-left">
@@ -840,16 +1157,13 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          8 · 90-DAY OUTCOMES — with life-moment imagery
+          10 · 90-DAY OUTCOMES
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                style={{ color: PERSONA }}
-              >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 90 days in
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
@@ -873,24 +1187,54 @@ export default function TestosteroneTherapyPage() {
 
           <AnimateOnScroll>
             <p className="text-center text-[11px] italic text-halo-charcoal/40 mt-10 max-w-2xl mx-auto">
-              Based on patient-reported outcomes from clinical trials of
-              testosterone replacement therapy. Individual response varies.
+              Based on patient-reported outcomes from clinical trials of testosterone replacement therapy. Individual response varies.
             </p>
           </AnimateOnScroll>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════
-          9 · PRICING + FAQ
+          11 · PHYSICIANS — named, credentialed
+          ═══════════════════════════════════════════════ */}
+      <section className="py-16 md:py-24 px-6" style={{ background: "#F7F3EC" }}>
+        <div className="max-w-6xl mx-auto">
+          <AnimateOnScroll>
+            <div className="text-center mb-12 md:mb-16">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+                Your physicians
+              </p>
+              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
+                Trained at the places{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  training the rest.
+                </span>
+              </h2>
+              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
+                Every Halo protocol is reviewed by a board-certified physician with fellowship training in hormone medicine.
+              </p>
+            </div>
+          </AnimateOnScroll>
+
+          <AnimateOnScroll stagger>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
+              {physicians.map((p) => (
+                <div key={p.name} className="aos-child">
+                  <PhysicianCard p={p} />
+                </div>
+              ))}
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          12 · PRICING + FAQ
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6 section-light" style={{ background: "#FAF8F4" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12">
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                style={{ color: PERSONA }}
-              >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 Terms
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
@@ -906,10 +1250,7 @@ export default function TestosteroneTherapyPage() {
             <AnimateOnScroll>
               <div className="rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.15)] lg:sticky lg:top-24">
                 <div className="flex items-baseline gap-2 md:gap-3 mb-2 flex-wrap">
-                  <span
-                    className="font-serif text-[44px] md:text-[64px] font-light leading-none"
-                    style={{ color: PERSONA }}
-                  >
+                  <span className="font-serif text-[44px] md:text-[64px] font-light leading-none" style={{ color: PERSONA }}>
                     $129
                   </span>
                   <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">
@@ -919,10 +1260,7 @@ export default function TestosteroneTherapyPage() {
                     $149
                   </span>
                 </div>
-                <p
-                  className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-6"
-                  style={{ color: PERSONA_DEEP }}
-                >
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-6" style={{ color: PERSONA_DEEP }}>
                   Founding rate &middot; locked in for life
                 </p>
 
@@ -940,10 +1278,7 @@ export default function TestosteroneTherapyPage() {
                       "Protocol adjustments as needed",
                       "Supplies (syringes, swabs) included",
                     ].map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-start gap-2.5 text-[13px] text-halo-charcoal/80 leading-snug"
-                      >
+                      <li key={item} className="flex items-start gap-2.5 text-[13px] text-halo-charcoal/80 leading-snug">
                         <span
                           className="mt-[7px] flex-shrink-0 w-3 h-px"
                           style={{ background: PERSONA }}
@@ -973,10 +1308,7 @@ export default function TestosteroneTherapyPage() {
 
             <AnimateOnScroll>
               <div>
-                <p
-                  className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                  style={{ color: PERSONA }}
-                >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                   Questions
                 </p>
                 <h3 className="headline-section text-2xl md:text-3xl text-halo-charcoal leading-[1.15] mb-8">
@@ -990,7 +1322,7 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          10 · FINAL CTA
+          13 · FINAL CTA
           ═══════════════════════════════════════════════ */}
       <section
         className="relative overflow-hidden py-16 md:py-24 px-6"
@@ -1005,10 +1337,7 @@ export default function TestosteroneTherapyPage() {
         />
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <AnimateOnScroll>
-            <p
-              className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-5"
-              style={{ color: PERSONA_SOFT }}
-            >
+            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-5" style={{ color: PERSONA_SOFT }}>
               Know your numbers
             </p>
             <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white leading-[1.1] mb-6">
@@ -1018,8 +1347,7 @@ export default function TestosteroneTherapyPage() {
               </span>
             </h2>
             <p className="text-[15px] md:text-base text-white/60 leading-relaxed mb-10 max-w-xl mx-auto">
-              First lab panel is free for founding members. No commitment until
-              your physician reviews the numbers.
+              First lab panel is free for founding members. No commitment until your physician reviews the numbers.
             </p>
             <Link
               href="/quiz?from=trt"
@@ -1036,11 +1364,7 @@ export default function TestosteroneTherapyPage() {
       {/* Disclaimer */}
       <div className="py-6 px-6 section-light border-t border-halo-charcoal/[0.05]">
         <p className="text-center text-[11px] text-halo-charcoal/35 max-w-3xl mx-auto leading-relaxed">
-          Halo is a technology platform that connects patients with licensed
-          healthcare providers. All clinical decisions are made by independent
-          licensed providers. Individual results vary. Not medical advice.
-          Compounded drug products are not FDA-approved or evaluated. Testosterone
-          is a controlled substance. Rx required. Not available in all 50 states.
+          Halo is a technology platform that connects patients with licensed healthcare providers. All clinical decisions are made by independent licensed providers. Individual results vary. Not medical advice. Compounded drug products are not FDA-approved or evaluated. Testosterone is a controlled substance. Rx required. Not available in all 50 states.
         </p>
       </div>
     </>
