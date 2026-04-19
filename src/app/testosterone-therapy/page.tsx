@@ -171,29 +171,12 @@ const biomarkers = [
 ];
 
 /* Physician board — placeholder, swap with real profiles */
-const physicians = [
-  {
-    name: "Dr. A. Chen",
-    credentials: "MD",
-    specialty: "Endocrinology",
-    trained: "Stanford · Johns Hopkins Residency",
-    image: "/trt/physician-1.png",
-  },
-  {
-    name: "Dr. M. Reyes",
-    credentials: "MD, MPH",
-    specialty: "Internal Medicine",
-    trained: "UCSF · Cleveland Clinic Fellowship",
-    image: "/trt/physician-2.png",
-  },
-  {
-    name: "Dr. J. Okafor",
-    credentials: "MD",
-    specialty: "Urology & Men\u2019s Health",
-    trained: "Mayo Clinic · Cornell Residency",
-    image: "/trt/physician-3.png",
-  },
-];
+/* Featured physician — mirrors HRT pattern using existing home-page profile */
+const featuredPhysician = {
+  name: "Dr. James Rivera, DO",
+  title: "Family Medicine · Men\u2019s Health",
+  image: "/providers/james-rivera.png",
+};
 
 const faqItems = [
   {
@@ -692,55 +675,6 @@ function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
 }
 
 /* ==============================
-   PHYSICIAN CARD
-   ============================== */
-
-function PhysicianCard({ p }: { p: (typeof physicians)[number] }) {
-  const [imageFailed, setImageFailed] = useState(false);
-  return (
-    <div className="flex flex-col">
-      <div
-        className="relative aspect-[3/4] rounded-[18px] overflow-hidden mb-5 bg-white"
-        style={{
-          border: "1px solid rgba(28,28,30,0.06)",
-        }}
-      >
-        {!imageFailed && (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={p.image}
-            alt={`Portrait of ${p.name}`}
-            className="absolute inset-0 w-full h-full object-cover"
-            onError={() => setImageFailed(true)}
-          />
-        )}
-        {imageFailed && (
-          <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{
-              background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}35 100%)`,
-            }}
-          >
-            <span className="font-serif text-[44px] font-light opacity-40" style={{ color: PERSONA_DEEP }}>
-              {p.name.split(" ").slice(-1)[0].charAt(0)}
-            </span>
-          </div>
-        )}
-      </div>
-      <h3 className="font-serif text-[20px] md:text-[22px] text-halo-charcoal leading-tight tracking-tight mb-1">
-        {p.name}, <span className="text-halo-charcoal/55">{p.credentials}</span>
-      </h3>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: PERSONA }}>
-        {p.specialty}
-      </p>
-      <p className="text-[12px] text-halo-charcoal/55 italic leading-snug">
-        {p.trained}
-      </p>
-    </div>
-  );
-}
-
-/* ==============================
    COMPARISON TABLE — Halo vs typical
    ============================== */
 
@@ -1194,34 +1128,55 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          11 · PHYSICIANS — named, credentialed
+          11 · PHYSICIAN — specialist credibility strip (mirrors HRT)
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6" style={{ background: "#F7F3EC" }}>
-        <div className="max-w-6xl mx-auto">
+      <section className="py-12 md:py-16 px-6 section-light">
+        <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-16">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
-                Your physicians
-              </p>
-              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
-                Trained at the places{" "}
-                <span className="italic" style={{ color: PERSONA }}>
-                  training the rest.
-                </span>
-              </h2>
-              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
-                Every Halo protocol is reviewed by a board-certified physician with fellowship training in hormone medicine.
-              </p>
-            </div>
-          </AnimateOnScroll>
-
-          <AnimateOnScroll stagger>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
-              {physicians.map((p) => (
-                <div key={p.name} className="aos-child">
-                  <PhysicianCard p={p} />
-                </div>
-              ))}
+            <div
+              className="rounded-[20px] p-6 md:p-8 lg:p-10 flex flex-col md:flex-row gap-6 md:gap-8 items-center"
+              style={{ background: "#EBF0F7" }}
+            >
+              {/* Physician photo */}
+              <div
+                className="relative w-[140px] h-[180px] md:w-[160px] md:h-[200px] rounded-[16px] overflow-hidden flex-shrink-0"
+                style={{
+                  background: `linear-gradient(145deg, #FFFFFF 0%, ${PERSONA_SOFT}60 100%)`,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={featuredPhysician.image}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </div>
+              {/* Content */}
+              <div className="flex-1 text-center md:text-left">
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-3"
+                  style={{ color: PERSONA }}
+                >
+                  Your physician
+                </p>
+                <h3 className="headline-section text-2xl md:text-3xl text-halo-charcoal leading-[1.15] mb-3">
+                  A men&rsquo;s health{" "}
+                  <span className="italic text-halo-charcoal/70">
+                    specialist.
+                  </span>
+                  <br className="hidden md:block" />
+                  Not a GP who treats TRT on the side.
+                </h3>
+                <p className="text-[14px] text-halo-charcoal/60 leading-relaxed max-w-lg md:mx-0 mx-auto">
+                  Halo physicians are board-certified with fellowship training
+                  in men&rsquo;s health and sports medicine. They&rsquo;ve spent a
+                  decade learning what most GPs weren&rsquo;t taught.
+                </p>
+              </div>
             </div>
           </AnimateOnScroll>
         </div>
