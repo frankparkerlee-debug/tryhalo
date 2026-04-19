@@ -647,6 +647,20 @@ function QuizPageInner() {
     } catch {}
   }, [gender, age, goals, hasContraindications]);
 
+  /* ---- Auto-skip gender step when launched from HRT or TRT page ---- */
+  useEffect(() => {
+    // Only run on mount, and only if we're on step 1 with no gender picked yet
+    if (step !== 1 || gender) return;
+    if (quizContext === "hrt") {
+      setGender("Woman");
+      goTo(2, "forward");
+    } else if (quizContext === "trt") {
+      setGender("Man");
+      goTo(2, "forward");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizContext]);
+
   /* ---- Auto-advance from loading to results ---- */
   useEffect(() => {
     if (step === 8) {
@@ -957,6 +971,16 @@ function QuizPageInner() {
             {/* ============ STEP 2: AGE ============ */}
             {step === 2 && (
               <div>
+                {/* Context label — when auto-routed from HRT/TRT page */}
+                {(quizContext === "hrt" || quizContext === "trt") && (
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-[0.28em] text-center mb-4"
+                    style={{ color: personaColor }}
+                  >
+                    {quizContext === "hrt" && "Hormone Therapy Assessment"}
+                    {quizContext === "trt" && "Testosterone Therapy Assessment"}
+                  </p>
+                )}
                 <QuestionHeadline>
                   What&rsquo;s your{" "}
                   <span className="italic text-halo-charcoal/70">age range?</span>
@@ -975,6 +999,22 @@ function QuizPageInner() {
                     />
                   ))}
                 </div>
+                {/* Escape link — if auto-routed and this isn't for them */}
+                {(quizContext === "hrt" || quizContext === "trt") && (
+                  <div className="mt-5 text-center">
+                    <button
+                      onClick={() => {
+                        setGender("");
+                        goTo(1, "back");
+                      }}
+                      className="text-[12px] text-halo-charcoal/50 hover:text-halo-charcoal transition-colors border-b border-halo-charcoal/15 hover:border-halo-charcoal/35 pb-0.5 italic"
+                    >
+                      {quizContext === "hrt"
+                        ? "Looking for a man in your life? Switch"
+                        : "Looking for a woman in your life? Switch"}
+                    </button>
+                  </div>
+                )}
                 <WhyWeAsk stepNum={2} />
               </div>
             )}
