@@ -102,9 +102,20 @@ export const metadata: Metadata = {
   },
   category: "health",
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    apple: "/apple-touch-icon.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      {
+        url: "/apple-touch-icon.svg",
+        sizes: "180x180",
+        type: "image/svg+xml",
+      },
+    ],
   },
+  manifest: "/site.webmanifest",
 };
 
 /* JSON-LD structured data for Google rich results */

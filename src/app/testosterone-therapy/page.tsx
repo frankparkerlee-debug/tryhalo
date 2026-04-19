@@ -767,16 +767,14 @@ export default function TestosteroneTherapyPage() {
             </div>
 
             <h1 className="headline-hero text-[34px] md:text-[48px] lg:text-[56px] text-halo-charcoal leading-[1.05] tracking-tight mb-5">
-              Low T isn&rsquo;t a{" "}
+              The testosterone therapy that{" "}
               <span className="italic" style={{ color: PERSONA }}>
-                vibe.
+                actually measures.
               </span>
-              <br />
-              It&rsquo;s a lab result.
             </h1>
 
             <p className="text-[16px] md:text-[17px] text-halo-charcoal/70 leading-relaxed mb-8 max-w-md">
-              Physician-led testosterone optimization. Real labs. Compounded medication. Door to door.
+              Full hormone panel. Physician-designed protocol. Medication in 14 days.
             </p>
 
             <ul className="space-y-2.5 mb-9 max-w-md">
