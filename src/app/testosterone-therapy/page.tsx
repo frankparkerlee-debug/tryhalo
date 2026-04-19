@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 
 /* ==============================
-   PERSONA COLOR — TRT = steel blue
+   PERSONA — TRT = steel blue
    ============================== */
 const PERSONA = "#4A7AB8";
 const PERSONA_SOFT = "#8DA1B8";
@@ -21,40 +21,40 @@ const PERSONA_DEEP = "#3A5F94";
 
 const treatmentFormats = [
   {
-    name: "Pill",
-    desc: "Daily oral capsule",
-    body: "Simple routine, no needles. A steady format for men who want treatment without any daily physicality.",
-    image: "/trt/format-pill.png",
-  },
-  {
     name: "Injection",
     desc: "Weekly subcutaneous",
-    body: "The gold standard for precise dosing and the most well-studied delivery method. A small needle, once a week.",
+    body: "The gold standard. Most precise dosing. Most studied. A small needle, once a week.",
     image: "/trt/format-injection.png",
   },
   {
     name: "Cream",
     desc: "Daily transdermal",
-    body: "Applied to the shoulders or upper arms. Smooth, steady levels without needles. Absorbs quickly.",
+    body: "Applied to shoulders or upper arms. Smooth levels, no needles. Absorbs in minutes.",
     image: "/trt/format-cream.png",
+  },
+  {
+    name: "Pill",
+    desc: "Daily oral capsule",
+    body: "Simple routine. No needles. A steady daily format that moves with your life.",
+    image: "/trt/format-pill.png",
   },
 ];
 
 const impactStats = [
   {
     numberText: "25%",
-    label: "drop in men's testosterone levels since the 1980s",
-    source: "Travison et al., J Clin Endocrinol Metab, 2007",
+    label: "decline in male testosterone since 1980.",
+    source: "Travison et al., JCEM, 2007",
   },
   {
     numberText: "1 in 4",
-    label: "men over 30 have clinically low testosterone",
-    source: "Araujo et al., J Clin Endocrinol Metab, 2007",
+    label: "men over 30. Hypogonadal. Most don\u2019t know.",
+    source: "Araujo et al., JCEM, 2007",
   },
   {
     numberText: "5+ yrs",
-    label: "average wait before a man gets tested for low T",
-    source: "Endocrine Society Position Statement, 2020",
+    label: "average wait from symptoms to first lab.",
+    source: "Endocrine Society Statement, 2020",
   },
 ];
 
@@ -74,40 +74,43 @@ const outcomes = [
   {
     stat: "78%",
     label: "Drive",
-    claim: "report renewed motivation and focus within 6 weeks",
+    claim: "Renewed motivation and focus. Most men feel it within six weeks.",
+    image: "/trt/life-drive.png",
   },
   {
     stat: "74%",
     label: "Energy",
-    claim: "sustained daily energy without afternoon crash",
+    claim: "Daily energy sustained through afternoon. No 3pm crash.",
+    image: "/trt/life-energy.png",
   },
   {
     stat: "82%",
     label: "Recovery",
-    claim: "deeper sleep and faster recovery within 12 weeks",
+    claim: "Deeper sleep. Faster recovery from training.",
+    image: "/trt/life-recovery.png",
   },
 ];
 
 const trtSteps = [
   {
-    day: "DAY 1",
-    title: "Health profile",
-    desc: "A short intake covering symptoms, goals, and medical history. About two minutes.",
+    day: "Day 1",
+    title: "Profile",
+    desc: "Short intake. Symptoms, goals, history. Two minutes.",
   },
   {
-    day: "DAY 2\u20135",
-    title: "Labs drawn",
-    desc: "Lab order sent to a Quest or Labcorp near you. Walk in anytime \u2014 no appointment needed.",
+    day: "Day 2\u20135",
+    title: "Labs",
+    desc: "Order sent to Quest or Labcorp. Walk in anytime.",
   },
   {
-    day: "DAY 6\u201310",
-    title: "Physician consult",
-    desc: "Video visit with your physician. They walk your panel, discuss goals, and design your protocol.",
+    day: "Day 6\u201310",
+    title: "Consult",
+    desc: "Video visit. Your physician walks the panel and designs your protocol.",
   },
   {
-    day: "DAY 11\u201314",
-    title: "Medication ships",
-    desc: "Shipped from a US-licensed 503A pharmacy, everything you need in one box.",
+    day: "Day 11\u201314",
+    title: "Delivery",
+    desc: "Shipped from a US-licensed 503A pharmacy. Everything in one box.",
   },
 ];
 
@@ -115,40 +118,40 @@ const faqItems = [
   {
     question: "Who is testosterone therapy for?",
     answer:
-      "Men with clinically low testosterone \u2014 typically ages 30 through 65. Symptoms include fatigue, low drive, poor recovery, brain fog, disrupted sleep, and loss of strength or muscle mass. Diagnosis starts with a full hormone panel.",
+      "Men with clinically low testosterone, typically ages 30 to 65. Hypogonadism doesn\u2019t announce itself. Fatigue, low drive, poor recovery, brain fog, disrupted sleep, loss of strength. If you\u2019re feeling several of these, a full hormone panel is the first step.",
   },
   {
     question: "Will TRT shut down my natural production?",
     answer:
-      "Exogenous testosterone suppresses your body\u2019s LH and FSH signaling, which can reduce your own production. That\u2019s why some protocols include HCG to preserve testicular function. Your physician will walk through the tradeoffs before you start.",
+      "Exogenous testosterone suppresses LH and FSH signaling, which can reduce your body\u2019s own production. Some protocols include HCG to preserve testicular function. Your physician will walk the tradeoffs before you start.",
   },
   {
-    question: "Will TRT affect my fertility?",
+    question: "What about fertility?",
     answer:
-      "Testosterone alone can reduce sperm production. If fertility matters, your physician may add HCG to your protocol, or prescribe Enclomiphene \u2014 which stimulates your own production while preserving fertility. This is a first-visit conversation.",
+      "Testosterone alone can reduce sperm production. If fertility matters, your physician may add HCG, or prescribe Enclomiphene, which stimulates your own production. First visit.",
   },
   {
     question: "Is TRT forever?",
     answer:
-      "For most men with clinically low testosterone, yes. Stopping causes a return to baseline. That said, you\u2019re never locked in. Protocols can be adjusted, tapered, or paused with physician guidance.",
+      "For most men with clinically low testosterone, yes. Stopping returns you to baseline. Protocols can be adjusted or tapered under physician supervision. You\u2019re never locked in.",
   },
   {
-    question: "What labs do you run?",
+    question: "What do you test?",
     answer:
-      "Total testosterone, free testosterone, SHBG, estradiol, LH, FSH, prolactin, CBC, CMP, lipid panel, PSA, and thyroid panel. Follow-up labs at 90 days. Every adjustment is based on bloodwork.",
+      "Total testosterone, free testosterone, SHBG, estradiol, LH, FSH, prolactin, CBC, CMP, lipid panel, PSA, thyroid. Follow-up at 90 days. Every adjustment is based on bloodwork.",
   },
   {
-    question: "How fast will I feel results?",
+    question: "How fast will I feel it?",
     answer:
-      "Most men notice energy and drive shifts within 2\u20134 weeks. Body composition, strength, and recovery typically catch up over 8\u201312 weeks as levels stabilize.",
+      "Energy and drive usually shift in 2\u20134 weeks. Body composition, strength, and recovery catch up over 8\u201312 weeks as levels stabilize.",
   },
   {
     question: "Can I switch formats later?",
     answer:
-      "Yes. If injection isn\u2019t working for your routine, we can switch to cream. If cream isn\u2019t consistent enough, we can switch to injection. Format is a lifestyle choice \u2014 the medicine underneath stays the same.",
+      "Yes. Injection to cream, cream to injection, any time. Same medicine, different delivery.",
   },
   {
-    question: "Can I cancel anytime?",
+    question: "Cancel anytime?",
     answer:
       "Yes. No contracts. Cancel through your member portal or by emailing your care team. Your prescription continues through the current shipment cycle.",
   },
@@ -162,187 +165,6 @@ const trtMarqueeItems = [
   { symptom: "Disrupted Sleep", outcome: "Deep Rest" },
   { symptom: "Low Libido", outcome: "Drive Back" },
 ];
-
-/* ==============================
-   LAB PANEL \u2014 the hero visual
-   ============================== */
-
-type LabMarker = {
-  name: string;
-  value: string;
-  unit: string;
-  status: "low" | "mid" | "ok" | "optimal";
-  position: number;
-};
-
-const beforePanel: LabMarker[] = [
-  { name: "Total Testosterone", value: "325", unit: "ng/dL", status: "low", position: 2 },
-  { name: "Free T", value: "6.4", unit: "pg/mL", status: "low", position: 2.5 },
-  { name: "SHBG", value: "42", unit: "nmol/L", status: "mid", position: 5 },
-  { name: "Estradiol", value: "19", unit: "pg/mL", status: "ok", position: 6 },
-  { name: "LH", value: "4.2", unit: "IU/L", status: "ok", position: 5.5 },
-];
-
-const afterPanel: LabMarker[] = [
-  { name: "Total Testosterone", value: "685", unit: "ng/dL", status: "optimal", position: 7.5 },
-  { name: "Free T", value: "18.2", unit: "pg/mL", status: "optimal", position: 7.8 },
-  { name: "SHBG", value: "38", unit: "nmol/L", status: "ok", position: 5.5 },
-  { name: "Estradiol", value: "24", unit: "pg/mL", status: "ok", position: 6.5 },
-  { name: "LH", value: "2.8", unit: "IU/L", status: "ok", position: 4.5 },
-];
-
-function statusLabel(status: LabMarker["status"]) {
-  if (status === "low") return "LOW";
-  if (status === "mid") return "MID";
-  if (status === "ok") return "NORMAL";
-  return "OPTIMAL";
-}
-
-function statusColor(status: LabMarker["status"]) {
-  if (status === "low") return "#C26B4A";
-  if (status === "mid") return "#8DA1B8";
-  if (status === "ok") return "#6B8BB8";
-  return PERSONA;
-}
-
-function Gauge({ position, status }: { position: number; status: LabMarker["status"] }) {
-  const pct = Math.max(2, Math.min(98, (position / 10) * 100));
-  return (
-    <div className="relative w-full h-[6px] rounded-full overflow-hidden" style={{ background: "rgba(28,28,30,0.06)" }}>
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(194,107,74,0.18) 0%, rgba(141,161,184,0.15) 45%, rgba(74,122,184,0.20) 100%)",
-        }}
-      />
-      <div
-        className="absolute top-1/2 w-[10px] h-[10px] rounded-full shadow-sm"
-        style={{
-          left: `${pct}%`,
-          transform: "translate(-50%, -50%)",
-          background: statusColor(status),
-          border: "1.5px solid white",
-        }}
-      />
-    </div>
-  );
-}
-
-function LabPanel({ markers, badge }: { markers: LabMarker[]; badge?: string }) {
-  return (
-    <div
-      className="relative rounded-[22px] overflow-hidden"
-      style={{
-        background: "#FAF8F4",
-        boxShadow:
-          "0 20px 60px -20px rgba(30,30,40,0.22), 0 1px 0 rgba(255,255,255,0.6) inset",
-        border: "1px solid rgba(28,28,30,0.06)",
-      }}
-    >
-      {/* Header */}
-      <div className="px-6 md:px-7 pt-5 md:pt-6 pb-4 flex items-start justify-between">
-        <div>
-          <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-halo-charcoal/40">
-            Halo Health
-          </p>
-          <p className="text-[13px] md:text-[14px] font-semibold tracking-tight text-halo-charcoal mt-1.5">
-            Your Hormone Panel
-          </p>
-        </div>
-        {badge && (
-          <span
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.15em]"
-            style={{
-              background: badge.toLowerCase().includes("before")
-                ? "rgba(194,107,74,0.12)"
-                : `${PERSONA}18`,
-              color: badge.toLowerCase().includes("before") ? "#C26B4A" : PERSONA,
-            }}
-          >
-            <span
-              className="w-1 h-1 rounded-full"
-              style={{
-                background: badge.toLowerCase().includes("before")
-                  ? "#C26B4A"
-                  : PERSONA,
-              }}
-            />
-            {badge}
-          </span>
-        )}
-      </div>
-
-      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
-
-      {/* Lead number */}
-      <div className="px-6 md:px-7 pt-5 pb-4">
-        <div className="flex items-baseline justify-between mb-2">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/45">
-            Total Testosterone
-          </p>
-          <span
-            className="text-[9px] font-semibold tracking-[0.15em]"
-            style={{ color: statusColor(markers[0].status) }}
-          >
-            {statusLabel(markers[0].status)}
-          </span>
-        </div>
-        <div className="flex items-baseline gap-2 mb-3">
-          <span className="font-serif text-[48px] md:text-[56px] font-light leading-none tracking-tight text-halo-charcoal">
-            {markers[0].value}
-          </span>
-          <span className="text-[13px] text-halo-charcoal/55">
-            {markers[0].unit}
-          </span>
-        </div>
-        <Gauge position={markers[0].position} status={markers[0].status} />
-      </div>
-
-      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
-
-      {/* Secondary markers */}
-      <div className="px-6 md:px-7 py-4 space-y-3">
-        {markers.slice(1).map((m) => (
-          <div key={m.name}>
-            <div className="flex items-baseline justify-between mb-1.5">
-              <span className="text-[11px] font-medium text-halo-charcoal/80 truncate">
-                {m.name}
-              </span>
-              <div className="flex items-baseline gap-1.5 flex-shrink-0">
-                <span className="text-[12px] font-medium text-halo-charcoal">
-                  {m.value}
-                </span>
-                <span className="text-[10px] text-halo-charcoal/45">
-                  {m.unit}
-                </span>
-                <span
-                  className="text-[9px] font-semibold tracking-[0.12em] ml-1"
-                  style={{ color: statusColor(m.status) }}
-                >
-                  · {statusLabel(m.status)}
-                </span>
-              </div>
-            </div>
-            <Gauge position={m.position} status={m.status} />
-          </div>
-        ))}
-      </div>
-
-      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
-
-      {/* Footer */}
-      <div className="px-6 md:px-7 py-3.5 flex items-center justify-between">
-        <p className="text-[10px] italic text-halo-charcoal/45">
-          Physician review in 5 days
-        </p>
-        <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-halo-charcoal/30">
-          Halo · 2026
-        </p>
-      </div>
-    </div>
-  );
-}
 
 /* ==============================
    TESTOSTERONE DECLINE CHART
@@ -382,18 +204,6 @@ function TestosteroneChart() {
 
   return (
     <div className="w-full">
-      <p className="font-serif text-[22px] md:text-[28px] text-halo-charcoal leading-tight mb-2 tracking-tight">
-        Your number,{" "}
-        <span className="italic" style={{ color: PERSONA }}>
-          pulled back up.
-        </span>
-      </p>
-      <p className="text-[13px] text-halo-charcoal/55 mb-8 max-w-md">
-        Testosterone drops 1&ndash;2% per year after 30. TRT restores you to a
-        clinically healthy range &mdash; not a 25-year-old&rsquo;s peak, the
-        number your body actually needs now.
-      </p>
-
       <div
         className="relative rounded-[20px] border border-halo-charcoal/[0.08] p-6 md:p-8"
         style={{
@@ -403,7 +213,7 @@ function TestosteroneChart() {
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="w-full h-auto"
-          aria-label="Testosterone levels decline with age — TRT restores to therapeutic range"
+          aria-label="Testosterone decline with age and therapeutic range"
         >
           <defs>
             <linearGradient id="range-band-trt" x1="0" x2="0" y1="0" y2="1">
@@ -550,9 +360,9 @@ function TestosteroneChart() {
         </svg>
 
         <p className="text-[11px] italic text-halo-charcoal/45 mt-5 leading-relaxed">
-          Based on clinical reference ranges for total serum testosterone.
-          Therapeutic targets vary by patient. &mdash; Bhasin et al., Endocrine
-          Society Guidelines, 2018.
+          Clinical reference ranges for total serum testosterone. Therapeutic
+          targets vary by patient. &mdash; Bhasin et al., Endocrine Society
+          Guidelines, 2018.
         </p>
       </div>
     </div>
@@ -610,72 +420,85 @@ function FormatCard({ format }: { format: (typeof treatmentFormats)[number] }) {
 }
 
 /* ==============================
+   OUTCOME CARD — with life-moment image
+   ============================== */
+
+function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  return (
+    <div className="flex flex-col">
+      {/* Life-moment image on top */}
+      <div
+        className="relative aspect-[4/5] rounded-[20px] overflow-hidden mb-6"
+        style={{
+          background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}60 100%)`,
+        }}
+      >
+        {!imageFailed && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={outcome.image}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={() => setImageFailed(true)}
+          />
+        )}
+      </div>
+
+      {/* Stat + claim */}
+      <div>
+        <p
+          className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-3"
+          style={{ color: PERSONA }}
+        >
+          {outcome.label}
+        </p>
+        <div className="flex items-baseline gap-3 mb-3">
+          <span
+            className="font-serif text-[56px] md:text-[64px] font-light leading-none tracking-tight"
+            style={{ color: PERSONA_DEEP }}
+          >
+            {outcome.stat}
+          </span>
+          <span
+            className="w-8 h-px"
+            style={{ background: PERSONA, opacity: 0.4 }}
+            aria-hidden="true"
+          />
+        </div>
+        <p className="text-[14px] text-halo-charcoal/70 leading-relaxed">
+          {outcome.claim}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ==============================
    PAGE
    ============================== */
 
 export default function TestosteroneTherapyPage() {
-  const rightColRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-
-  /* Parallax: right column scrolls slightly faster than the page */
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.innerWidth < 1024) return;
-
-    let raf = 0;
-    const update = () => {
-      if (!rightColRef.current || !heroRef.current) return;
-      const heroTop = heroRef.current.getBoundingClientRect().top;
-      const offset = Math.max(-160, Math.min(0, heroTop * 0.12));
-      rightColRef.current.style.transform = `translate3d(0, ${offset}px, 0)`;
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
   return (
     <>
       {/* ═══════════════════════════════════════════════
-          1 · HERO — Lab Panel + left content
+          1 · HERO — Portrait + left content
           ═══════════════════════════════════════════════ */}
-      <section ref={heroRef} className="relative section-light overflow-hidden">
-        <div className="grid lg:grid-cols-[40%_60%] lg:min-h-[760px]">
+      <section className="relative section-light overflow-hidden">
+        <div className="grid lg:grid-cols-[1fr_1.1fr] lg:min-h-[680px]">
           {/* LEFT: Content */}
           <div className="relative flex flex-col justify-center px-6 md:px-10 lg:px-14 py-12 md:py-16 lg:py-20 order-2 lg:order-1">
-            <div className="flex items-center gap-3 mb-6 flex-wrap">
+            <div className="flex items-center gap-3 mb-6">
               <span
-                className="text-[10px] font-semibold uppercase tracking-[0.25em]"
+                className="text-[10px] font-semibold uppercase tracking-[0.28em]"
                 style={{ color: PERSONA }}
               >
                 Testosterone Therapy
               </span>
-              <span className="text-halo-charcoal/20">·</span>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-halo-charcoal/50">
-                For men
-              </span>
-              <span
-                className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border"
-                style={{
-                  borderColor: `${PERSONA}40`,
-                  color: PERSONA,
-                }}
-              >
-                <span className="w-1 h-1 rounded-full" style={{ background: PERSONA }} />
-                <span className="text-[10px] font-semibold uppercase tracking-[0.15em]">
-                  Founding · Closes June 1
-                </span>
-              </span>
             </div>
 
-            <h1 className="headline-hero text-[34px] md:text-[48px] lg:text-[56px] text-halo-charcoal leading-[1.05] tracking-tight mb-4">
+            <h1 className="headline-hero text-[34px] md:text-[48px] lg:text-[56px] text-halo-charcoal leading-[1.05] tracking-tight mb-5">
               Low T isn&rsquo;t a{" "}
               <span className="italic" style={{ color: PERSONA }}>
                 vibe.
@@ -684,24 +507,23 @@ export default function TestosteroneTherapyPage() {
               It&rsquo;s a lab result.
             </h1>
 
-            <p className="text-[16px] md:text-[17px] text-halo-charcoal/65 leading-relaxed mb-8 max-w-md">
-              Halo Testosterone is physician-led optimization for men whose
-              numbers have drifted. Comprehensive labs. Pharmacy-compounded
-              medication. Delivered to your door.
+            <p className="text-[16px] md:text-[17px] text-halo-charcoal/70 leading-relaxed mb-8 max-w-md">
+              Physician-led testosterone optimization. Real labs. Compounded
+              medication. Door to door.
             </p>
 
-            <ul className="space-y-2.5 mb-8 max-w-md">
+            <ul className="space-y-2.5 mb-9 max-w-md">
               {[
-                "Physician-led protocols, not a supplement stack",
-                "Real labs. Real numbers. Real adjustments.",
-                "Medication in your hands in 14 days",
+                "Physician-led. Not a supplement stack.",
+                "Every adjustment based on bloodwork.",
+                "Medication delivered in 14 days.",
               ].map((bullet) => (
                 <li key={bullet} className="flex items-start gap-3">
                   <span
-                    className="mt-[9px] flex-shrink-0 w-5 h-px"
+                    className="mt-[10px] flex-shrink-0 w-5 h-px"
                     style={{ background: PERSONA }}
                   />
-                  <span className="text-[14px] md:text-[15px] text-halo-charcoal/80 leading-snug">
+                  <span className="text-[14px] md:text-[15px] text-halo-charcoal/85 leading-snug">
                     {bullet}
                   </span>
                 </li>
@@ -733,56 +555,47 @@ export default function TestosteroneTherapyPage() {
             </p>
           </div>
 
-          {/* RIGHT: Lab Panel stack + parallax */}
+          {/* RIGHT: Portrait */}
           <div
-            className="relative order-1 lg:order-2"
+            className="relative order-1 lg:order-2 min-h-[400px] md:min-h-[500px] lg:min-h-0 overflow-hidden"
             style={{
               background:
-                "linear-gradient(165deg, #EDF3FA 0%, #DEE6F1 50%, #B8CCE3 100%)",
+                "linear-gradient(165deg, #E8EFF6 0%, #C9D9EB 50%, #8BA8C8 100%)",
             }}
           >
-            <div className="absolute inset-0 opacity-[0.25] pointer-events-none">
-              <HaloPattern
-                variant="default"
-                intensity={0.9}
-                color={PERSONA}
-                showCore={false}
-                className="absolute inset-0 w-full h-full"
-              />
-            </div>
+            {/* Portrait loads if file present */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/trt/hero-portrait.png"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ objectPosition: "center 35%" }}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
 
+            {/* Soft bottom scrim for trust-strip legibility */}
             <div
-              ref={rightColRef}
-              className="relative px-6 md:px-10 lg:px-14 py-10 md:py-14 lg:py-20 min-h-[540px] lg:min-h-[760px] flex items-center"
-            >
-              <div className="relative w-full max-w-[440px] mx-auto">
-                {/* BACK panel — peeks behind */}
-                <div
-                  className="absolute top-10 md:top-14 -right-6 md:-right-8 w-[88%] md:w-[92%] opacity-[0.85] pointer-events-none"
-                  aria-hidden="true"
-                  style={{ filter: "blur(0.4px) saturate(0.92)" }}
-                >
-                  <LabPanel markers={afterPanel} badge="At 90 days · Optimal" />
-                </div>
-
-                {/* FRONT panel */}
-                <div className="relative">
-                  <LabPanel markers={beforePanel} badge="Before protocol" />
-                </div>
-              </div>
-            </div>
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(180deg, transparent 70%, rgba(20,25,35,0.18) 100%)",
+              }}
+            />
           </div>
         </div>
 
         {/* Trust strip */}
-        <div className="border-t border-halo-charcoal/[0.08] bg-white/40 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/55">
+        <div className="border-t border-halo-charcoal/[0.08] bg-white/60 backdrop-blur-sm">
+          <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/60">
             <span>Board-certified physicians</span>
-            <span className="text-halo-charcoal/20">·</span>
+            <span className="text-halo-charcoal/20">&middot;</span>
             <span>US-licensed 503A pharmacy</span>
-            <span className="text-halo-charcoal/20">·</span>
+            <span className="text-halo-charcoal/20">&middot;</span>
             <span>HIPAA secure</span>
-            <span className="text-halo-charcoal/20">·</span>
+            <span className="text-halo-charcoal/20">&middot;</span>
             <span>Ships in 48 hours</span>
           </div>
         </div>
@@ -794,7 +607,7 @@ export default function TestosteroneTherapyPage() {
       <HaloMarquee items={trtMarqueeItems} />
 
       {/* ═══════════════════════════════════════════════
-          3 · DATA PUNCH — The treatment gap
+          3 · THE TREATMENT GAP
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-5xl mx-auto">
@@ -804,30 +617,32 @@ export default function TestosteroneTherapyPage() {
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
                 style={{ color: PERSONA }}
               >
-                The treatment gap
+                What hasn&rsquo;t been measured
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
-                Why most men{" "}
-                <span className="italic text-halo-charcoal/70">wait years</span>{" "}
-                to get tested.
+                Most men wait{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  five years.
+                </span>
+                <br className="hidden md:block" />{" "}
+                Nobody asks the right question.
               </h2>
-              <p className="text-[15px] md:text-base text-halo-charcoal/55 max-w-xl mx-auto mt-5 leading-relaxed">
-                You&rsquo;ve been told it&rsquo;s just getting older. Offered
-                coffee instead of a lab panel. That&rsquo;s not medicine.
-                That&rsquo;s a shrug.
+              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
+                You&rsquo;ve been told it&rsquo;s aging. Offered coffee instead
+                of bloodwork. That&rsquo;s not medicine. It&rsquo;s a shrug.
               </p>
             </div>
           </AnimateOnScroll>
 
           <AnimateOnScroll stagger>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10 lg:gap-x-10">
               {impactStats.map((stat, i) => (
                 <div
                   key={i}
                   className="aos-child text-center md:text-left flex flex-col"
                 >
                   <p
-                    className="font-serif text-[44px] md:text-[64px] lg:text-[72px] font-light leading-[0.95] mb-3 tracking-tight"
+                    className="font-serif text-[48px] md:text-[64px] lg:text-[72px] font-light leading-[0.95] mb-3 tracking-tight"
                     style={{ color: PERSONA }}
                   >
                     {stat.numberText}
@@ -836,7 +651,7 @@ export default function TestosteroneTherapyPage() {
                     className="w-10 h-px mb-3 md:mx-0 mx-auto"
                     style={{ background: PERSONA, opacity: 0.4 }}
                   />
-                  <p className="text-[14px] md:text-[15px] text-halo-charcoal/75 leading-snug mb-3">
+                  <p className="text-[14px] md:text-[15px] text-halo-charcoal/80 leading-snug mb-3">
                     {stat.label}
                   </p>
                   <p className="text-[11px] italic text-halo-charcoal/40 mt-auto">
@@ -850,9 +665,9 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          4 · THE DECLINE CHART
+          4 · THE DECLINE
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light" style={{ background: "#FAF8F4" }}>
+      <section className="py-16 md:py-24 px-6" style={{ background: "#F7F3EC" }}>
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-10 md:mb-14">
@@ -860,17 +675,18 @@ export default function TestosteroneTherapyPage() {
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
                 style={{ color: PERSONA }}
               >
-                The science
+                The decline
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
-                Testosterone doesn&rsquo;t just run libido.{" "}
-                <span className="italic text-halo-charcoal/70">
-                  It runs everything.
-                </span>
+                Testosterone runs{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  more
+                </span>{" "}
+                than libido.
               </h2>
-              <p className="text-[15px] md:text-base text-halo-charcoal/55 max-w-xl mx-auto mt-5 leading-relaxed">
-                Recovery, muscle, focus, mood, sleep architecture, metabolic
-                rate. When testosterone drops, all of it drops with it.
+              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
+                Recovery. Muscle. Focus. Mood. Sleep. Metabolism. When
+                testosterone drops, all of it drops with it.
               </p>
             </div>
           </AnimateOnScroll>
@@ -883,12 +699,7 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           5 · SYMPTOMS REFRAME
           ═══════════════════════════════════════════════ */}
-      <section
-        className="py-16 md:py-24 px-6"
-        style={{
-          background: "linear-gradient(180deg, #EDF3FA 0%, #DEE6F1 100%)",
-        }}
-      >
+      <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="grid md:grid-cols-[1fr_1fr] gap-10 md:gap-16 items-center">
@@ -897,7 +708,7 @@ export default function TestosteroneTherapyPage() {
                   className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-5"
                   style={{ color: PERSONA }}
                 >
-                  The reframe
+                  What it feels like
                 </p>
                 <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.08] mb-6">
                   You&rsquo;re not{" "}
@@ -907,10 +718,10 @@ export default function TestosteroneTherapyPage() {
                   <br />
                   You&rsquo;re running low.
                 </h2>
-                <p className="text-[15px] md:text-base text-halo-charcoal/65 leading-relaxed max-w-md">
-                  If several of these sound familiar, it&rsquo;s worth knowing
-                  your numbers. Not getting older. Not stress. Not a vibe.
-                  Testosterone, measurable.
+                <p className="text-[15px] md:text-base text-halo-charcoal/70 leading-relaxed max-w-md">
+                  If several of these are familiar, it&rsquo;s time to check
+                  your numbers. Not aging. Not stress. Testosterone.
+                  Measurable.
                 </p>
               </div>
               <div>
@@ -937,7 +748,7 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           6 · THREE FORMATS
           ═══════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 px-6 section-light">
+      <section className="py-16 md:py-24 px-6" style={{ background: "#F0EBE0" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
@@ -945,18 +756,16 @@ export default function TestosteroneTherapyPage() {
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
                 style={{ color: PERSONA }}
               >
-                Your treatment
+                The treatment
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
                 Three formats.{" "}
-                <span className="italic text-halo-charcoal/70">
+                <span className="italic" style={{ color: PERSONA }}>
                   One protocol.
                 </span>
               </h2>
-              <p className="text-[15px] md:text-base text-halo-charcoal/55 max-w-xl mx-auto mt-5 leading-relaxed">
-                The medicine is the same. Pick the format that fits your life
-                &mdash; needles or not, daily or weekly, in your routine or out
-                of it.
+              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
+                The medicine is the same. Pick the format that fits your life.
               </p>
             </div>
           </AnimateOnScroll>
@@ -976,10 +785,10 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           7 · 14-DAY TIMELINE
           ═══════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 px-6" style={{ background: "#1C1817" }}>
+      <section className="py-16 md:py-24 px-6" style={{ background: "#1C1817" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-14 md:mb-20">
+            <div className="text-center mb-12 md:mb-16">
               <p
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
                 style={{ color: PERSONA_SOFT }}
@@ -987,8 +796,8 @@ export default function TestosteroneTherapyPage() {
                 Your first 14 days
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white leading-[1.1]">
-                From intake to medication,{" "}
-                <span className="italic text-white/70">two weeks.</span>
+                Intake to medication.{" "}
+                <span className="italic text-white/70">Two weeks.</span>
               </h2>
             </div>
           </AnimateOnScroll>
@@ -1020,7 +829,7 @@ export default function TestosteroneTherapyPage() {
                   <h3 className="font-serif text-[22px] md:text-[24px] text-white leading-tight tracking-tight mb-3 text-center md:text-left">
                     {step.title}
                   </h3>
-                  <p className="text-[14px] text-white/60 leading-relaxed text-center md:text-left">
+                  <p className="text-[14px] text-white/65 leading-relaxed text-center md:text-left">
                     {step.desc}
                   </p>
                 </div>
@@ -1031,22 +840,22 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          8 · 90-DAY OUTCOMES
+          8 · 90-DAY OUTCOMES — with life-moment imagery
           ═══════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 px-6 section-light">
+      <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-14 md:mb-20">
+            <div className="text-center mb-12 md:mb-16">
               <p
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
                 style={{ color: PERSONA }}
               >
-                What optimization looks like
+                90 days in
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
-                At 90 days,{" "}
-                <span className="italic text-halo-charcoal/70">
-                  your numbers. And everything they carry.
+                Your numbers.{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  And everything they carry.
                 </span>
               </h2>
             </div>
@@ -1055,30 +864,8 @@ export default function TestosteroneTherapyPage() {
           <AnimateOnScroll stagger>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-10">
               {outcomes.map((o) => (
-                <div
-                  key={o.label}
-                  className="aos-child p-8 md:p-10 rounded-[24px] border border-halo-charcoal/[0.08] flex flex-col"
-                  style={{ background: "#FAF8F4" }}
-                >
-                  <p
-                    className="text-[11px] font-semibold uppercase tracking-[0.24em] mb-5"
-                    style={{ color: PERSONA }}
-                  >
-                    {o.label}
-                  </p>
-                  <p
-                    className="font-serif text-[64px] md:text-[76px] font-light leading-[0.95] mb-4 tracking-tight"
-                    style={{ color: PERSONA_DEEP }}
-                  >
-                    {o.stat}
-                  </p>
-                  <div
-                    className="w-12 h-px mb-4"
-                    style={{ background: PERSONA, opacity: 0.35 }}
-                  />
-                  <p className="text-[14px] text-halo-charcoal/70 leading-relaxed">
-                    {o.claim}
-                  </p>
+                <div key={o.label} className="aos-child">
+                  <OutcomeCard outcome={o} />
                 </div>
               ))}
             </div>
@@ -1096,19 +883,19 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           9 · PRICING + FAQ
           ═══════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 px-6 section-light">
+      <section className="py-16 md:py-24 px-6 section-light" style={{ background: "#FAF8F4" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-14">
+            <div className="text-center mb-12">
               <p
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
                 style={{ color: PERSONA }}
               >
-                Pricing
+                Terms
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
                 One membership.{" "}
-                <span className="italic text-halo-charcoal/70">
+                <span className="italic" style={{ color: PERSONA }}>
                   Everything in.
                 </span>
               </h2>
@@ -1146,12 +933,12 @@ export default function TestosteroneTherapyPage() {
                   <ul className="space-y-2.5 mb-8">
                     {[
                       "Initial video consultation with your physician",
-                      "Comprehensive hormone panel (first panel free)",
-                      "Testosterone and protocol medications included",
-                      "Ongoing async physician access",
+                      "Full hormone panel (first one free)",
+                      "Testosterone and protocol medications",
+                      "Async physician access",
                       "Follow-up labs at 90 days",
                       "Protocol adjustments as needed",
-                      "Supplies (syringes, alcohol swabs) included",
+                      "Supplies (syringes, swabs) included",
                     ].map((item) => (
                       <li
                         key={item}
@@ -1206,7 +993,7 @@ export default function TestosteroneTherapyPage() {
           10 · FINAL CTA
           ═══════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden py-14 md:py-24 lg:py-28 px-6"
+        className="relative overflow-hidden py-16 md:py-24 px-6"
         style={{ background: "#1C1817" }}
       >
         <HaloPattern
@@ -1222,7 +1009,7 @@ export default function TestosteroneTherapyPage() {
               className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-5"
               style={{ color: PERSONA_SOFT }}
             >
-              You don&rsquo;t have to push through it
+              Know your numbers
             </p>
             <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white leading-[1.1] mb-6">
               Stop wondering.{" "}
@@ -1230,9 +1017,9 @@ export default function TestosteroneTherapyPage() {
                 Start knowing.
               </span>
             </h2>
-            <p className="text-[15px] md:text-base text-white/55 leading-relaxed mb-10 max-w-xl mx-auto">
-              The first lab panel is free for founding members. No commitment
-              until your physician reviews your numbers.
+            <p className="text-[15px] md:text-base text-white/60 leading-relaxed mb-10 max-w-xl mx-auto">
+              First lab panel is free for founding members. No commitment until
+              your physician reviews the numbers.
             </p>
             <Link
               href="/quiz?from=trt"
@@ -1248,13 +1035,12 @@ export default function TestosteroneTherapyPage() {
 
       {/* Disclaimer */}
       <div className="py-6 px-6 section-light border-t border-halo-charcoal/[0.05]">
-        <p className="text-center text-[11px] text-halo-charcoal/30 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-center text-[11px] text-halo-charcoal/35 max-w-3xl mx-auto leading-relaxed">
           Halo is a technology platform that connects patients with licensed
           healthcare providers. All clinical decisions are made by independent
-          licensed providers. Individual results may vary. This content is not
-          medical advice. Compounded drug products are not approved or evaluated
-          for safety, effectiveness, or quality by the FDA. Testosterone is a
-          controlled substance. Rx required. Not available in all 50 states.
+          licensed providers. Individual results vary. Not medical advice.
+          Compounded drug products are not FDA-approved or evaluated. Testosterone
+          is a controlled substance. Rx required. Not available in all 50 states.
         </p>
       </div>
     </>
