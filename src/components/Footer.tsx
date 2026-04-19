@@ -101,7 +101,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://instagram.com/tryhalo"
+                  href="https://instagram.com/tryhalo.co"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-white/50 hover:text-white transition-colors duration-300"
