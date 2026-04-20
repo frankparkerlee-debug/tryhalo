@@ -780,8 +780,8 @@ export default function WeightLossPage() {
                   At 68 weeks
                 </p>
                 <p
-                  className="font-sans leading-none text-white text-[40px] md:text-[54px] lg:text-[62px] mb-2"
-                  style={{ fontWeight: 900, letterSpacing: "-0.02em" }}
+                  className="font-sans leading-none text-white text-[40px] md:text-[52px] lg:text-[60px] mb-2"
+                  style={{ fontWeight: 500, letterSpacing: "-0.03em" }}
                 >
                   &minus;15 lbs
                 </p>
