@@ -145,7 +145,7 @@ const faqItems = [
   {
     question: "Are Halo physicians real and board-certified?",
     answer:
-      "Yes. Every physician on the Halo platform is a US-licensed MD or DO, board-certified in their specialty (endocrinology, internal medicine, family medicine, or sports medicine), credentialed through our partner OpenLoop Health, and licensed in your state. Your physician reviews your labs, builds your personalized protocol, and adjusts it based on your results. No chatbots, no generic templates.",
+      "Yes. Every physician on the Halo platform is a US-licensed MD or DO, board-certified in their specialty (endocrinology, internal medicine, family medicine, or sports medicine), credentialed through our board-certified physician network, and licensed in your state. Your physician reviews your labs, builds your personalized protocol, and adjusts it based on your results. No chatbots, no generic templates.",
     category: "Medical",
   },
   {
@@ -1197,8 +1197,8 @@ export default function Home() {
               Representative physicians from Halo&rsquo;s provider network.
             </p>
             <p className="text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/30 mt-4">
-              Provider network powered by OpenLoop Health &middot; All physicians
-              US-licensed and board-certified
+              Board-certified physician network &middot; All physicians
+              US-licensed
             </p>
           </AnimateOnScroll>
         </div>
