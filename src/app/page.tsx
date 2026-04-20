@@ -208,10 +208,8 @@ const programs = [
     overlay: {
       variant: "restoration" as const,
       chips: [
-        { label: "Estradiol", iconKey: "up" as const },
         { label: "Mood", iconKey: "waves" as const },
         { label: "Sleep", iconKey: "moon" as const },
-        { label: "Clarity", iconKey: "sparkles" as const },
       ],
     },
     tier: "anchor",
@@ -237,9 +235,8 @@ const programs = [
     overlay: {
       variant: "performance" as const,
       chips: [
-        { label: "Strength", iconKey: "plus" as const },
-        { label: "Recovery", iconKey: "rotate" as const },
         { label: "Drive", iconKey: "up" as const },
+        { label: "Recovery", iconKey: "rotate" as const },
       ],
     },
     tier: "anchor",
