@@ -107,7 +107,7 @@ const faqItems = [
   {
     question: "How much does Halo cost?",
     answer:
-      "Halo programs start at $109/mo for Vitamin Injections and $149/mo for our core anchor programs (HRT, TRT, NAD+, Peptide Therapy) on our 52-week plan. GLP-1 Weight Management is $179/mo. Every plan includes physician consultations, compounded or branded medications, lab ordering, ongoing adjustments, and shipping. No hidden fees. Pay monthly, quarterly, every 6 months, or annually — longer terms save more.",
+      "Pricing depends on what your physician prescribes. Hormone Therapy (HRT) starts at $79/mo for Estradiol; women's testosterone is $149/mo. Testosterone Therapy (TRT) for men starts at $129/mo. GLP-1 Weight Loss starts at $199/mo. Peptide Therapy and NAD+ start at $179/mo. Vitamin Injections start at $109/mo. Every plan includes physician consultations, compounded or branded medications, lab ordering, ongoing adjustments, and shipping. No hidden fees.",
     category: "Pricing",
   },
   {
@@ -137,7 +137,7 @@ const faqItems = [
   {
     question: "What is the founding member pricing?",
     answer:
-      "The first 999 members lock in our lowest pricing ($149/mo across anchor programs) for the entire life of their membership, regardless of future price increases. Founding members also receive their baseline comprehensive hormone panel free (normally $300), priority onboarding, and first access to new programs as we launch them.",
+      "The first 999 members lock in our lowest per-compound pricing for the entire life of their membership, regardless of future price increases \u2014 starting as low as $79/mo for HRT Estradiol. Founding members also receive their baseline comprehensive hormone panel free (normally $300), priority onboarding, and first access to new programs as we launch them.",
     category: "Pricing",
   },
 
