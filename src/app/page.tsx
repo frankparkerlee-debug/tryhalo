@@ -12,7 +12,7 @@ import {
   Droplet,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import FoundingCircleForm from "@/components/FoundingCircleForm";
 import CountUpNumber from "@/components/CountUpNumber";
@@ -498,6 +498,49 @@ const foundingBenefits = [
   },
 ];
 
+/* ─── MOBILE QUIZ BANNER ────────────────────────────────────────
+   Slides up from the bottom after the user scrolls past the hero.
+   Hidden on tablet/desktop where the hero has its own quiz button.
+   ─────────────────────────────────────────────────────────────── */
+
+function MobileQuizBanner() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onScroll = () => {
+      // Show after scrolling past ~85% of the first viewport height.
+      // On mobile the hero is roughly one screen tall, so this puts
+      // the banner just as the user enters the second section.
+      const threshold = window.innerHeight * 0.85;
+      setVisible(window.scrollY > threshold);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <div
+      className={`md:hidden fixed bottom-0 left-0 right-0 z-40 transition-transform duration-300 ease-out ${
+        visible ? "translate-y-0" : "translate-y-full"
+      }`}
+      style={{
+        background: "#1C1C1E",
+        paddingBottom: "env(safe-area-inset-bottom, 0)",
+      }}
+    >
+      <Link
+        href="/quiz"
+        className="flex items-center justify-center gap-2 w-full px-6 py-3.5 text-white font-semibold text-[14px]"
+      >
+        Take the 2-minute quiz
+        <ArrowRight className="w-4 h-4" />
+      </Link>
+    </div>
+  );
+}
+
 /* ─── PAGE ────────────────────────────────────────────────────── */
 
 export default function Home() {
@@ -568,19 +611,13 @@ export default function Home() {
   return (
     <>
       {/* ═══════════════════════════════════════════════
-          Mobile-only floating quiz CTA
-          Persistent on-page shortcut to the quiz. Hidden on desktop
-          (desktop uses the hero button). Positioned above any iOS
-          safe-area so it never sits under the chat widget.
+          Mobile-only scroll-triggered quiz banner
+          Hidden on desktop. Hidden while the user is in the hero.
+          Slides up from the bottom after they scroll past ~90% of
+          the viewport height, giving an always-available path to
+          the quiz for the remainder of the page.
           ═══════════════════════════════════════════════ */}
-      <Link
-        href="/quiz"
-        className="md:hidden fixed bottom-5 left-5 z-40 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-halo-charcoal text-white font-semibold text-[13px] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:brightness-105 transition-all"
-        aria-label="Take the 2-minute quiz"
-      >
-        Take the quiz
-        <ArrowRight className="w-3.5 h-3.5" />
-      </Link>
+      <MobileQuizBanner />
 
       {/* ═══════════════════════════════════════════════
           1 · HERO — Action Grid (Hims-style)

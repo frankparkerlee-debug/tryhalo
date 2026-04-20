@@ -11,7 +11,6 @@ const navLinks = [
   { label: "Peptide Therapy", href: "/peptide-therapy" },
   { label: "NAD+", href: "/nad-therapy" },
   { label: "Weight Loss", href: "/weight-loss" },
-  { label: "Quiz", href: "/quiz" },
 ];
 
 export default function Navbar() {
