@@ -10,7 +10,7 @@ const navLinks = [
   { label: "Testosterone", href: "/testosterone-therapy" },
   { label: "Peptide Therapy", href: "/peptide-therapy" },
   { label: "NAD+", href: "/nad-therapy" },
-  { label: "Weight Loss", href: "/#founding-circle" },
+  { label: "Weight Loss", href: "/weight-loss" },
   { label: "Quiz", href: "/quiz" },
 ];
 
