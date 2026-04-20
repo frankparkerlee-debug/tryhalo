@@ -727,10 +727,11 @@ export default function WeightLossPage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-3 grid-rows-2 gap-2 md:gap-3 h-full min-h-[380px] md:min-h-[460px] lg:min-h-[580px]">
-              {/* Woman portrait — tile 1 */}
+            {/* Asymmetric bento: 4-col × 4-row grid with staggered tiles */}
+            <div className="grid grid-cols-4 grid-rows-4 gap-2 md:gap-3 h-full min-h-[480px] md:min-h-[560px] lg:min-h-[640px]">
+              {/* Tile 1 — Woman portrait (TALL, cols 1-2, rows 1-3) */}
               <div
-                className="relative col-span-1 row-span-1 rounded-[14px] md:rounded-[18px] overflow-hidden"
+                className="relative rounded-[14px] md:rounded-[18px] overflow-hidden col-start-1 col-end-3 row-start-1 row-end-4"
                 style={{
                   background: `linear-gradient(145deg, #F5E4D4 0%, ${PERSONA_SOFT}80 100%)`,
                 }}
@@ -747,20 +748,20 @@ export default function WeightLossPage() {
                 />
               </div>
 
-              {/* Product vial — tile 2 (with scroll rotation) */}
+              {/* Tile 2 — Product vial with scroll rotation (SQUARE, cols 3-4, rows 1-2) */}
               <div
-                className="relative col-span-1 row-span-1 rounded-[14px] md:rounded-[18px] overflow-hidden flex items-center justify-center"
+                className="relative rounded-[14px] md:rounded-[18px] overflow-hidden flex items-center justify-center col-start-3 col-end-5 row-start-1 row-end-3"
                 style={{
-                  background: `linear-gradient(145deg, #EDE0D2 0%, ${PERSONA}25 100%)`,
+                  background: `linear-gradient(145deg, #EDE0D2 0%, ${PERSONA}28 100%)`,
                 }}
               >
-                <ScrollRotate maxDeg={20} scrollExtent={1000} axis="y" className="w-[60%] h-[60%] flex items-center justify-center">
+                <ScrollRotate maxDeg={20} scrollExtent={1000} axis="y" className="w-[55%] h-[65%] flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/glp/product-vial.png"
                     alt=""
                     aria-hidden="true"
-                    className="w-full h-full object-contain drop-shadow-xl"
+                    className="w-full h-full object-contain drop-shadow-[0_18px_30px_rgba(143,67,36,0.25)]"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                     }}
@@ -768,50 +769,32 @@ export default function WeightLossPage() {
                 </ScrollRotate>
               </div>
 
-              {/* App UI — tile 3 */}
+              {/* Tile 3 — Stat card (WIDE, cols 3-4, row 3) — the hero claim as typography */}
               <div
-                className="relative col-span-1 row-span-2 rounded-[14px] md:rounded-[18px] overflow-hidden flex items-center justify-center"
+                className="relative rounded-[14px] md:rounded-[18px] overflow-hidden flex flex-col justify-center px-5 md:px-7 py-5 col-start-3 col-end-5 row-start-3 row-end-4"
                 style={{
                   background: `linear-gradient(145deg, ${PERSONA_DEEP} 0%, ${PERSONA} 100%)`,
                 }}
               >
-                {/* App mockup — SVG fallback */}
-                <div className="relative w-[80%] h-[75%] rounded-[10px] bg-white/95 backdrop-blur-sm p-3 md:p-4 shadow-xl">
-                  <p className="text-[8px] font-semibold uppercase tracking-[0.2em] text-halo-charcoal/40 mb-1">
-                    Your protocol
-                  </p>
-                  <p className="font-serif text-[16px] md:text-[22px] font-light leading-none mb-3 md:mb-4" style={{ color: PERSONA_DEEP }}>
-                    Week 8
-                  </p>
-                  <div className="mb-3 md:mb-4">
-                    <p className="text-[7px] uppercase tracking-wider text-halo-charcoal/40 mb-1">Dose</p>
-                    <p className="text-[11px] md:text-[13px] font-semibold text-halo-charcoal">0.5mg semaglutide</p>
-                  </div>
-                  <div className="mb-3 md:mb-4">
-                    <p className="text-[7px] uppercase tracking-wider text-halo-charcoal/40 mb-1">Weight trend</p>
-                    {/* Mini trend line */}
-                    <svg viewBox="0 0 120 30" className="w-full h-6 md:h-8">
-                      <path
-                        d="M 0 8 L 20 10 L 40 14 L 60 18 L 80 22 L 100 24 L 120 26"
-                        fill="none"
-                        stroke={PERSONA}
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                      />
-                      <circle cx="120" cy="26" r="2" fill={PERSONA} />
-                    </svg>
-                    <p className="text-[9px] text-halo-charcoal/60 mt-1">&minus;9.2 lbs</p>
-                  </div>
-                  <div>
-                    <p className="text-[7px] uppercase tracking-wider text-halo-charcoal/40 mb-1">Next lab</p>
-                    <p className="text-[10px] text-halo-charcoal/70">30 days</p>
-                  </div>
-                </div>
+                <p className="text-[8px] md:text-[9px] font-semibold uppercase tracking-[0.26em] text-white/70 mb-1">
+                  At 68 weeks
+                </p>
+                <p
+                  className="font-serif italic leading-none tracking-tight text-white text-[36px] md:text-[48px] lg:text-[56px] mb-2"
+                >
+                  &minus;15 lbs
+                </p>
+                <p className="text-[10px] md:text-[11px] text-white/75 leading-snug max-w-[180px]">
+                  Average body weight reduction on semaglutide 2.4mg.
+                </p>
+                <p className="text-[8px] md:text-[9px] italic text-white/40 mt-2">
+                  Wilding, NEJM 2021
+                </p>
               </div>
 
-              {/* Man portrait — tile 4 */}
+              {/* Tile 4 — Man portrait (SQUARE, cols 1-2, row 4) */}
               <div
-                className="relative col-span-1 row-span-1 rounded-[14px] md:rounded-[18px] overflow-hidden"
+                className="relative rounded-[14px] md:rounded-[18px] overflow-hidden col-start-1 col-end-3 row-start-4 row-end-5"
                 style={{
                   background: `linear-gradient(145deg, #E4D2C0 0%, ${PERSONA}35 100%)`,
                 }}
@@ -828,9 +811,9 @@ export default function WeightLossPage() {
                 />
               </div>
 
-              {/* Lifestyle / kitchen — tile 5 */}
+              {/* Tile 5 — Lifestyle (WIDE, cols 3-4, row 4) */}
               <div
-                className="relative col-span-1 row-span-1 rounded-[14px] md:rounded-[18px] overflow-hidden"
+                className="relative rounded-[14px] md:rounded-[18px] overflow-hidden col-start-3 col-end-5 row-start-4 row-end-5"
                 style={{
                   background: `linear-gradient(145deg, #F0DDC8 0%, #D9B896 100%)`,
                 }}
