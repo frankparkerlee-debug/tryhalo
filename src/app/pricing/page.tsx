@@ -12,10 +12,10 @@ export const metadata = {
 const programs = [
   {
     name: "Hormone Therapy",
-    description: "For women navigating perimenopause, menopause, and hormonal imbalance.",
+    description: "For women navigating perimenopause, menopause, and hormonal imbalance. Estradiol from $79/mo, women's testosterone from $149/mo.",
     compounds: "Estradiol, Progesterone, Testosterone",
-    standardPrice: "$149",
-    foundingPrice: "$129",
+    standardPrice: "$99",
+    foundingPrice: "$79",
     href: "/hormone-therapy",
     available: true,
   },

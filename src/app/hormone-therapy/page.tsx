@@ -1488,23 +1488,25 @@ export default function HormoneTherapyPage() {
             <div className="rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.15)]">
               <div className="flex items-baseline gap-2 md:gap-3 mb-2 flex-wrap">
                 <span
+                  className="text-[13px] md:text-[14px] text-halo-charcoal/50 uppercase tracking-[0.2em] font-semibold mr-1"
+                >
+                  From
+                </span>
+                <span
                   className="font-serif text-[44px] md:text-[64px] font-light leading-none"
                   style={{ color: PERSONA }}
                 >
-                  $129
+                  $79
                 </span>
                 <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">
                   /month
-                </span>
-                <span className="text-halo-charcoal/30 line-through text-[13px] md:text-[14px] md:ml-2">
-                  $149
                 </span>
               </div>
               <p
                 className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-6"
                 style={{ color: "#9C7F3E" }}
               >
-                Founding rate · locked in for life
+                Estradiol from $79/mo &middot; Testosterone from $149/mo
               </p>
 
               <div className="border-t border-halo-charcoal/[0.08] pt-6">

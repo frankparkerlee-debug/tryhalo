@@ -194,10 +194,10 @@ const programs = [
     desc: "For women experiencing fatigue, mood shifts, and sleep issues.",
     label: "Physician-prescribed",
     compounds: "Estradiol \u00B7 Progesterone \u00B7 Testosterone",
-    price: "$149/mo",
-    startingPrice: "from $149/mo",
-    monthly: "$149/mo",
-    quarterly: "$179/mo",
+    price: "From $79/mo",
+    startingPrice: "from $79/mo",
+    monthly: "$79/mo",
+    quarterly: "$99/mo",
     href: "/hormone-therapy",
     colorClass: "",
     color: "#D4836B",
@@ -568,16 +568,45 @@ export default function Home() {
   return (
     <>
       {/* ═══════════════════════════════════════════════
+          Mobile-only floating quiz CTA
+          Persistent on-page shortcut to the quiz. Hidden on desktop
+          (desktop uses the hero button). Positioned above any iOS
+          safe-area so it never sits under the chat widget.
+          ═══════════════════════════════════════════════ */}
+      <Link
+        href="/quiz"
+        className="md:hidden fixed bottom-5 left-5 z-40 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-halo-charcoal text-white font-semibold text-[13px] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:brightness-105 transition-all"
+        aria-label="Take the 2-minute quiz"
+      >
+        Take the quiz
+        <ArrowRight className="w-3.5 h-3.5" />
+      </Link>
+
+      {/* ═══════════════════════════════════════════════
           1 · HERO — Action Grid (Hims-style)
           ═══════════════════════════════════════════════ */}
       <section className="px-6 md:px-12 lg:px-20 pt-20 md:pt-28 pb-12 section-light">
         <div className="max-w-7xl mx-auto">
           {/* Headline — short, direct, serif */}
-          <h1 className="headline-hero text-4xl md:text-5xl lg:text-6xl text-halo-charcoal mb-8">
+          <h1 className="headline-hero text-4xl md:text-5xl lg:text-6xl text-halo-charcoal mb-6">
             {heroHeadline.line1}
             <br />
             {heroHeadline.line2}
           </h1>
+
+          {/* Primary hero CTA — route to the quiz as the main call to action */}
+          <div className="flex flex-wrap items-center gap-4 mb-10">
+            <Link
+              href="/quiz"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-halo-charcoal text-white font-semibold text-sm hover:bg-halo-charcoal/85 transition-colors shadow-[0_8px_28px_rgba(0,0,0,0.15)]"
+            >
+              Take the 2-minute quiz
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <p className="text-[13px] text-halo-charcoal/55">
+              Personalized to your biology. No commitment.
+            </p>
+          </div>
 
           {/* Hero grid — anchor programs get the spotlight */}
           <div className="space-y-3">
