@@ -1093,20 +1093,31 @@ function QuizPageInner() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-[42%_58%]">
-                    {/* LEFT: Portrait (placeholder gradient until real image) */}
+                    {/* LEFT: Portrait — gendered background + image */}
                     <div
                       className="relative aspect-[4/5] md:aspect-auto md:min-h-[380px] overflow-hidden"
                       style={{
-                        background: `
-                          radial-gradient(ellipse 80% 55% at 50% 10%, rgba(255, 220, 195, 0.85) 0%, transparent 60%),
-                          radial-gradient(ellipse 60% 40% at 30% 80%, ${personaColor}30 0%, transparent 55%),
-                          linear-gradient(165deg, #FBEDDE 0%, #ECC4A6 50%, #B87960 100%)
-                        `,
+                        background:
+                          gender === "Man"
+                            ? `
+                              radial-gradient(ellipse 80% 55% at 50% 10%, rgba(220, 230, 240, 0.85) 0%, transparent 60%),
+                              radial-gradient(ellipse 60% 40% at 30% 80%, ${personaColor}30 0%, transparent 55%),
+                              linear-gradient(165deg, #EDF3FA 0%, #C9D9EB 50%, #8BA8C8 100%)
+                            `
+                            : `
+                              radial-gradient(ellipse 80% 55% at 50% 10%, rgba(255, 220, 195, 0.85) 0%, transparent 60%),
+                              radial-gradient(ellipse 60% 40% at 30% 80%, ${personaColor}30 0%, transparent 55%),
+                              linear-gradient(165deg, #FBEDDE 0%, #ECC4A6 50%, #B87960 100%)
+                            `,
                       }}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src="/hrt/gate-portrait.png"
+                        src={
+                          gender === "Man"
+                            ? "/trt/hero-portrait.png"
+                            : "/hrt/gate-portrait.png"
+                        }
                         alt=""
                         aria-hidden="true"
                         className="absolute inset-0 w-full h-full object-cover"
