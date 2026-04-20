@@ -661,8 +661,8 @@ export default function WeightLossPage() {
             </h1>
 
             <p className="text-[16px] md:text-[17px] text-halo-charcoal/70 leading-relaxed mb-8 max-w-md">
-              Physician-led GLP-1 weight loss for men and women. Full metabolic
-              panel. Dose titrated to your labs. Medication in 14 days.
+              Physician-led GLP-1 weight loss. Full metabolic panel. Dose
+              titrated to your labs. Medication in 14 days.
             </p>
 
             <ul className="space-y-2.5 mb-9 max-w-md">
@@ -780,7 +780,8 @@ export default function WeightLossPage() {
                   At 68 weeks
                 </p>
                 <p
-                  className="font-serif italic leading-none tracking-tight text-white text-[36px] md:text-[48px] lg:text-[56px] mb-2"
+                  className="font-sans leading-none text-white text-[40px] md:text-[54px] lg:text-[62px] mb-2"
+                  style={{ fontWeight: 900, letterSpacing: "-0.02em" }}
                 >
                   &minus;15 lbs
                 </p>
@@ -868,17 +869,14 @@ export default function WeightLossPage() {
                 The treatment gap
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
-                The problem isn&rsquo;t{" "}
+                This isn&rsquo;t a willpower problem.{" "}
                 <span className="italic" style={{ color: PERSONA }}>
-                  willpower.
+                  It&rsquo;s a medicine gap.
                 </span>
-                <br className="hidden md:block" />{" "}
-                It&rsquo;s biology the system ignores.
               </h2>
               <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
-                You&rsquo;ve tried the diets. You&rsquo;ve tried the discipline.
-                Your PCP suggested you try again. GLP-1s treat the underlying
-                biology. Not the willpower.
+                You&rsquo;ve tried the diets. Your PCP told you to try again.
+                GLP-1s treat the biology diets can&rsquo;t reach.
               </p>
             </div>
           </AnimateOnScroll>
@@ -986,10 +984,11 @@ export default function WeightLossPage() {
                 What changes
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.08] max-w-2xl mx-auto">
-                Your relationship with food,{" "}
+                Food noise, quiet.{" "}
                 <span className="italic" style={{ color: PERSONA }}>
-                  quiet again.
-                </span>
+                  Cravings, handled.
+                </span>{" "}
+                Plateaus, ended.
               </h2>
               <p className="text-[14px] md:text-[15px] text-halo-charcoal/55 max-w-lg mx-auto mt-5 leading-relaxed italic">
                 Hover or tap. See what changes.
