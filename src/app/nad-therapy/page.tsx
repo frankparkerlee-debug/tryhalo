@@ -9,6 +9,7 @@ import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import BenefitScroller from "@/components/BenefitScroller";
 import CountUpNumber from "@/components/CountUpNumber";
+import { track } from "@/lib/tracking";
 
 /* ==============================
    PERSONA — NAD+ = deep sapphire (clinical, longevity)
@@ -745,18 +746,96 @@ function CellularAgeQuiz() {
   const [recovery, setRecovery] = useState<Recovery | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
+  // Lead capture state — shown once the user sees their estimate
+  const [leadName, setLeadName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadHoneypot, setLeadHoneypot] = useState("");
+  const [leadStatus, setLeadStatus] = useState<
+    "idle" | "submitting" | "success" | "duplicate" | "error"
+  >("idle");
+  const [leadError, setLeadError] = useState("");
+
+  // Recognize returning leads so we don't double-collect
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = localStorage.getItem("halo_nad_lead_email");
+    if (saved) setLeadStatus("duplicate");
+  }, []);
+
   const result = (() => {
     if (!age || !recovery) return null;
     const a = ageBrackets.find((x) => x.key === age)!;
     const r = recoveryOptions.find((x) => x.key === recovery)!;
     // Estimated NAD+ (ng/mL) = base curve - recovery penalty
     const estimated = Math.max(10, a.baseNad - r.penalty);
-    // Reference young-adult NAD+ (\u224840) vs estimated \u2192 deficit pct
+    // Reference young-adult NAD+ (~40) vs estimated -> deficit pct
     const deficit = Math.round(((40 - estimated) / 40) * 100);
     return { estimated, deficit };
   })();
 
   const canSubmit = age !== null && recovery !== null;
+
+  const validEmail = (e: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+
+  const handleEstimateSubmit = () => {
+    if (!canSubmit || !result) return;
+    setSubmitted(true);
+    track("nad_estimator_submit", {
+      age: age ?? "",
+      recovery: recovery ?? "",
+      estimated: result.estimated,
+      deficit: result.deficit,
+    });
+  };
+
+  const handleLeadSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    track("nad_lead_attempt", { has_name: !!leadName.trim() });
+
+    // Silent bot rejection
+    if (leadHoneypot) {
+      setLeadStatus("success");
+      return;
+    }
+
+    if (!validEmail(leadEmail)) {
+      setLeadError("Please enter a valid email.");
+      setLeadStatus("error");
+      track("nad_lead_error", { reason: "invalid_email" });
+      return;
+    }
+
+    const saved =
+      typeof window !== "undefined"
+        ? localStorage.getItem("halo_nad_lead_email")
+        : null;
+    if (saved) {
+      setLeadStatus("duplicate");
+      track("nad_lead_duplicate", {});
+      return;
+    }
+
+    setLeadStatus("submitting");
+    // Matches the FoundingCircleForm pattern — localStorage persistence,
+    // 800ms debounce to feel like a real network call.
+    setTimeout(() => {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("halo_nad_lead_email", leadEmail.trim());
+        if (leadName.trim()) {
+          localStorage.setItem("halo_nad_lead_name", leadName.trim());
+        }
+      }
+      setLeadStatus("success");
+      track("nad_lead_success", {
+        age: age ?? "",
+        recovery: recovery ?? "",
+        estimated: result?.estimated ?? 0,
+        deficit: result?.deficit ?? 0,
+        has_name: !!leadName.trim(),
+      });
+    }, 800);
+  };
 
   return (
     <div
@@ -865,7 +944,7 @@ function CellularAgeQuiz() {
             </div>
 
             <button
-              onClick={() => canSubmit && setSubmitted(true)}
+              onClick={handleEstimateSubmit}
               disabled={!canSubmit}
               className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
               style={{
@@ -940,29 +1019,188 @@ function CellularAgeQuiz() {
               design a protocol to your biology.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/quiz?from=nad-estimator"
-                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+            {/* ─── Lead capture — idle / error / submitting ─── */}
+            {(leadStatus === "idle" ||
+              leadStatus === "error" ||
+              leadStatus === "submitting") && (
+              <div
+                className="rounded-[14px] p-5 md:p-6"
                 style={{
-                  backgroundColor: PERSONA,
-                  boxShadow: `0 10px 28px ${PERSONA}55`,
+                  background: "#FFFFFF",
+                  border: `1px solid ${PERSONA}22`,
+                  boxShadow: `0 10px 30px -20px ${PERSONA}66`,
                 }}
               >
-                Measure the real number
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <button
-                onClick={() => {
-                  setSubmitted(false);
-                  setAge(null);
-                  setRecovery(null);
+                <p
+                  className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] mb-2"
+                  style={{ color: PERSONA_DEEP }}
+                >
+                  Your personalized plan
+                </p>
+                <h4 className="font-serif text-[20px] md:text-[22px] leading-[1.2] tracking-tight text-halo-charcoal mb-2">
+                  Send my NAD+ protocol &amp; what to measure first.
+                </h4>
+                <p className="text-[13px] text-halo-charcoal/60 leading-relaxed mb-4">
+                  A physician-built overview, tailored to a{" "}
+                  <strong className="text-halo-charcoal">
+                    {result.deficit}%
+                  </strong>{" "}
+                  estimated deficit. No pressure to enroll.
+                </p>
+
+                <form onSubmit={handleLeadSubmit} className="space-y-2.5">
+                  {/* Honeypot */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={leadHoneypot}
+                    onChange={(e) => setLeadHoneypot(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    style={{
+                      position: "absolute",
+                      left: "-9999px",
+                      opacity: 0,
+                      height: 0,
+                      width: 0,
+                      overflow: "hidden",
+                    }}
+                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <input
+                      type="text"
+                      autoComplete="given-name"
+                      placeholder="First name"
+                      aria-label="First name"
+                      value={leadName}
+                      onChange={(e) => {
+                        setLeadName(e.target.value);
+                        if (leadStatus === "error") setLeadStatus("idle");
+                      }}
+                      className="w-full px-4 py-3 bg-[#FAF8F4] border border-halo-charcoal/12 focus:border-halo-charcoal/35 focus:outline-none rounded-[10px] text-sm text-halo-charcoal placeholder:text-halo-charcoal/40 transition-colors"
+                    />
+                    <input
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      placeholder="Email"
+                      aria-label="Email"
+                      required
+                      value={leadEmail}
+                      onChange={(e) => {
+                        setLeadEmail(e.target.value);
+                        if (leadStatus === "error") setLeadStatus("idle");
+                      }}
+                      className="w-full px-4 py-3 bg-[#FAF8F4] border border-halo-charcoal/12 focus:border-halo-charcoal/35 focus:outline-none rounded-[10px] text-sm text-halo-charcoal placeholder:text-halo-charcoal/40 transition-colors"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={leadStatus === "submitting"}
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+                    style={{
+                      backgroundColor: PERSONA,
+                      boxShadow: `0 10px 28px ${PERSONA}55`,
+                      opacity: leadStatus === "submitting" ? 0.7 : 1,
+                      cursor:
+                        leadStatus === "submitting" ? "wait" : "pointer",
+                    }}
+                  >
+                    {leadStatus === "submitting"
+                      ? "Sending\u2026"
+                      : "Send my plan"}
+                    {leadStatus !== "submitting" && (
+                      <ArrowRight className="w-4 h-4" />
+                    )}
+                  </button>
+                  {leadStatus === "error" && (
+                    <p className="text-xs text-red-500 pl-1">{leadError}</p>
+                  )}
+                  <p className="text-[10px] text-center text-halo-charcoal/40 pt-1">
+                    We&rsquo;ll never share your info. Unsubscribe anytime.
+                  </p>
+                </form>
+              </div>
+            )}
+
+            {/* ─── Lead capture — success ─── */}
+            {leadStatus === "success" && (
+              <div
+                className="rounded-[14px] p-5 md:p-6 text-center"
+                style={{
+                  background: `${PERSONA}0F`,
+                  border: `1px solid ${PERSONA}33`,
                 }}
-                className="inline-flex items-center justify-center px-6 py-3.5 rounded-full text-halo-charcoal/70 font-semibold text-sm border border-halo-charcoal/15 hover:bg-halo-charcoal/[0.04] transition-colors"
               >
-                Reset
-              </button>
-            </div>
+                <p
+                  className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] mb-2"
+                  style={{ color: PERSONA_DEEP }}
+                >
+                  On its way
+                </p>
+                <h4 className="font-serif text-[20px] md:text-[22px] leading-[1.2] tracking-tight text-halo-charcoal mb-2">
+                  Check your inbox.
+                </h4>
+                <p className="text-[13px] text-halo-charcoal/65 leading-relaxed mb-5 max-w-sm mx-auto">
+                  Your personalized NAD+ overview is on its way. When
+                  you&rsquo;re ready to measure your actual numbers, take the
+                  full assessment below.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2.5 justify-center">
+                  <Link
+                    href="/quiz?from=nad-estimator"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+                    style={{ backgroundColor: PERSONA }}
+                  >
+                    Take the full assessment
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setSubmitted(false);
+                      setAge(null);
+                      setRecovery(null);
+                    }}
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-full text-halo-charcoal/70 font-semibold text-sm border border-halo-charcoal/15 hover:bg-halo-charcoal/[0.04] transition-colors"
+                  >
+                    Start over
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ─── Lead capture — returning (already on the list) ─── */}
+            {leadStatus === "duplicate" && (
+              <div
+                className="rounded-[14px] p-5 md:p-6 text-center"
+                style={{
+                  background: `${PERSONA}0F`,
+                  border: `1px solid ${PERSONA}33`,
+                }}
+              >
+                <p
+                  className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] mb-2"
+                  style={{ color: PERSONA_DEEP }}
+                >
+                  Welcome back
+                </p>
+                <h4 className="font-serif text-[20px] md:text-[22px] leading-[1.2] tracking-tight text-halo-charcoal mb-2">
+                  You&rsquo;re already on the list.
+                </h4>
+                <p className="text-[13px] text-halo-charcoal/65 leading-relaxed mb-5 max-w-sm mx-auto">
+                  Ready to measure your actual NAD+? The full assessment takes
+                  about four minutes.
+                </p>
+                <Link
+                  href="/quiz?from=nad-estimator"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+                  style={{ backgroundColor: PERSONA }}
+                >
+                  Take the full assessment
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
 
             <p className="plex-mono text-[9px] italic text-halo-charcoal/35 mt-5 text-center">
               Not a diagnostic. Actual NAD+ varies by tissue, genetics, and lifestyle.
@@ -1203,14 +1441,14 @@ export default function NadTherapyPage() {
                 className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em]"
                 style={{ color: PERSONA_SOFT }}
               >
-                NAD+ Therapy \u00B7 Halo Rx 001
+                NAD+ Therapy &middot; Longevity medicine
               </span>
             </div>
 
-            <h1 className="headline-hero text-[36px] md:text-[52px] lg:text-[62px] text-white leading-[1.02] tracking-tight mb-5">
-              Take on{" "}
+            <h1 className="headline-hero text-[32px] md:text-[46px] lg:text-[56px] text-white leading-[1.04] tracking-tight mb-5">
+              You&rsquo;ve heard about NAD+.{" "}
               <span className="italic" style={{ color: PERSONA_SOFT }}>
-                Father Time.
+                Here&rsquo;s how to actually use it.
               </span>
             </h1>
 
@@ -1221,7 +1459,7 @@ export default function NadTherapyPage() {
 
             <ul className="space-y-2.5 mb-9 max-w-md">
               {[
-                "Physician-designed. Not a supplement stack.",
+                "A prescribed therapy \u2014 not a drugstore supplement.",
                 "Subcutaneous injection \u2014 skip the IV chair.",
                 "Paired with Glutathione. Monitored every 90 days.",
               ].map((bullet) => (
@@ -1250,12 +1488,19 @@ export default function NadTherapyPage() {
                 Start my assessment
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                href="/quiz?from=nad"
+              <a
+                href="#cellular-age-estimator"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById("cellular-age-estimator");
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-white/25 text-white font-semibold text-sm hover:border-white/50 transition-colors"
               >
                 See if I qualify
-              </Link>
+              </a>
             </div>
 
             <p className="text-[12px] text-white/45 italic">
@@ -1296,7 +1541,7 @@ export default function NadTherapyPage() {
                 Tap &ldquo;90 days&rdquo; to see the shift
               </p>
               <p className="plex-mono text-[9px] uppercase tracking-[0.18em] text-white/25 mt-2 text-center">
-                Sample panel \u00B7 representative of member results
+                Sample panel &middot; representative of member results
               </p>
             </div>
           </div>
@@ -1419,7 +1664,7 @@ export default function NadTherapyPage() {
           5 · CELLULAR AGE QUIZ — inline engagement
           "Your number → measure it for real"
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
+      <section id="cellular-age-estimator" className="scroll-mt-20 py-16 md:py-24 px-6 section-light">
         <div className="max-w-3xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-10 md:mb-14">
