@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Plus, Minus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft, ArrowRight, Plus, Minus } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
@@ -724,29 +724,150 @@ function ScienceAccordion({
    panel" CTA routes high-intent visitors straight to the quiz.
    ============================== */
 
-type AgeBracket = "30s" | "40s" | "50s" | "60s";
+/* ──────────────────────────────────────────────────────────
+   Cellular Age Estimator — 7-question inline quiz
+   ──────────────────────────────────────────────────────────
+   Honest framing: this is a PROXY for biological/cellular age
+   based on lifestyle inputs correlated with NAD+ decline. The
+   only way to know actual NAD+ is a blood panel. That caveat
+   is the sales argument for measuring it with Halo.
+   ────────────────────────────────────────────────────────── */
+
+type Gender = "female" | "male";
 type Recovery = "quick" | "slower" | "much-slower";
+type Sleep = "good" | "decent" | "rough";
+type Alcohol = "low" | "medium" | "high";
+type Supplementation = "none" | "pills" | "iv";
+type PrimaryDrag = "energy" | "clarity" | "recovery" | "mood";
 
-const ageBrackets: { key: AgeBracket; label: string; baseNad: number }[] = [
-  // baseNad = rough expected tissue NAD+ midpoint (ng/mL) per published decline curves
-  { key: "30s", label: "30s", baseNad: 34 },
-  { key: "40s", label: "40s", baseNad: 27 },
-  { key: "50s", label: "50s", baseNad: 21 },
-  { key: "60s", label: "60s+", baseNad: 17 },
+type OptionItem<T extends string> = { key: T; label: string; note?: string };
+
+const genderOptions: OptionItem<Gender>[] = [
+  { key: "female", label: "Female" },
+  { key: "male", label: "Male" },
 ];
 
-const recoveryOptions: { key: Recovery; label: string; penalty: number }[] = [
-  { key: "quick", label: "Same day", penalty: 0 },
-  { key: "slower", label: "A day or two", penalty: 3 },
-  { key: "much-slower", label: "Several days", penalty: 6 },
+const recoveryOptions: OptionItem<Recovery>[] = [
+  { key: "quick", label: "Same day", note: "Fresh the next morning" },
+  { key: "slower", label: "A day or two", note: "Back to normal in 48 hours" },
+  { key: "much-slower", label: "Several days", note: "Lingering soreness, lower output" },
 ];
+
+const sleepOptions: OptionItem<Sleep>[] = [
+  { key: "good", label: "Consistently good", note: "7+ hours, wake up rested" },
+  { key: "decent", label: "Decent, some bad nights", note: "Mixed — a few rough weeks" },
+  { key: "rough", label: "Rough most nights", note: "Under 6 hours or broken sleep" },
+];
+
+const alcoholOptions: OptionItem<Alcohol>[] = [
+  { key: "low", label: "0\u20132 drinks / week" },
+  { key: "medium", label: "3\u20137 drinks / week" },
+  { key: "high", label: "8+ drinks / week" },
+];
+
+const supplementationOptions: OptionItem<Supplementation>[] = [
+  { key: "none", label: "Not supplementing", note: "Nothing targeting NAD+ right now" },
+  { key: "pills", label: "NR or NMN pills", note: "Daily oral precursor" },
+  { key: "iv", label: "IV drips", note: "Occasional clinic visits" },
+];
+
+const primaryDragOptions: OptionItem<PrimaryDrag>[] = [
+  { key: "energy", label: "Energy & stamina" },
+  { key: "clarity", label: "Mental clarity" },
+  { key: "recovery", label: "Recovery & soreness" },
+  { key: "mood", label: "Mood & resilience" },
+];
+
+/* Tailored narrative by user's biggest daily drag.
+   Strings are interpolated via {narrative} in JSX — entities like &rsquo;
+   would render literally, so use real Unicode characters instead. */
+const DRAG_NARRATIVE: Record<PrimaryDrag, string> = {
+  energy:
+    "Most members report sustained daily energy within 4\u20136 weeks as mitochondrial output improves. It\u2019s usually the first thing they feel.",
+  clarity:
+    "Brain fog tends to clear first. Restored sirtuin activity and reduced CD38 consumption typically show up cognitively within 6\u20138 weeks.",
+  recovery:
+    "Recovery is where the biological age gap shows up fastest. NAD+ supports mitochondrial rebuilding post-stress \u2014 most members notice it inside 30 days.",
+  mood:
+    "Mood stabilization often follows cognitive clearing. Serotonin synthesis depends on NAD+ pools; members report steadier affect within 6\u20138 weeks.",
+};
+
+interface CellularAgeInputs {
+  chronologicalAge: number;
+  gender: Gender;
+  recovery: Recovery;
+  sleep: Sleep;
+  alcohol: Alcohol;
+  supplementation: Supplementation;
+}
+
+interface CellularAgeResult {
+  chronologicalAge: number;
+  cellularAge: number;
+  ageDelta: number;
+  estimatedNad: number;
+  deficit: number;
+}
+
+function computeCellularAge(inputs: CellularAgeInputs): CellularAgeResult {
+  let delta = 0;
+
+  // Recovery — strongest proxy for mitochondrial NAD+ function
+  if (inputs.recovery === "slower") delta += 3;
+  if (inputs.recovery === "much-slower") delta += 7;
+
+  // Sleep — NAMPT (NAD+ biosynthesis) activity peaks during deep sleep
+  if (inputs.sleep === "decent") delta += 1;
+  if (inputs.sleep === "rough") delta += 5;
+
+  // Alcohol — activates CD38, a primary NAD+ consumer
+  if (inputs.alcohol === "medium") delta += 1;
+  if (inputs.alcohol === "high") delta += 4;
+
+  // Supplementation — small bias correction
+  if (inputs.supplementation === "pills") delta -= 1;
+  if (inputs.supplementation === "iv") delta -= 2;
+
+  // Gender — women's NAD+ decline is steeper through perimenopause window
+  // Keep neutral in delta (subtle effect not worth the cognitive weight)
+  void inputs.gender;
+
+  delta = Math.max(-3, Math.min(15, delta));
+  const cellularAge = Math.round(inputs.chronologicalAge + delta);
+
+  // Rough NAD+ decline curve: ~40 ng/mL at 30, linear -0.67/yr
+  const estimatedNad = Math.max(
+    10,
+    Math.round(40 - Math.max(0, cellularAge - 30) * 0.67)
+  );
+  const deficit = Math.round(((40 - estimatedNad) / 40) * 100);
+
+  return {
+    chronologicalAge: inputs.chronologicalAge,
+    cellularAge,
+    ageDelta: delta,
+    estimatedNad,
+    deficit,
+  };
+}
+
+type StepNum = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type Step = StepNum | "result";
+const TOTAL_STEPS = 7;
 
 function CellularAgeQuiz() {
-  const [age, setAge] = useState<AgeBracket | null>(null);
-  const [recovery, setRecovery] = useState<Recovery | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [step, setStep] = useState<Step>(1);
 
-  // Lead capture state — shown once the user sees their estimate
+  // Answers
+  const [chronologicalAge, setChronologicalAge] = useState(40);
+  const [gender, setGender] = useState<Gender | null>(null);
+  const [recovery, setRecovery] = useState<Recovery | null>(null);
+  const [sleep, setSleep] = useState<Sleep | null>(null);
+  const [alcohol, setAlcohol] = useState<Alcohol | null>(null);
+  const [supplementation, setSupplementation] = useState<Supplementation | null>(null);
+  const [primaryDrag, setPrimaryDrag] = useState<PrimaryDrag | null>(null);
+
+  // Lead capture state
   const [leadName, setLeadName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
   const [leadHoneypot, setLeadHoneypot] = useState("");
@@ -762,50 +883,96 @@ function CellularAgeQuiz() {
     if (saved) setLeadStatus("duplicate");
   }, []);
 
-  const result = (() => {
-    if (!age || !recovery) return null;
-    const a = ageBrackets.find((x) => x.key === age)!;
-    const r = recoveryOptions.find((x) => x.key === recovery)!;
-    // Estimated NAD+ (ng/mL) = base curve - recovery penalty
-    const estimated = Math.max(10, a.baseNad - r.penalty);
-    // Reference young-adult NAD+ (~40) vs estimated -> deficit pct
-    const deficit = Math.round(((40 - estimated) / 40) * 100);
-    return { estimated, deficit };
+  // Compute result once all answers are in
+  const result = useMemo<CellularAgeResult | null>(() => {
+    if (!gender || !recovery || !sleep || !alcohol || !supplementation) return null;
+    return computeCellularAge({
+      chronologicalAge,
+      gender,
+      recovery,
+      sleep,
+      alcohol,
+      supplementation,
+    });
+  }, [chronologicalAge, gender, recovery, sleep, alcohol, supplementation]);
+
+  // Is the current step answered?
+  const currentAnswered = (() => {
+    switch (step) {
+      case 1: return chronologicalAge >= 25 && chronologicalAge <= 75;
+      case 2: return gender !== null;
+      case 3: return recovery !== null;
+      case 4: return sleep !== null;
+      case 5: return alcohol !== null;
+      case 6: return supplementation !== null;
+      case 7: return primaryDrag !== null;
+      default: return false;
+    }
   })();
 
-  const canSubmit = age !== null && recovery !== null;
+  const goNext = () => {
+    if (step === "result") return;
+    if (step === 7) {
+      if (result && primaryDrag) {
+        setStep("result");
+        track("nad_estimator_submit", {
+          chronological_age: chronologicalAge,
+          gender: gender ?? "",
+          recovery: recovery ?? "",
+          sleep: sleep ?? "",
+          alcohol: alcohol ?? "",
+          supplementation: supplementation ?? "",
+          primary_drag: primaryDrag,
+          cellular_age: result.cellularAge,
+          age_delta: result.ageDelta,
+          deficit: result.deficit,
+        });
+      }
+    } else {
+      setStep((step + 1) as StepNum);
+    }
+  };
+
+  const goBack = () => {
+    if (step === "result") {
+      setStep(7);
+      return;
+    }
+    if (step > 1) {
+      setStep((step - 1) as StepNum);
+    }
+  };
+
+  // Tap-to-select with auto-advance for single-select questions (Q2-Q6).
+  // Q7 intentionally requires explicit submit so the user can read the result intro.
+  function selectAndAdvance<T>(setter: (v: T) => void, value: T) {
+    setter(value);
+    setTimeout(() => {
+      setStep((prev) => {
+        if (prev === "result") return prev;
+        if (prev === 7) return prev;
+        return (prev + 1) as StepNum;
+      });
+    }, 300);
+  }
 
   const validEmail = (e: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
-
-  const handleEstimateSubmit = () => {
-    if (!canSubmit || !result) return;
-    setSubmitted(true);
-    track("nad_estimator_submit", {
-      age: age ?? "",
-      recovery: recovery ?? "",
-      estimated: result.estimated,
-      deficit: result.deficit,
-    });
-  };
 
   const handleLeadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     track("nad_lead_attempt", { has_name: !!leadName.trim() });
 
-    // Silent bot rejection
     if (leadHoneypot) {
       setLeadStatus("success");
       return;
     }
-
     if (!validEmail(leadEmail)) {
       setLeadError("Please enter a valid email.");
       setLeadStatus("error");
       track("nad_lead_error", { reason: "invalid_email" });
       return;
     }
-
     const saved =
       typeof window !== "undefined"
         ? localStorage.getItem("halo_nad_lead_email")
@@ -817,8 +984,6 @@ function CellularAgeQuiz() {
     }
 
     setLeadStatus("submitting");
-    // Matches the FoundingCircleForm pattern — localStorage persistence,
-    // 800ms debounce to feel like a real network call.
     setTimeout(() => {
       if (typeof window !== "undefined") {
         localStorage.setItem("halo_nad_lead_email", leadEmail.trim());
@@ -828,14 +993,78 @@ function CellularAgeQuiz() {
       }
       setLeadStatus("success");
       track("nad_lead_success", {
-        age: age ?? "",
-        recovery: recovery ?? "",
-        estimated: result?.estimated ?? 0,
+        cellular_age: result?.cellularAge ?? 0,
+        chronological_age: chronologicalAge,
         deficit: result?.deficit ?? 0,
+        primary_drag: primaryDrag ?? "",
         has_name: !!leadName.trim(),
       });
     }, 800);
   };
+
+  const handleReset = () => {
+    setStep(1);
+    setChronologicalAge(40);
+    setGender(null);
+    setRecovery(null);
+    setSleep(null);
+    setAlcohol(null);
+    setSupplementation(null);
+    setPrimaryDrag(null);
+    setLeadName("");
+    setLeadEmail("");
+    setLeadError("");
+    // Only reset lead status if user is restarting after an error/idle.
+    // If they've already captured, keep duplicate state.
+    if (leadStatus === "error" || leadStatus === "idle") {
+      setLeadStatus("idle");
+    }
+  };
+
+  const progressNum = step === "result" ? TOTAL_STEPS : step;
+
+  // ─── Inline option-button renderer ───
+  const OptionButton = ({
+    label,
+    note,
+    selected,
+    onClick,
+  }: {
+    label: string;
+    note?: string;
+    selected: boolean;
+    onClick: () => void;
+  }) => (
+    <button
+      onClick={onClick}
+      aria-pressed={selected}
+      className="rounded-[10px] py-3 px-4 text-left transition-all duration-200"
+      style={{
+        background: selected ? PERSONA : "#FFFFFF",
+        color: selected ? "#FFFFFF" : "rgba(28,28,30,0.85)",
+        border: `1px solid ${selected ? PERSONA : "rgba(28,28,30,0.12)"}`,
+        boxShadow: selected
+          ? `0 8px 24px ${PERSONA}55`
+          : "0 1px 0 rgba(28,28,30,0.04)",
+      }}
+    >
+      <span className="block text-[14px] font-medium leading-tight">{label}</span>
+      {note && (
+        <span
+          className="block text-[11px] mt-1 leading-snug"
+          style={{ opacity: selected ? 0.85 : 0.55 }}
+        >
+          {note}
+        </span>
+      )}
+    </button>
+  );
+
+  const StepEyebrow = ({ n, title }: { n: number; title: string }) => (
+    <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3">
+      Question {n} of {TOTAL_STEPS} &middot; {title}
+    </p>
+  );
 
   return (
     <div
@@ -846,6 +1075,7 @@ function CellularAgeQuiz() {
         boxShadow: "0 18px 50px -25px rgba(10,14,24,0.18)",
       }}
     >
+      {/* ─── Header bar ─── */}
       <div
         className="px-6 md:px-8 py-4 flex items-center justify-between"
         style={{ background: `${PERSONA}0C`, borderBottom: "1px solid rgba(28,28,30,0.06)" }}
@@ -864,128 +1094,275 @@ function CellularAgeQuiz() {
           </p>
         </div>
         <p className="plex-mono text-[9px] uppercase tracking-[0.18em] text-halo-charcoal/40">
-          60 seconds
+          {step === "result"
+            ? "Your estimate"
+            : `${progressNum} / ${TOTAL_STEPS}`}
         </p>
       </div>
 
+      {/* ─── Progress bar (hidden on result) ─── */}
+      {step !== "result" && (
+        <div className="px-6 md:px-8 pt-4 pb-1">
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+              <span
+                key={n}
+                aria-hidden="true"
+                className="flex-1 rounded-full transition-colors duration-300"
+                style={{
+                  height: 2,
+                  background: n <= progressNum ? PERSONA : "rgba(28,28,30,0.10)",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── Body ─── */}
       <div className="px-6 md:px-8 py-8 md:py-10">
-        {!submitted && (
-          <>
-            {/* Q1 \u2014 age bracket */}
-            <div className="mb-8">
-              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3">
-                Step 1 &middot; Your age
-              </p>
-              <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-5">
-                Which bracket are you in?
-              </h3>
-              <div className="grid grid-cols-4 gap-2">
-                {ageBrackets.map((b) => {
-                  const isSelected = age === b.key;
-                  return (
-                    <button
-                      key={b.key}
-                      onClick={() => setAge(b.key)}
-                      className="plex-mono rounded-[10px] py-3 text-[13px] font-semibold uppercase tracking-[0.14em] transition-all duration-200"
-                      style={{
-                        background: isSelected ? PERSONA : "#FFFFFF",
-                        color: isSelected ? "#FFFFFF" : "rgba(28,28,30,0.75)",
-                        border: `1px solid ${isSelected ? PERSONA : "rgba(28,28,30,0.12)"}`,
-                        boxShadow: isSelected
-                          ? `0 8px 24px ${PERSONA}55`
-                          : "0 1px 0 rgba(28,28,30,0.04)",
-                      }}
-                      aria-pressed={isSelected}
-                    >
-                      {b.label}
-                    </button>
-                  );
-                })}
-              </div>
+        {/* Q1 — chronological age */}
+        {step === 1 && (
+          <div className="animate-in fade-in duration-300">
+            <StepEyebrow n={1} title="Your age" />
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-6">
+              How old are you, chronologically?
+            </h3>
+            <div className="flex items-center justify-center gap-4 md:gap-6 mb-2">
+              <button
+                onClick={() => setChronologicalAge((a) => Math.max(25, a - 1))}
+                aria-label="Decrease age"
+                className="w-11 h-11 rounded-full flex items-center justify-center transition-colors hover:bg-halo-charcoal/[0.04]"
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(28,28,30,0.12)",
+                }}
+              >
+                <Minus className="w-4 h-4" strokeWidth={2.5} style={{ color: PERSONA }} />
+              </button>
+              <input
+                type="number"
+                min={25}
+                max={75}
+                value={chronologicalAge}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value || "0", 10);
+                  if (!isNaN(v)) setChronologicalAge(Math.max(25, Math.min(75, v)));
+                }}
+                className="font-serif text-[64px] md:text-[80px] font-light leading-none tracking-tight text-halo-charcoal w-[140px] text-center bg-transparent border-none focus:outline-none"
+                aria-label="Age in years"
+              />
+              <button
+                onClick={() => setChronologicalAge((a) => Math.min(75, a + 1))}
+                aria-label="Increase age"
+                className="w-11 h-11 rounded-full flex items-center justify-center transition-colors hover:bg-halo-charcoal/[0.04]"
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(28,28,30,0.12)",
+                }}
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.5} style={{ color: PERSONA }} />
+              </button>
             </div>
-
-            {/* Q2 \u2014 recovery */}
-            <div
-              className="mb-8 transition-all duration-500"
-              style={{
-                opacity: age ? 1 : 0.35,
-                pointerEvents: age ? "auto" : "none",
-              }}
-            >
-              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3">
-                Step 2 &middot; Recovery
-              </p>
-              <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-5">
-                After a hard workout, how long until you feel fresh again?
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {recoveryOptions.map((r) => {
-                  const isSelected = recovery === r.key;
-                  return (
-                    <button
-                      key={r.key}
-                      onClick={() => setRecovery(r.key)}
-                      className="rounded-[10px] py-3 px-4 text-[13px] font-medium transition-all duration-200 text-left"
-                      style={{
-                        background: isSelected ? PERSONA : "#FFFFFF",
-                        color: isSelected ? "#FFFFFF" : "rgba(28,28,30,0.8)",
-                        border: `1px solid ${isSelected ? PERSONA : "rgba(28,28,30,0.12)"}`,
-                        boxShadow: isSelected
-                          ? `0 8px 24px ${PERSONA}55`
-                          : "0 1px 0 rgba(28,28,30,0.04)",
-                      }}
-                      aria-pressed={isSelected}
-                    >
-                      {r.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <button
-              onClick={handleEstimateSubmit}
-              disabled={!canSubmit}
-              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
-              style={{
-                backgroundColor: canSubmit ? PERSONA : "rgba(28,28,30,0.15)",
-                cursor: canSubmit ? "pointer" : "not-allowed",
-                boxShadow: canSubmit ? `0 10px 28px ${PERSONA}55` : "none",
-              }}
-            >
-              See my estimated NAD+
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </>
+            <p className="plex-mono text-[10px] uppercase tracking-[0.22em] text-halo-charcoal/45 text-center">
+              years
+            </p>
+          </div>
         )}
 
-        {submitted && result && (
+        {/* Q2 — biological sex */}
+        {step === 2 && (
+          <div className="animate-in fade-in duration-300">
+            <StepEyebrow n={2} title="Biological sex" />
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-2">
+              Which applies to you?
+            </h3>
+            <p className="text-[12px] italic text-halo-charcoal/50 mb-5">
+              NAD+ biology differs between sexes; we use this to tune the estimate.
+            </p>
+            <div className="grid grid-cols-2 gap-2.5">
+              {genderOptions.map((o) => (
+                <OptionButton
+                  key={o.key}
+                  label={o.label}
+                  selected={gender === o.key}
+                  onClick={() => selectAndAdvance(setGender, o.key)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Q3 — recovery */}
+        {step === 3 && (
+          <div className="animate-in fade-in duration-300">
+            <StepEyebrow n={3} title="Recovery" />
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-5">
+              After a hard effort, how long until you feel fresh again?
+            </h3>
+            <div className="flex flex-col gap-2.5">
+              {recoveryOptions.map((o) => (
+                <OptionButton
+                  key={o.key}
+                  label={o.label}
+                  note={o.note}
+                  selected={recovery === o.key}
+                  onClick={() => selectAndAdvance(setRecovery, o.key)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Q4 — sleep */}
+        {step === 4 && (
+          <div className="animate-in fade-in duration-300">
+            <StepEyebrow n={4} title="Sleep" />
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-5">
+              How&rsquo;s your sleep, honestly?
+            </h3>
+            <div className="flex flex-col gap-2.5">
+              {sleepOptions.map((o) => (
+                <OptionButton
+                  key={o.key}
+                  label={o.label}
+                  note={o.note}
+                  selected={sleep === o.key}
+                  onClick={() => selectAndAdvance(setSleep, o.key)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Q5 — alcohol */}
+        {step === 5 && (
+          <div className="animate-in fade-in duration-300">
+            <StepEyebrow n={5} title="Alcohol" />
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-2">
+              A typical week of drinks?
+            </h3>
+            <p className="text-[12px] italic text-halo-charcoal/50 mb-5">
+              Alcohol activates CD38, a primary NAD+ consumer.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {alcoholOptions.map((o) => (
+                <OptionButton
+                  key={o.key}
+                  label={o.label}
+                  selected={alcohol === o.key}
+                  onClick={() => selectAndAdvance(setAlcohol, o.key)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Q6 — supplementation */}
+        {step === 6 && (
+          <div className="animate-in fade-in duration-300">
+            <StepEyebrow n={6} title="Supplementation" />
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-5">
+              Already doing anything for NAD+?
+            </h3>
+            <div className="flex flex-col gap-2.5">
+              {supplementationOptions.map((o) => (
+                <OptionButton
+                  key={o.key}
+                  label={o.label}
+                  note={o.note}
+                  selected={supplementation === o.key}
+                  onClick={() => selectAndAdvance(setSupplementation, o.key)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Q7 — primary drag */}
+        {step === 7 && (
+          <div className="animate-in fade-in duration-300">
+            <StepEyebrow n={7} title="What feels off" />
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-2">
+              What&rsquo;s pulling on you most?
+            </h3>
+            <p className="text-[12px] italic text-halo-charcoal/50 mb-5">
+              Pick the one that would change your daily life most if it lifted.
+            </p>
+            <div className="grid grid-cols-2 gap-2.5">
+              {primaryDragOptions.map((o) => (
+                <OptionButton
+                  key={o.key}
+                  label={o.label}
+                  selected={primaryDrag === o.key}
+                  onClick={() => setPrimaryDrag(o.key)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Result */}
+        {step === "result" && result && primaryDrag && (
           <div className="animate-in fade-in duration-500">
-            <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3">
+            <p
+              className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] mb-3"
+              style={{ color: PERSONA_DEEP }}
+            >
               Your estimate
             </p>
-            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-6">
-              Estimated NAD+ range &amp; deficit vs. your 20s.
+            <h3 className="font-serif text-[22px] md:text-[28px] leading-[1.15] tracking-tight text-halo-charcoal mb-6">
+              {result.ageDelta > 0 ? (
+                <>
+                  You&rsquo;re chronologically {result.chronologicalAge}. Your
+                  lifestyle puts you closer to{" "}
+                  <span className="italic" style={{ color: PERSONA }}>
+                    {result.cellularAge} biologically
+                  </span>
+                  .
+                </>
+              ) : result.ageDelta < 0 ? (
+                <>
+                  You&rsquo;re chronologically {result.chronologicalAge}, but
+                  you&rsquo;re trending{" "}
+                  <span className="italic" style={{ color: PERSONA }}>
+                    {Math.abs(result.ageDelta)} years younger
+                  </span>{" "}
+                  biologically.
+                </>
+              ) : (
+                <>
+                  You&rsquo;re tracking roughly on par with your chronological
+                  age &mdash;{" "}
+                  <span className="italic" style={{ color: PERSONA }}>
+                    {result.cellularAge}
+                  </span>
+                  .
+                </>
+              )}
             </h3>
 
+            {/* Two number cards */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div
                 className="rounded-[14px] p-5"
                 style={{ background: "#FFFFFF", border: "1px solid rgba(28,28,30,0.08)" }}
               >
                 <p className="plex-mono text-[9px] uppercase tracking-[0.2em] text-halo-charcoal/45 mb-2">
-                  Estimated NAD+
+                  Est. cellular age
                 </p>
                 <div className="flex items-baseline gap-1.5">
                   <CountUpNumber
-                    target={result.estimated}
+                    target={result.cellularAge}
                     duration={1200}
                     className="font-serif text-[42px] md:text-[54px] font-light leading-none tracking-tight text-halo-charcoal"
                   />
-                  <span className="plex-mono text-[11px] text-halo-charcoal/55">ng/mL</span>
+                  <span className="plex-mono text-[11px] text-halo-charcoal/55">
+                    yrs
+                  </span>
                 </div>
                 <p className="text-[11px] italic text-halo-charcoal/45 mt-2">
-                  Reference: ~40 ng/mL in healthy 20s
+                  vs. {result.chronologicalAge} chronological
                 </p>
               </div>
 
@@ -993,33 +1370,55 @@ function CellularAgeQuiz() {
                 className="rounded-[14px] p-5"
                 style={{ background: `${PERSONA}0F`, border: `1px solid ${PERSONA}30` }}
               >
-                <p className="plex-mono text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: PERSONA_DEEP }}>
-                  Deficit
+                <p
+                  className="plex-mono text-[9px] uppercase tracking-[0.2em] mb-2"
+                  style={{ color: PERSONA_DEEP }}
+                >
+                  NAD+ deficit
                 </p>
                 <div className="flex items-baseline gap-1">
                   <CountUpNumber
                     target={result.deficit}
                     duration={1200}
                     className="font-serif text-[42px] md:text-[54px] font-light leading-none tracking-tight"
-                    // styled via className; color applied below
                   />
-                  <span className="font-serif text-[28px] md:text-[36px] font-light" style={{ color: PERSONA_DEEP }}>%</span>
+                  <span
+                    className="font-serif text-[28px] md:text-[36px] font-light"
+                    style={{ color: PERSONA_DEEP }}
+                  >
+                    %
+                  </span>
                 </div>
-                <p className="text-[11px] italic mt-2" style={{ color: PERSONA_DEEP, opacity: 0.7 }}>
-                  vs. healthy-young-adult NAD+
+                <p
+                  className="text-[11px] italic mt-2"
+                  style={{ color: PERSONA_DEEP, opacity: 0.7 }}
+                >
+                  vs. healthy 20s baseline
                 </p>
               </div>
             </div>
 
-            <p className="text-[13px] text-halo-charcoal/65 leading-relaxed mb-6">
-              This is an{" "}
-              <strong className="text-halo-charcoal">estimate</strong> based on
-              population averages. Halo&rsquo;s baseline panel measures your
-              actual NAD+ along with 15+ other markers so your physician can
-              design a protocol to your biology.
-            </p>
+            {/* Tailored narrative — based on primary drag */}
+            <div
+              className="rounded-[14px] p-5 mb-6"
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid rgba(28,28,30,0.08)",
+              }}
+            >
+              <p className="text-[13px] md:text-[14px] text-halo-charcoal/75 leading-relaxed">
+                {DRAG_NARRATIVE[primaryDrag]}
+              </p>
+              <p className="text-[12px] text-halo-charcoal/55 leading-relaxed mt-3">
+                This is an{" "}
+                <strong className="text-halo-charcoal">estimate</strong> based
+                on lifestyle inputs. Halo&rsquo;s baseline panel measures your
+                actual NAD+ along with 15+ other markers so your physician can
+                design a protocol to your biology.
+              </p>
+            </div>
 
-            {/* ─── Lead capture — idle / error / submitting ─── */}
+            {/* Lead capture — idle / error / submitting */}
             {(leadStatus === "idle" ||
               leadStatus === "error" ||
               leadStatus === "submitting") && (
@@ -1041,7 +1440,7 @@ function CellularAgeQuiz() {
                   Send my NAD+ protocol &amp; what to measure first.
                 </h4>
                 <p className="text-[13px] text-halo-charcoal/60 leading-relaxed mb-4">
-                  A physician-built overview, tailored to a{" "}
+                  A physician-built overview tailored to a{" "}
                   <strong className="text-halo-charcoal">
                     {result.deficit}%
                   </strong>{" "}
@@ -1123,7 +1522,7 @@ function CellularAgeQuiz() {
               </div>
             )}
 
-            {/* ─── Lead capture — success ─── */}
+            {/* Success */}
             {leadStatus === "success" && (
               <div
                 className="rounded-[14px] p-5 md:p-6 text-center"
@@ -1144,9 +1543,10 @@ function CellularAgeQuiz() {
                 <p className="text-[13px] text-halo-charcoal/65 leading-relaxed mb-5 max-w-sm mx-auto">
                   Your personalized NAD+ overview is on its way. When
                   you&rsquo;re ready to measure your actual numbers, take the
-                  full assessment below.
+                  full assessment.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2.5 justify-center">
+                  {/* TODO: Swap to /quiz/nad once the focused NAD+ qualification quiz ships */}
                   <Link
                     href="/quiz?from=nad-estimator"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
@@ -1156,11 +1556,7 @@ function CellularAgeQuiz() {
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <button
-                    onClick={() => {
-                      setSubmitted(false);
-                      setAge(null);
-                      setRecovery(null);
-                    }}
+                    onClick={handleReset}
                     className="inline-flex items-center justify-center px-6 py-3 rounded-full text-halo-charcoal/70 font-semibold text-sm border border-halo-charcoal/15 hover:bg-halo-charcoal/[0.04] transition-colors"
                   >
                     Start over
@@ -1169,7 +1565,7 @@ function CellularAgeQuiz() {
               </div>
             )}
 
-            {/* ─── Lead capture — returning (already on the list) ─── */}
+            {/* Duplicate */}
             {leadStatus === "duplicate" && (
               <div
                 className="rounded-[14px] p-5 md:p-6 text-center"
@@ -1191,6 +1587,7 @@ function CellularAgeQuiz() {
                   Ready to measure your actual NAD+? The full assessment takes
                   about four minutes.
                 </p>
+                {/* TODO: Swap to /quiz/nad once the focused NAD+ qualification quiz ships */}
                 <Link
                   href="/quiz?from=nad-estimator"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
@@ -1208,6 +1605,46 @@ function CellularAgeQuiz() {
           </div>
         )}
       </div>
+
+      {/* ─── Back / Next footer — questions only ─── */}
+      {step !== "result" && (
+        <div className="px-6 md:px-8 pb-6 flex items-center justify-between">
+          <button
+            onClick={goBack}
+            disabled={step === 1}
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors"
+            style={{
+              color:
+                step === 1 ? "rgba(28,28,30,0.25)" : "rgba(28,28,30,0.65)",
+              cursor: step === 1 ? "not-allowed" : "pointer",
+            }}
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back
+          </button>
+          {step === 1 || step === 7 ? (
+            <button
+              onClick={goNext}
+              disabled={!currentAnswered}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white font-semibold text-[13px] transition-all hover:brightness-95"
+              style={{
+                backgroundColor: currentAnswered
+                  ? PERSONA
+                  : "rgba(28,28,30,0.15)",
+                cursor: currentAnswered ? "pointer" : "not-allowed",
+                boxShadow: currentAnswered ? `0 8px 24px ${PERSONA}55` : "none",
+              }}
+            >
+              {step === 7 ? "See my estimate" : "Continue"}
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <p className="plex-mono text-[9px] uppercase tracking-[0.2em] text-halo-charcoal/35">
+              Tap to continue
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1681,9 +2118,10 @@ export default function NadTherapyPage() {
                 </span>
               </h2>
               <p className="text-[14px] md:text-[15px] text-halo-charcoal/60 max-w-xl mx-auto mt-5 leading-relaxed">
-                Two questions, one estimate. It&rsquo;s not a diagnostic &mdash;
-                Halo&rsquo;s baseline panel is. But it&rsquo;s a fast way to
-                see how far the curve has moved on you.
+                Seven quick questions. One estimated cellular age. It&rsquo;s
+                not a diagnostic &mdash; Halo&rsquo;s baseline panel is. But
+                it&rsquo;s a fast way to see how far the curve has moved on
+                you.
               </p>
             </div>
           </AnimateOnScroll>
