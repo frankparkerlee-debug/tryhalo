@@ -10,6 +10,7 @@ import HaloMarquee from "@/components/HaloMarquee";
 import BenefitScroller from "@/components/BenefitScroller";
 import CountUpNumber from "@/components/CountUpNumber";
 import { track } from "@/lib/tracking";
+import { submitQuiz } from "@/lib/quiz-client";
 
 /* ==============================
    PERSONA — NAD+ = deep sapphire (clinical, longevity)
@@ -977,7 +978,7 @@ function CellularAgeQuiz() {
   const validEmail = (e: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
 
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     track("nad_lead_attempt", { has_name: !!leadName.trim() });
 
@@ -1002,22 +1003,58 @@ function CellularAgeQuiz() {
     }
 
     setLeadStatus("submitting");
-    setTimeout(() => {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("halo_nad_lead_email", leadEmail.trim());
-        if (leadName.trim()) {
-          localStorage.setItem("halo_nad_lead_name", leadName.trim());
-        }
-      }
-      setLeadStatus("success");
-      track("nad_lead_success", {
-        cellular_age: result?.cellularAge ?? 0,
+
+    // Post to the secure quiz-submission endpoint.
+    // Klaviyo profile upsert + event track happens server-side.
+    const res = await submitQuiz({
+      quiz: "cellular_age",
+      contact: {
+        email: leadEmail.trim(),
+        firstName: leadName.trim() || undefined,
+      },
+      answers: {
         chronological_age: chronologicalAge,
-        deficit: result?.deficit ?? 0,
-        primary_drag: primaryDrag ?? "",
-        has_name: !!leadName.trim(),
-      });
-    }, 800);
+        gender: gender ?? null,
+        recovery: recovery ?? null,
+        sleep: sleep ?? null,
+        alcohol: alcohol ?? null,
+        supplementation: supplementation ?? null,
+        primary_drag: primaryDrag ?? null,
+      },
+      derived: {
+        cellular_age: result?.cellularAge,
+        cellular_age_delta: result?.ageDelta,
+        nad_deficit_percent: result?.deficit,
+        primary_driver: primaryDrag ?? undefined,
+      },
+    });
+
+    if (!res.ok) {
+      setLeadError(
+        res.error === "rate_limited"
+          ? "Too many attempts. Please try again in a minute."
+          : "Something went wrong. Please try again."
+      );
+      setLeadStatus("error");
+      track("nad_lead_error", { reason: res.error });
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("halo_nad_lead_email", leadEmail.trim());
+      if (leadName.trim()) {
+        localStorage.setItem("halo_nad_lead_name", leadName.trim());
+      }
+    }
+    setLeadStatus("success");
+    track("nad_lead_success", {
+      cellular_age: result?.cellularAge ?? 0,
+      chronological_age: chronologicalAge,
+      deficit: result?.deficit ?? 0,
+      primary_drag: primaryDrag ?? "",
+      has_name: !!leadName.trim(),
+      submission_id: res.id,
+    });
   };
 
   const handleReset = () => {

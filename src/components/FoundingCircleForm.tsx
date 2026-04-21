@@ -3,13 +3,22 @@
 import { useState, useEffect, useCallback } from "react";
 import { ArrowRight } from "lucide-react";
 import { track } from "@/lib/tracking";
+import { submitQuiz } from "@/lib/quiz-client";
 
 interface FoundingCircleFormProps {
   variant?: "light" | "dark";
+  /**
+   * Fires after a successful submission (or duplicate short-circuit). Lets
+   * a parent page chain a second submitQuiz() call — e.g. /quiz fires a
+   * "Completed Homepage Intake" alongside the founding-circle signup.
+   * Gets the validated email and submission id.
+   */
+  onSubmitted?: (info: { email: string; phone?: string; id: string }) => void;
 }
 
 export default function FoundingCircleForm({
   variant = "light",
+  onSubmitted,
 }: FoundingCircleFormProps) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -43,7 +52,7 @@ export default function FoundingCircleForm({
   };
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
 
       track("founding_signup_attempt", {
@@ -84,27 +93,61 @@ export default function FoundingCircleForm({
       if (saved) {
         setStatus("duplicate");
         track("founding_signup_duplicate", { variant });
+        // Still fire onSubmitted so parent pages (e.g. /quiz) can chain
+        // their own event — the server-side dedupe in submitQuiz() will
+        // handle any replays.
+        onSubmitted?.({
+          email: email.trim(),
+          phone: phone.trim() || undefined,
+          id: "local_duplicate",
+        });
         return;
       }
 
-      // Submit
       setStatus("submitting");
 
-      // Simulate submission with debounce delay
-      setTimeout(() => {
-        localStorage.setItem("halo_signup_email", email.trim());
-        if (phone.trim()) {
-          localStorage.setItem("halo_signup_phone", phone.trim());
-        }
-        setStatus("success");
-        track("founding_signup_success", {
+      // POST to the secure quiz-submission endpoint.
+      // Klaviyo profile upsert + event + list-subscribe happens server-side.
+      const res = await submitQuiz({
+        quiz: "founding_circle",
+        contact: {
+          email: email.trim(),
+          phone: phone.trim() || undefined,
+        },
+        answers: {
           variant,
-          has_phone: !!phone.trim(),
-          source: typeof window !== "undefined" ? window.location.pathname : "",
-        });
-      }, 800);
+        },
+      });
+
+      if (!res.ok) {
+        setErrorMessage(
+          res.error === "rate_limited"
+            ? "Too many attempts. Please try again in a minute."
+            : "Something went wrong. Please try again."
+        );
+        setStatus("error");
+        track("founding_signup_error", { reason: res.error, variant });
+        return;
+      }
+
+      localStorage.setItem("halo_signup_email", email.trim());
+      if (phone.trim()) {
+        localStorage.setItem("halo_signup_phone", phone.trim());
+      }
+      setStatus("success");
+      track("founding_signup_success", {
+        variant,
+        has_phone: !!phone.trim(),
+        source: typeof window !== "undefined" ? window.location.pathname : "",
+        submission_id: res.id,
+      });
+      onSubmitted?.({
+        email: email.trim(),
+        phone: phone.trim() || undefined,
+        id: res.id,
+      });
     },
-    [email, phone, honeypot, variant]
+    [email, phone, honeypot, variant, onSubmitted]
   );
 
   if (status === "duplicate") {

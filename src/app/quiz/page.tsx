@@ -8,6 +8,7 @@ import HaloLogo from "@/components/HaloLogo";
 import FoundingCircleForm from "@/components/FoundingCircleForm";
 import HormoneBalanceChart from "@/components/HormoneBalanceChart";
 import { track } from "@/lib/tracking";
+import { submitQuiz } from "@/lib/quiz-client";
 
 /* ==============================
    PROGRAM DATA
@@ -1559,7 +1560,31 @@ function QuizPageInner() {
                     </p>
                   </div>
                   <div className="max-w-lg mx-auto">
-                    <FoundingCircleForm variant="light" />
+                    <FoundingCircleForm
+                      variant="light"
+                      onSubmitted={({ email, phone }) => {
+                        // Fire a separate "Completed Homepage Intake" event
+                        // carrying the full quiz answers. The founding-circle
+                        // signup is its own event; this is the intake record
+                        // physicians/marketing can segment on.
+                        void submitQuiz({
+                          quiz: "homepage",
+                          contact: { email, phone },
+                          answers: {
+                            gender,
+                            age,
+                            goals,
+                            symptoms,
+                            taking_medications: takingMedications,
+                            medication_details: medicationDetails || undefined,
+                            quiz_context: quizContext,
+                          },
+                          derived: {
+                            primary_program: primaryRec ?? undefined,
+                          },
+                        });
+                      }}
+                    />
                   </div>
                 </div>
               </div>
