@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { ArrowRight, Plus, Minus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import BenefitScroller from "@/components/BenefitScroller";
+import CountUpNumber from "@/components/CountUpNumber";
 
 /* ==============================
    PERSONA — NAD+ = deep sapphire (clinical, longevity)
@@ -40,37 +41,29 @@ const marqueeItems = [
   { symptom: "Mitochondrial Drift", outcome: "Energy Restored" },
 ];
 
-const costGapStats = [
+const impactStats: Array<{
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  label: string;
+  source: string;
+}> = [
   {
-    numberText: "$600+",
-    label: "per session for IV NAD+ at boutique longevity clinics.",
-    source: "Next Health published pricing, 2024",
-  },
-  {
-    numberText: "$800/mo",
-    label: "average monthly IV NAD+ therapy with bi-weekly dosing.",
-    source: "Strut Health pricing index, 2024",
-  },
-  {
-    numberText: "$179/mo",
-    label: "Halo. Same molecule. Same pharmacy grade. Shipped monthly.",
-    source: "",
-  },
-];
-
-const impactStats = [
-  {
-    numberText: "50%",
+    value: 50,
+    suffix: "%",
     label: "decline in tissue NAD+ between ages 30 and 60.",
     source: "Massudi et al., J Biol Chem, 2012",
   },
   {
-    numberText: "40%",
+    value: 40,
+    suffix: "%",
     label: "average increase in whole-blood NAD+ with physician-dosed NR therapy.",
     source: "Martens et al., Nature Communications, 2018",
   },
   {
-    numberText: "<2%",
+    value: 2,
+    prefix: "<",
+    suffix: "%",
     label: "of longevity-curious adults have ever had their NAD+ markers measured.",
     source: "Halo provider network estimate, 2025",
   },
@@ -162,18 +155,24 @@ type LabMarker = {
   position: number; // 0\u201310 gauge position
 };
 
+/* Lab markers chosen specifically because NAD+ therapy moves them:
+   - NAD+ Level: direct substrate
+   - NAD+/NADH ratio: redox state, the cleanest functional readout
+   - 8-OHdG: oxidative DNA damage, a PARP/NAD consumer proxy
+   - hs-CRP: systemic inflammation; NAD protocols shift it in a subset of members
+   The last carries a "may" caveat in the footnote. */
 const beforePanel: LabMarker[] = [
   { name: "NAD+ Level", value: "18", unit: "ng/mL", status: "low", position: 2 },
-  { name: "hs-CRP", value: "2.4", unit: "mg/L", status: "high", position: 7.5 },
-  { name: "Homocysteine", value: "11.2", unit: "\u03BCmol/L", status: "high", position: 7.5 },
-  { name: "Fasting Insulin", value: "12.0", unit: "\u03BCU/mL", status: "high", position: 7.0 },
+  { name: "NAD+/NADH Ratio", value: "2.1", unit: "", status: "low", position: 2.5 },
+  { name: "8-OHdG", value: "9.4", unit: "ng/mg Cr", status: "high", position: 7.5 },
+  { name: "hs-CRP", value: "2.4", unit: "mg/L", status: "high", position: 7.2 },
 ];
 
 const afterPanel: LabMarker[] = [
   { name: "NAD+ Level", value: "42", unit: "ng/mL", status: "optimal", position: 7 },
-  { name: "hs-CRP", value: "0.8", unit: "mg/L", status: "optimal", position: 3 },
-  { name: "Homocysteine", value: "7.5", unit: "\u03BCmol/L", status: "optimal", position: 3 },
-  { name: "Fasting Insulin", value: "7.0", unit: "\u03BCU/mL", status: "optimal", position: 3.5 },
+  { name: "NAD+/NADH Ratio", value: "5.8", unit: "", status: "optimal", position: 6.8 },
+  { name: "8-OHdG", value: "4.2", unit: "ng/mg Cr", status: "optimal", position: 3.2 },
+  { name: "hs-CRP", value: "1.1", unit: "mg/L", status: "optimal", position: 3.5 },
 ];
 
 const faqItems = [
@@ -340,6 +339,236 @@ function LabGauge({ position, status }: { position: number; status: LabStatus })
   );
 }
 
+/* Ease-out cubic for smooth number ticks */
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+/* Parse the "value" string into a numeric part and a suffix (for "<2%" etc.).
+   For our lab markers, values are always plain decimals/ints so we treat the
+   whole string as a number and format back using the original decimal places. */
+function parseLabValue(s: string): { n: number; decimals: number } {
+  const cleaned = s.replace(/[^0-9.\-]/g, "");
+  const n = parseFloat(cleaned);
+  const dot = cleaned.indexOf(".");
+  const decimals = dot >= 0 ? cleaned.length - dot - 1 : 0;
+  return { n: isNaN(n) ? 0 : n, decimals };
+}
+
+/**
+ * InteractiveLabPanel \u2014 signature hero visual.
+ *
+ * The visitor toggles between "Before" and "At 90 days". Every numeric value
+ * animates (ease-out cubic, ~700ms), every gauge marker slides, every status
+ * pill re-colors. It's the page's proof of concept: "we move these numbers."
+ *
+ * Why this matters for conversion: biohackers want to see measured deltas.
+ * A static before/after looks like a stock photo. An interactive one makes
+ * the visitor poke at the data themselves \u2014 and suddenly they're invested.
+ */
+function InteractiveLabPanel({
+  before,
+  after,
+}: {
+  before: LabMarker[];
+  after: LabMarker[];
+}) {
+  const [isAfter, setIsAfter] = useState(false);
+  // t \u2208 [0,1] where 0 = before, 1 = after. Animated via RAF.
+  const [t, setT] = useState(0);
+
+  useEffect(() => {
+    const target = isAfter ? 1 : 0;
+    const start = t;
+    const startTime = performance.now();
+    const duration = 720; // ms
+
+    // Respect reduced motion \u2014 snap instantly
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setT(target);
+      return;
+    }
+
+    let rafId: number;
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - startTime) / duration);
+      const eased = easeOutCubic(progress);
+      setT(start + (target - start) * eased);
+      if (progress < 1) rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+    // Only re-run when the toggle target changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAfter]);
+
+  // Interpolate a single marker based on current t
+  const lerp = (a: number, b: number) => a + (b - a) * t;
+
+  // Status color at current t: blend from before color toward after color via opacity swap.
+  // Simple approach: whichever side t is closer to wins. Threshold at 0.5.
+  const currentStatus = (b: LabStatus, a: LabStatus): LabStatus =>
+    t < 0.5 ? b : a;
+
+  const renderValue = (bVal: string, aVal: string) => {
+    const pb = parseLabValue(bVal);
+    const pa = parseLabValue(aVal);
+    const decimals = Math.max(pb.decimals, pa.decimals);
+    return lerp(pb.n, pa.n).toFixed(decimals);
+  };
+
+  const lead = { before: before[0], after: after[0] };
+  const leadStatus = currentStatus(lead.before.status, lead.after.status);
+  const leadPosition = lerp(lead.before.position, lead.after.position);
+
+  return (
+    <div
+      className="relative rounded-[22px] overflow-hidden"
+      style={{
+        background: "#FAF8F4",
+        boxShadow:
+          "0 24px 70px -20px rgba(10,14,24,0.45), 0 1px 0 rgba(255,255,255,0.6) inset",
+        border: "1px solid rgba(28,28,30,0.06)",
+      }}
+    >
+      {/* Header with toggle */}
+      <div className="px-6 md:px-7 pt-5 md:pt-6 pb-4 flex items-center justify-between gap-4">
+        <div>
+          <p className="plex-mono text-[9px] font-semibold uppercase tracking-[0.28em] text-halo-charcoal/40">
+            Halo \u00B7 Sample
+          </p>
+          <p className="text-[13px] md:text-[14px] font-semibold tracking-tight text-halo-charcoal mt-1.5">
+            Cellular Panel
+          </p>
+        </div>
+
+        {/* Segmented toggle \u2014 the signature interaction */}
+        <div
+          className="plex-mono relative flex items-center rounded-full p-[3px] flex-shrink-0"
+          style={{
+            background: "rgba(28,28,30,0.06)",
+            border: "1px solid rgba(28,28,30,0.08)",
+          }}
+          role="tablist"
+          aria-label="Toggle between before and 90-day results"
+        >
+          {/* Sliding pill */}
+          <span
+            className="absolute top-[3px] bottom-[3px] left-[3px] rounded-full transition-transform duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{
+              width: "calc(50% - 3px)",
+              transform: isAfter ? "translateX(100%)" : "translateX(0)",
+              background: isAfter ? PERSONA : "#C26B4A",
+              boxShadow: "0 2px 6px rgba(10,14,24,0.18)",
+            }}
+            aria-hidden="true"
+          />
+          <button
+            onClick={() => setIsAfter(false)}
+            role="tab"
+            aria-selected={!isAfter}
+            className="relative z-10 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] transition-colors"
+            style={{ color: !isAfter ? "#FFFFFF" : "rgba(28,28,30,0.55)" }}
+          >
+            Before
+          </button>
+          <button
+            onClick={() => setIsAfter(true)}
+            role="tab"
+            aria-selected={isAfter}
+            className="relative z-10 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] transition-colors"
+            style={{ color: isAfter ? "#FFFFFF" : "rgba(28,28,30,0.55)" }}
+          >
+            90 days
+          </button>
+        </div>
+      </div>
+
+      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
+
+      {/* Lead marker \u2014 animated */}
+      <div className="px-6 md:px-7 pt-5 pb-4">
+        <div className="flex items-baseline justify-between mb-2">
+          <p className="plex-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50">
+            {lead.before.name}
+          </p>
+          <span
+            className="plex-mono text-[9px] font-semibold tracking-[0.18em] transition-colors duration-[420ms]"
+            style={{ color: statusColor(leadStatus) }}
+          >
+            {statusLabel(leadStatus)}
+          </span>
+        </div>
+        <div className="flex items-baseline gap-2 mb-3">
+          <span
+            className="font-serif text-[48px] md:text-[58px] font-light leading-none tracking-tight text-halo-charcoal plex-mono-num"
+            style={{ fontVariantNumeric: "tabular-nums" }}
+          >
+            {renderValue(lead.before.value, lead.after.value)}
+          </span>
+          <span className="plex-mono text-[12px] text-halo-charcoal/55">
+            {lead.before.unit || lead.after.unit}
+          </span>
+        </div>
+        <LabGauge position={leadPosition} status={leadStatus} />
+      </div>
+
+      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
+
+      {/* Secondary markers \u2014 all animated */}
+      <div className="px-6 md:px-7 py-4 space-y-3">
+        {before.slice(1).map((bm, i) => {
+          const am = after[i + 1];
+          const status = currentStatus(bm.status, am.status);
+          const position = lerp(bm.position, am.position);
+          return (
+            <div key={bm.name}>
+              <div className="flex items-baseline justify-between mb-1.5">
+                <span className="plex-mono text-[10px] uppercase tracking-[0.15em] text-halo-charcoal/75 truncate">
+                  {bm.name}
+                </span>
+                <div className="flex items-baseline gap-1.5 flex-shrink-0">
+                  <span
+                    className="plex-mono text-[11px] font-medium text-halo-charcoal"
+                    style={{ fontVariantNumeric: "tabular-nums" }}
+                  >
+                    {renderValue(bm.value, am.value)}
+                  </span>
+                  <span className="plex-mono text-[9px] text-halo-charcoal/45">
+                    {bm.unit || am.unit}
+                  </span>
+                  <span
+                    className="plex-mono text-[9px] font-semibold tracking-[0.12em] ml-1 transition-colors duration-[420ms]"
+                    style={{ color: statusColor(status) }}
+                  >
+                    &middot; {statusLabel(status)}
+                  </span>
+                </div>
+              </div>
+              <LabGauge position={position} status={status} />
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
+
+      {/* Footer */}
+      <div className="px-6 md:px-7 py-3.5 flex items-center justify-between">
+        <p className="plex-mono text-[9px] uppercase tracking-[0.18em] text-halo-charcoal/45">
+          Physician review \u00B7 90-day recheck
+        </p>
+        <p className="plex-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-halo-charcoal/30">
+          Halo 2026
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function LabPanel({ markers, badge }: { markers: LabMarker[]; badge?: string }) {
   return (
     <div
@@ -477,6 +706,270 @@ function ScienceAccordion({
           {children}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ==============================
+   COMPONENT: CELLULAR AGE QUIZ — signature micro-interaction
+
+   Two tap-forward questions. Calculates an estimated "cellular age gap"
+   based on chronological age + a recovery self-assessment. This is a
+   proxy indicator, NOT a diagnostic — we say so explicitly. The point
+   is to move the visitor from passive reader to engaged participant,
+   and to hand them a personalized number they want to improve.
+
+   Converts because: personalized number + clear gap + "get your real
+   panel" CTA routes high-intent visitors straight to the quiz.
+   ============================== */
+
+type AgeBracket = "30s" | "40s" | "50s" | "60s";
+type Recovery = "quick" | "slower" | "much-slower";
+
+const ageBrackets: { key: AgeBracket; label: string; baseNad: number }[] = [
+  // baseNad = rough expected tissue NAD+ midpoint (ng/mL) per published decline curves
+  { key: "30s", label: "30s", baseNad: 34 },
+  { key: "40s", label: "40s", baseNad: 27 },
+  { key: "50s", label: "50s", baseNad: 21 },
+  { key: "60s", label: "60s+", baseNad: 17 },
+];
+
+const recoveryOptions: { key: Recovery; label: string; penalty: number }[] = [
+  { key: "quick", label: "Same day", penalty: 0 },
+  { key: "slower", label: "A day or two", penalty: 3 },
+  { key: "much-slower", label: "Several days", penalty: 6 },
+];
+
+function CellularAgeQuiz() {
+  const [age, setAge] = useState<AgeBracket | null>(null);
+  const [recovery, setRecovery] = useState<Recovery | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  const result = (() => {
+    if (!age || !recovery) return null;
+    const a = ageBrackets.find((x) => x.key === age)!;
+    const r = recoveryOptions.find((x) => x.key === recovery)!;
+    // Estimated NAD+ (ng/mL) = base curve - recovery penalty
+    const estimated = Math.max(10, a.baseNad - r.penalty);
+    // Reference young-adult NAD+ (\u224840) vs estimated \u2192 deficit pct
+    const deficit = Math.round(((40 - estimated) / 40) * 100);
+    return { estimated, deficit };
+  })();
+
+  const canSubmit = age !== null && recovery !== null;
+
+  return (
+    <div
+      className="relative rounded-[22px] overflow-hidden"
+      style={{
+        background: "#FAF8F4",
+        border: "1px solid rgba(28,28,30,0.08)",
+        boxShadow: "0 18px 50px -25px rgba(10,14,24,0.18)",
+      }}
+    >
+      <div
+        className="px-6 md:px-8 py-4 flex items-center justify-between"
+        style={{ background: `${PERSONA}0C`, borderBottom: "1px solid rgba(28,28,30,0.06)" }}
+      >
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block w-1.5 h-1.5 rounded-full"
+            style={{ background: PERSONA, animation: "nad-pulse-soft 2.4s ease-in-out infinite" }}
+            aria-hidden="true"
+          />
+          <p
+            className="plex-mono text-[10px] font-semibold uppercase tracking-[0.24em]"
+            style={{ color: PERSONA_DEEP }}
+          >
+            Cellular Age Estimator
+          </p>
+        </div>
+        <p className="plex-mono text-[9px] uppercase tracking-[0.18em] text-halo-charcoal/40">
+          60 seconds
+        </p>
+      </div>
+
+      <div className="px-6 md:px-8 py-8 md:py-10">
+        {!submitted && (
+          <>
+            {/* Q1 \u2014 age bracket */}
+            <div className="mb-8">
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3">
+                Step 1 &middot; Your age
+              </p>
+              <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-5">
+                Which bracket are you in?
+              </h3>
+              <div className="grid grid-cols-4 gap-2">
+                {ageBrackets.map((b) => {
+                  const isSelected = age === b.key;
+                  return (
+                    <button
+                      key={b.key}
+                      onClick={() => setAge(b.key)}
+                      className="plex-mono rounded-[10px] py-3 text-[13px] font-semibold uppercase tracking-[0.14em] transition-all duration-200"
+                      style={{
+                        background: isSelected ? PERSONA : "#FFFFFF",
+                        color: isSelected ? "#FFFFFF" : "rgba(28,28,30,0.75)",
+                        border: `1px solid ${isSelected ? PERSONA : "rgba(28,28,30,0.12)"}`,
+                        boxShadow: isSelected
+                          ? `0 8px 24px ${PERSONA}55`
+                          : "0 1px 0 rgba(28,28,30,0.04)",
+                      }}
+                      aria-pressed={isSelected}
+                    >
+                      {b.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Q2 \u2014 recovery */}
+            <div
+              className="mb-8 transition-all duration-500"
+              style={{
+                opacity: age ? 1 : 0.35,
+                pointerEvents: age ? "auto" : "none",
+              }}
+            >
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3">
+                Step 2 &middot; Recovery
+              </p>
+              <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-5">
+                After a hard workout, how long until you feel fresh again?
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {recoveryOptions.map((r) => {
+                  const isSelected = recovery === r.key;
+                  return (
+                    <button
+                      key={r.key}
+                      onClick={() => setRecovery(r.key)}
+                      className="rounded-[10px] py-3 px-4 text-[13px] font-medium transition-all duration-200 text-left"
+                      style={{
+                        background: isSelected ? PERSONA : "#FFFFFF",
+                        color: isSelected ? "#FFFFFF" : "rgba(28,28,30,0.8)",
+                        border: `1px solid ${isSelected ? PERSONA : "rgba(28,28,30,0.12)"}`,
+                        boxShadow: isSelected
+                          ? `0 8px 24px ${PERSONA}55`
+                          : "0 1px 0 rgba(28,28,30,0.04)",
+                      }}
+                      aria-pressed={isSelected}
+                    >
+                      {r.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <button
+              onClick={() => canSubmit && setSubmitted(true)}
+              disabled={!canSubmit}
+              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+              style={{
+                backgroundColor: canSubmit ? PERSONA : "rgba(28,28,30,0.15)",
+                cursor: canSubmit ? "pointer" : "not-allowed",
+                boxShadow: canSubmit ? `0 10px 28px ${PERSONA}55` : "none",
+              }}
+            >
+              See my estimated NAD+
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </>
+        )}
+
+        {submitted && result && (
+          <div className="animate-in fade-in duration-500">
+            <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3">
+              Your estimate
+            </p>
+            <h3 className="font-serif text-[22px] md:text-[26px] leading-[1.15] tracking-tight text-halo-charcoal mb-6">
+              Estimated NAD+ range &amp; deficit vs. your 20s.
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div
+                className="rounded-[14px] p-5"
+                style={{ background: "#FFFFFF", border: "1px solid rgba(28,28,30,0.08)" }}
+              >
+                <p className="plex-mono text-[9px] uppercase tracking-[0.2em] text-halo-charcoal/45 mb-2">
+                  Estimated NAD+
+                </p>
+                <div className="flex items-baseline gap-1.5">
+                  <CountUpNumber
+                    target={result.estimated}
+                    duration={1200}
+                    className="font-serif text-[42px] md:text-[54px] font-light leading-none tracking-tight text-halo-charcoal"
+                  />
+                  <span className="plex-mono text-[11px] text-halo-charcoal/55">ng/mL</span>
+                </div>
+                <p className="text-[11px] italic text-halo-charcoal/45 mt-2">
+                  Reference: ~40 ng/mL in healthy 20s
+                </p>
+              </div>
+
+              <div
+                className="rounded-[14px] p-5"
+                style={{ background: `${PERSONA}0F`, border: `1px solid ${PERSONA}30` }}
+              >
+                <p className="plex-mono text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: PERSONA_DEEP }}>
+                  Deficit
+                </p>
+                <div className="flex items-baseline gap-1">
+                  <CountUpNumber
+                    target={result.deficit}
+                    duration={1200}
+                    className="font-serif text-[42px] md:text-[54px] font-light leading-none tracking-tight"
+                    // styled via className; color applied below
+                  />
+                  <span className="font-serif text-[28px] md:text-[36px] font-light" style={{ color: PERSONA_DEEP }}>%</span>
+                </div>
+                <p className="text-[11px] italic mt-2" style={{ color: PERSONA_DEEP, opacity: 0.7 }}>
+                  vs. healthy-young-adult NAD+
+                </p>
+              </div>
+            </div>
+
+            <p className="text-[13px] text-halo-charcoal/65 leading-relaxed mb-6">
+              This is an{" "}
+              <strong className="text-halo-charcoal">estimate</strong> based on
+              population averages. Halo&rsquo;s baseline panel measures your
+              actual NAD+ along with 15+ other markers so your physician can
+              design a protocol to your biology.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/quiz?from=nad-estimator"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+                style={{
+                  backgroundColor: PERSONA,
+                  boxShadow: `0 10px 28px ${PERSONA}55`,
+                }}
+              >
+                Measure the real number
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <button
+                onClick={() => {
+                  setSubmitted(false);
+                  setAge(null);
+                  setRecovery(null);
+                }}
+                className="inline-flex items-center justify-center px-6 py-3.5 rounded-full text-halo-charcoal/70 font-semibold text-sm border border-halo-charcoal/15 hover:bg-halo-charcoal/[0.04] transition-colors"
+              >
+                Reset
+              </button>
+            </div>
+
+            <p className="plex-mono text-[9px] italic text-halo-charcoal/35 mt-5 text-center">
+              Not a diagnostic. Actual NAD+ varies by tissue, genetics, and lifestyle.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -634,6 +1127,23 @@ function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
 export default function NadTherapyPage() {
   return (
     <>
+      {/* Page-scoped animations. Respect prefers-reduced-motion. */}
+      <style jsx global>{`
+        @keyframes nad-breathe {
+          0%, 100% { transform: scale(1); opacity: 0.55; }
+          50%      { transform: scale(1.8); opacity: 0.18; }
+        }
+        @keyframes nad-pulse-soft {
+          0%, 100% { opacity: 0.45; transform: scale(1); }
+          50%      { opacity: 1;    transform: scale(1.25); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [style*="nad-breathe"], [style*="nad-pulse-soft"] {
+            animation: none !important;
+          }
+        }
+      `}</style>
+
       {/* ═══════════════════════════════════════════════
           1 · HERO — Dark + lab panel (edgy / scientific)
           ═══════════════════════════════════════════════ */}
@@ -672,6 +1182,23 @@ export default function NadTherapyPage() {
           {/* LEFT: Content */}
           <div className="relative flex flex-col justify-center px-6 md:px-10 lg:px-14 py-14 md:py-16 lg:py-20 order-2 lg:order-1">
             <div className="flex items-center gap-3 mb-6">
+              {/* Breathing cellular-energy dot — signature NAD+ motif */}
+              <span
+                className="relative inline-flex items-center justify-center w-[10px] h-[10px]"
+                aria-hidden="true"
+              >
+                <span
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: PERSONA_SOFT,
+                    animation: "nad-breathe 6s ease-in-out infinite",
+                  }}
+                />
+                <span
+                  className="absolute w-[4px] h-[4px] rounded-full"
+                  style={{ background: PERSONA_SOFT }}
+                />
+              </span>
               <span
                 className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em]"
                 style={{ color: PERSONA_SOFT }}
@@ -753,25 +1280,22 @@ export default function NadTherapyPage() {
             </div>
 
             <div className="relative w-full max-w-[440px] mx-auto">
-              {/* BACK panel — "At 90 days" peeks behind */}
-              <div
-                className="absolute top-10 md:top-14 -right-5 md:-right-8 w-[88%] md:w-[92%] opacity-[0.88] pointer-events-none"
-                aria-hidden="true"
-                style={{ filter: "blur(0.4px) saturate(0.95)" }}
-              >
-                <LabPanel markers={afterPanel} badge="At 90 days \u00B7 Optimal" />
-              </div>
+              {/* Interactive lab panel — toggle drives animated number ticks + gauge slides.
+                  This is the page's signature interaction. */}
+              <InteractiveLabPanel before={beforePanel} after={afterPanel} />
 
-              {/* FRONT panel — Before */}
-              <div className="relative">
-                <LabPanel markers={beforePanel} badge="Before protocol" />
-              </div>
-
-              {/* Annotation caption */}
+              {/* Nudge caption — gets users to actually touch the toggle */}
               <p
-                className="plex-mono text-[10px] uppercase tracking-[0.22em] text-white/35 mt-6 text-center"
-                aria-hidden="true"
+                className="plex-mono text-[10px] uppercase tracking-[0.22em] text-white/45 mt-5 text-center flex items-center justify-center gap-2"
               >
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full"
+                  style={{ background: PERSONA_SOFT, animation: "nad-pulse-soft 2.4s ease-in-out infinite" }}
+                  aria-hidden="true"
+                />
+                Tap &ldquo;90 days&rdquo; to see the shift
+              </p>
+              <p className="plex-mono text-[9px] uppercase tracking-[0.18em] text-white/25 mt-2 text-center">
                 Sample panel \u00B7 representative of member results
               </p>
             </div>
@@ -809,64 +1333,8 @@ export default function NadTherapyPage() {
       <HaloMarquee items={marqueeItems} />
 
       {/* ═══════════════════════════════════════════════
-          4 · THE COST GAP
-          ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
-        <div className="max-w-5xl mx-auto">
-          <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-16">
-              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
-                The cost gap
-              </p>
-              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
-                Same molecule.{" "}
-                <span className="italic" style={{ color: PERSONA }}>
-                  Different markup.
-                </span>
-              </h2>
-              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
-                IV therapy centers charge $100&ndash;$200 per session for NAD+.
-                At-home injection is the same pharmacy-grade molecule, without
-                the chair or the markup.
-              </p>
-            </div>
-          </AnimateOnScroll>
-
-          <AnimateOnScroll stagger>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10 lg:gap-x-10">
-              {costGapStats.map((stat, i) => (
-                <div
-                  key={i}
-                  className={`aos-child text-center md:text-left flex flex-col ${
-                    i === 2 ? "md:border-l md:pl-6 lg:pl-10" : ""
-                  }`}
-                  style={i === 2 ? { borderColor: `${PERSONA}30` } : undefined}
-                >
-                  <p
-                    className="font-serif text-[44px] md:text-[60px] lg:text-[68px] font-light leading-[0.95] mb-3 tracking-tight"
-                    style={{ color: i === 2 ? PERSONA : "#6F6355" }}
-                  >
-                    {stat.numberText}
-                  </p>
-                  <div
-                    className="w-10 h-px mb-3 md:mx-0 mx-auto"
-                    style={{ background: PERSONA, opacity: i === 2 ? 0.6 : 0.3 }}
-                  />
-                  <p className="text-[14px] md:text-[15px] text-halo-charcoal/80 leading-snug mb-3">
-                    {stat.label}
-                  </p>
-                  {stat.source && (
-                    <p className="text-[11px] italic text-halo-charcoal/40 mt-auto">{stat.source}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </AnimateOnScroll>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          5 · THE DECLINE — science + biohacker accordion
+          4 · THE DECLINE — science + biohacker accordion
+          (cost comparison lives in Section 7 Delivery Comparison)
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6" style={{ background: "#F2EEE4" }}>
         <div className="max-w-4xl mx-auto">
@@ -898,8 +1366,19 @@ export default function NadTherapyPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-10">
               {impactStats.map((stat, i) => (
                 <div key={i} className="aos-child text-center md:text-left flex flex-col">
-                  <p className="font-serif text-[44px] md:text-[60px] lg:text-[68px] font-light leading-[0.95] mb-3 tracking-tight" style={{ color: PERSONA }}>
-                    {stat.numberText}
+                  <p
+                    className="font-serif text-[44px] md:text-[60px] lg:text-[68px] font-light leading-[0.95] mb-3 tracking-tight flex items-baseline justify-center md:justify-start"
+                    style={{ color: PERSONA }}
+                  >
+                    {stat.prefix && (
+                      <span className="opacity-70 mr-0.5">{stat.prefix}</span>
+                    )}
+                    <CountUpNumber
+                      target={stat.value}
+                      duration={1400}
+                      className="font-serif font-light leading-[0.95] tracking-tight"
+                    />
+                    {stat.suffix && <span>{stat.suffix}</span>}
                   </p>
                   <div className="w-10 h-px mb-3 md:mx-0 mx-auto" style={{ background: PERSONA, opacity: 0.4 }} />
                   <p className="text-[14px] md:text-[15px] text-halo-charcoal/80 leading-snug mb-3">
@@ -932,6 +1411,40 @@ export default function NadTherapyPage() {
                 Covarrubias et al., Nature Reviews Molecular Cell Biology 2021.
               </p>
             </ScienceAccordion>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          5 · CELLULAR AGE QUIZ — inline engagement
+          "Your number → measure it for real"
+          ═══════════════════════════════════════════════ */}
+      <section className="py-16 md:py-24 px-6 section-light">
+        <div className="max-w-3xl mx-auto">
+          <AnimateOnScroll>
+            <div className="text-center mb-10 md:mb-14">
+              <p
+                className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
+                style={{ color: PERSONA }}
+              >
+                Your number
+              </p>
+              <h2 className="headline-section text-3xl md:text-4xl lg:text-[44px] text-halo-charcoal leading-[1.1] max-w-2xl mx-auto">
+                See roughly where you stand.{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  Before you measure it.
+                </span>
+              </h2>
+              <p className="text-[14px] md:text-[15px] text-halo-charcoal/60 max-w-xl mx-auto mt-5 leading-relaxed">
+                Two questions, one estimate. It&rsquo;s not a diagnostic &mdash;
+                Halo&rsquo;s baseline panel is. But it&rsquo;s a fast way to
+                see how far the curve has moved on you.
+              </p>
+            </div>
+          </AnimateOnScroll>
+
+          <AnimateOnScroll>
+            <CellularAgeQuiz />
           </AnimateOnScroll>
         </div>
       </section>
