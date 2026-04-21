@@ -860,6 +860,10 @@ function CellularAgeQuiz() {
 
   // Answers
   const [chronologicalAge, setChronologicalAge] = useState(40);
+  // Draft string for the age input — allows free typing ("3", "37", "")
+  // without clamping mid-keystroke. Committed to chronologicalAge on blur
+  // or on Continue.
+  const [ageDraft, setAgeDraft] = useState("40");
   const [gender, setGender] = useState<Gender | null>(null);
   const [recovery, setRecovery] = useState<Recovery | null>(null);
   const [sleep, setSleep] = useState<Sleep | null>(null);
@@ -910,8 +914,22 @@ function CellularAgeQuiz() {
     }
   })();
 
+  // Parse + clamp the draft string back to a committed age. Returns the
+  // clamped number so callers can use it in the same tick.
+  const commitAgeDraft = (): number => {
+    const parsed = parseInt(ageDraft, 10);
+    const clamped = isNaN(parsed)
+      ? chronologicalAge
+      : Math.max(25, Math.min(75, parsed));
+    setChronologicalAge(clamped);
+    setAgeDraft(String(clamped));
+    return clamped;
+  };
+
   const goNext = () => {
     if (step === "result") return;
+    // If leaving the age step, commit the draft before advancing.
+    if (step === 1) commitAgeDraft();
     if (step === 7) {
       if (result && primaryDrag) {
         setStep("result");
@@ -1005,6 +1023,7 @@ function CellularAgeQuiz() {
   const handleReset = () => {
     setStep(1);
     setChronologicalAge(40);
+    setAgeDraft("40");
     setGender(null);
     setRecovery(null);
     setSleep(null);
@@ -1130,7 +1149,11 @@ function CellularAgeQuiz() {
             </h3>
             <div className="flex items-center justify-center gap-4 md:gap-6 mb-2">
               <button
-                onClick={() => setChronologicalAge((a) => Math.max(25, a - 1))}
+                onClick={() => {
+                  const next = Math.max(25, chronologicalAge - 1);
+                  setChronologicalAge(next);
+                  setAgeDraft(String(next));
+                }}
                 aria-label="Decrease age"
                 className="w-11 h-11 rounded-full flex items-center justify-center transition-colors hover:bg-halo-charcoal/[0.04]"
                 style={{
@@ -1141,19 +1164,35 @@ function CellularAgeQuiz() {
                 <Minus className="w-4 h-4" strokeWidth={2.5} style={{ color: PERSONA }} />
               </button>
               <input
-                type="number"
-                min={25}
-                max={75}
-                value={chronologicalAge}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={2}
+                value={ageDraft}
                 onChange={(e) => {
-                  const v = parseInt(e.target.value || "0", 10);
-                  if (!isNaN(v)) setChronologicalAge(Math.max(25, Math.min(75, v)));
+                  // Allow only digits, up to 2 characters. Free typing —
+                  // clamping happens on blur / Continue so "3" doesn't
+                  // snap to 25 before the user types "37".
+                  const digits = e.target.value.replace(/\D/g, "").slice(0, 2);
+                  setAgeDraft(digits);
+                }}
+                onBlur={commitAgeDraft}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    commitAgeDraft();
+                    (e.target as HTMLInputElement).blur();
+                  }
                 }}
                 className="font-serif text-[64px] md:text-[80px] font-light leading-none tracking-tight text-halo-charcoal w-[140px] text-center bg-transparent border-none focus:outline-none"
                 aria-label="Age in years"
               />
               <button
-                onClick={() => setChronologicalAge((a) => Math.min(75, a + 1))}
+                onClick={() => {
+                  const next = Math.min(75, chronologicalAge + 1);
+                  setChronologicalAge(next);
+                  setAgeDraft(String(next));
+                }}
                 aria-label="Increase age"
                 className="w-11 h-11 rounded-full flex items-center justify-center transition-colors hover:bg-halo-charcoal/[0.04]"
                 style={{
