@@ -11,6 +11,13 @@
   --color-halo-border: #E5E4E0;
   --font-serif: var(--font-playfair), "Playfair Display", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
+  --font-plex: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* IBM Plex Mono utility — for technical/data labels across the site */
+.plex-mono {
+  font-family: var(--font-plex);
+  font-variant-numeric: tabular-nums;
 }
 
 html {

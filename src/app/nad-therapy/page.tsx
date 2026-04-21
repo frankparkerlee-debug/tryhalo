@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, X, Plus, Minus } from "lucide-react";
+import { ArrowRight, Plus, Minus } from "lucide-react";
 import { useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
@@ -116,17 +116,6 @@ const outcomes = [
   },
 ];
 
-const comparisonRows = [
-  { label: "Baseline metabolic panel", halo: "Full 16+ biomarkers", typical: "Not included" },
-  { label: "Physician consultation", halo: "Within 5 days", typical: "Weeks, if at all" },
-  { label: "Dose form", halo: "Subcutaneous injection", typical: "IV drip in clinic" },
-  { label: "Time per dose", halo: "10 seconds, at home", typical: "2\u20134 hours in chair" },
-  { label: "Follow-up monitoring", halo: "Labs at 90 days", typical: "Not included" },
-  { label: "Paired Glutathione", halo: "Included", typical: "Extra $75+/session" },
-  { label: "Typical monthly cost", halo: "$179", typical: "$600\u2013$800" },
-  { label: "Cancel anytime", halo: "Yes, no contract", typical: "Session packages locked" },
-];
-
 const biomarkers = [
   "NAD/NADH ratio",
   "hs-CRP",
@@ -157,6 +146,35 @@ const featuredPhysician = {
   title: "Internal Medicine \u00B7 Peptide & NAD+ Therapy",
   image: "/providers/priya-patel.png",
 };
+
+/* ==============================
+   LAB PANEL DATA \u2014 hero visual
+   NAD+ specific markers. Before state (everything suboptimal).
+   After state (90 days, optimal).
+   ============================== */
+
+type LabStatus = "low" | "mid" | "optimal" | "high";
+type LabMarker = {
+  name: string;
+  value: string;
+  unit: string;
+  status: LabStatus;
+  position: number; // 0\u201310 gauge position
+};
+
+const beforePanel: LabMarker[] = [
+  { name: "NAD+ Level", value: "18", unit: "ng/mL", status: "low", position: 2 },
+  { name: "hs-CRP", value: "2.4", unit: "mg/L", status: "high", position: 7.5 },
+  { name: "Homocysteine", value: "11.2", unit: "\u03BCmol/L", status: "high", position: 7.5 },
+  { name: "Fasting Insulin", value: "12.0", unit: "\u03BCU/mL", status: "high", position: 7.0 },
+];
+
+const afterPanel: LabMarker[] = [
+  { name: "NAD+ Level", value: "42", unit: "ng/mL", status: "optimal", position: 7 },
+  { name: "hs-CRP", value: "0.8", unit: "mg/L", status: "optimal", position: 3 },
+  { name: "Homocysteine", value: "7.5", unit: "\u03BCmol/L", status: "optimal", position: 3 },
+  { name: "Fasting Insulin", value: "7.0", unit: "\u03BCU/mL", status: "optimal", position: 3.5 },
+];
 
 const faqItems = [
   {
@@ -210,7 +228,7 @@ function BiomarkerScroll() {
   return (
     <div className="relative overflow-hidden py-10 md:py-14" style={{ background: "#0D1220" }}>
       <div className="text-center mb-8 px-6">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-3" style={{ color: PERSONA_SOFT }}>
+        <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-3" style={{ color: PERSONA_SOFT }}>
           What we measure before prescribing
         </p>
         <h3 className="font-serif text-2xl md:text-3xl text-white leading-[1.15] tracking-tight max-w-2xl mx-auto">
@@ -271,6 +289,164 @@ function BiomarkerScroll() {
    Biohacker-depth expander. Surface is plain-English; expand to
    reveal the mechanistic detail.
    ============================== */
+
+/* ==============================
+   COMPONENT: LAB PANEL \u2014 hero visual
+   Editorial rendering of a Halo cellular panel. Shows a lead marker
+   with a large numeric value, then secondary markers with mini-gauges.
+   Supports a \u201cbefore\u201d / \u201cat 90 days\u201d variant pair for the parallax stack.
+   ============================== */
+
+function statusLabel(s: LabStatus) {
+  if (s === "low") return "LOW";
+  if (s === "mid") return "MID";
+  if (s === "high") return "HIGH";
+  return "OPTIMAL";
+}
+
+function statusColor(s: LabStatus) {
+  if (s === "low") return "#C26B4A";
+  if (s === "high") return "#C26B4A";
+  if (s === "mid") return "#B8974E";
+  return PERSONA;
+}
+
+function LabGauge({ position, status }: { position: number; status: LabStatus }) {
+  const pct = Math.max(3, Math.min(97, (position / 10) * 100));
+  return (
+    <div
+      className="relative w-full h-[6px] rounded-full overflow-hidden"
+      style={{ background: "rgba(28,28,30,0.06)" }}
+    >
+      {/* Range band gradient */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(194,107,74,0.16) 0%, rgba(184,151,78,0.14) 35%, rgba(63,90,138,0.20) 65%, rgba(194,107,74,0.16) 100%)",
+        }}
+      />
+      {/* Indicator dot */}
+      <div
+        className="absolute top-1/2 w-[10px] h-[10px] rounded-full shadow-sm"
+        style={{
+          left: `${pct}%`,
+          transform: "translate(-50%, -50%)",
+          background: statusColor(status),
+          border: "1.5px solid white",
+        }}
+      />
+    </div>
+  );
+}
+
+function LabPanel({ markers, badge }: { markers: LabMarker[]; badge?: string }) {
+  return (
+    <div
+      className="relative rounded-[22px] overflow-hidden"
+      style={{
+        background: "#FAF8F4",
+        boxShadow: "0 24px 70px -20px rgba(10,14,24,0.45), 0 1px 0 rgba(255,255,255,0.6) inset",
+        border: "1px solid rgba(28,28,30,0.06)",
+      }}
+    >
+      {/* Header */}
+      <div className="px-6 md:px-7 pt-5 md:pt-6 pb-4 flex items-start justify-between">
+        <div>
+          <p className="plex-mono text-[9px] font-semibold uppercase tracking-[0.28em] text-halo-charcoal/40">
+            Halo \u00B7 Sample
+          </p>
+          <p className="text-[13px] md:text-[14px] font-semibold tracking-tight text-halo-charcoal mt-1.5">
+            Cellular Panel
+          </p>
+        </div>
+        {badge && (
+          <span
+            className="plex-mono inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.18em]"
+            style={{
+              background: badge.toLowerCase().includes("before")
+                ? "rgba(194,107,74,0.12)"
+                : `${PERSONA}18`,
+              color: badge.toLowerCase().includes("before") ? "#C26B4A" : PERSONA,
+            }}
+          >
+            <span
+              className="w-1 h-1 rounded-full"
+              style={{
+                background: badge.toLowerCase().includes("before") ? "#C26B4A" : PERSONA,
+              }}
+            />
+            {badge}
+          </span>
+        )}
+      </div>
+
+      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
+
+      {/* Lead marker */}
+      <div className="px-6 md:px-7 pt-5 pb-4">
+        <div className="flex items-baseline justify-between mb-2">
+          <p className="plex-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50">
+            {markers[0].name}
+          </p>
+          <span
+            className="plex-mono text-[9px] font-semibold tracking-[0.18em]"
+            style={{ color: statusColor(markers[0].status) }}
+          >
+            {statusLabel(markers[0].status)}
+          </span>
+        </div>
+        <div className="flex items-baseline gap-2 mb-3">
+          <span className="font-serif text-[48px] md:text-[58px] font-light leading-none tracking-tight text-halo-charcoal">
+            {markers[0].value}
+          </span>
+          <span className="plex-mono text-[12px] text-halo-charcoal/55">{markers[0].unit}</span>
+        </div>
+        <LabGauge position={markers[0].position} status={markers[0].status} />
+      </div>
+
+      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
+
+      {/* Secondary markers */}
+      <div className="px-6 md:px-7 py-4 space-y-3">
+        {markers.slice(1).map((m) => (
+          <div key={m.name}>
+            <div className="flex items-baseline justify-between mb-1.5">
+              <span className="plex-mono text-[10px] uppercase tracking-[0.15em] text-halo-charcoal/75 truncate">
+                {m.name}
+              </span>
+              <div className="flex items-baseline gap-1.5 flex-shrink-0">
+                <span className="plex-mono text-[11px] font-medium text-halo-charcoal">
+                  {m.value}
+                </span>
+                <span className="plex-mono text-[9px] text-halo-charcoal/45">{m.unit}</span>
+                <span
+                  className="plex-mono text-[9px] font-semibold tracking-[0.12em] ml-1"
+                  style={{ color: statusColor(m.status) }}
+                >
+                  &middot; {statusLabel(m.status)}
+                </span>
+              </div>
+            </div>
+            <LabGauge position={m.position} status={m.status} />
+          </div>
+        ))}
+      </div>
+
+      <div className="h-px w-full" style={{ background: "rgba(28,28,30,0.08)" }} />
+
+      {/* Footer */}
+      <div className="px-6 md:px-7 py-3.5 flex items-center justify-between">
+        <p className="plex-mono text-[9px] uppercase tracking-[0.18em] text-halo-charcoal/45">
+          Physician review \u00B7 90-day recheck
+        </p>
+        <p className="plex-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-halo-charcoal/30">
+          Halo 2026
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function ScienceAccordion({
   summary,
@@ -415,61 +591,6 @@ function DeliveryComparison() {
 }
 
 /* ==============================
-   COMPONENT: HALO VS TYPICAL (2-col)
-   ============================== */
-
-function HaloVsTypicalTable() {
-  return (
-    <div className="rounded-[22px] overflow-hidden border border-halo-charcoal/[0.08] bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.12)]">
-      <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-halo-charcoal/[0.08]">
-        <div className="p-4 md:p-5 flex items-center">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">Compare</span>
-        </div>
-        <div className="p-4 md:p-5 flex items-center justify-center text-center" style={{ background: `${PERSONA}10` }}>
-          <div>
-            <p className="font-serif text-[16px] md:text-[18px] leading-tight tracking-tight" style={{ color: PERSONA_DEEP }}>
-              Halo
-            </p>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.22em]" style={{ color: PERSONA }}>Your protocol</p>
-          </div>
-        </div>
-        <div className="p-4 md:p-5 flex items-center justify-center text-center">
-          <div>
-            <p className="font-serif text-[16px] md:text-[18px] text-halo-charcoal/70 leading-tight tracking-tight">
-              IV Longevity Clinic
-            </p>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">Boutique drip</p>
-          </div>
-        </div>
-      </div>
-
-      {comparisonRows.map((row, i) => (
-        <div
-          key={row.label}
-          className={`grid grid-cols-[1.3fr_1fr_1fr] ${
-            i !== comparisonRows.length - 1 ? "border-b border-halo-charcoal/[0.06]" : ""
-          }`}
-        >
-          <div className="p-4 md:p-5 text-[13px] md:text-[14px] text-halo-charcoal/80 font-medium">{row.label}</div>
-          <div className="p-4 md:p-5 text-center text-[13px] md:text-[14px] font-medium" style={{ background: `${PERSONA}08`, color: PERSONA_DEEP }}>
-            <span className="inline-flex items-center gap-1.5 justify-center">
-              <Check className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} style={{ color: PERSONA }} />
-              {row.halo}
-            </span>
-          </div>
-          <div className="p-4 md:p-5 text-center text-[13px] md:text-[14px] text-halo-charcoal/55">
-            <span className="inline-flex items-center gap-1.5 justify-center">
-              <X className="w-3.5 h-3.5 flex-shrink-0 text-halo-charcoal/30" strokeWidth={2.5} />
-              {row.typical}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ==============================
    COMPONENT: OUTCOME CARD
    ============================== */
 
@@ -514,25 +635,59 @@ export default function NadTherapyPage() {
   return (
     <>
       {/* ═══════════════════════════════════════════════
-          1 · HERO — split, portrait right
+          1 · HERO — Dark + lab panel (edgy / scientific)
           ═══════════════════════════════════════════════ */}
-      <section className="relative section-light overflow-hidden">
-        <div className="grid lg:grid-cols-[1fr_1.1fr] lg:min-h-[680px]">
-          <div className="relative flex flex-col justify-center px-6 md:px-10 lg:px-14 py-12 md:py-16 lg:py-20 order-2 lg:order-1">
+      <section
+        className="relative overflow-hidden"
+        style={{ background: "#0B1020" }}
+      >
+        {/* Subtle grid pattern — technical document register */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(123,142,179,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(123,142,179,0.07) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+            maskImage:
+              "radial-gradient(ellipse at 50% 50%, black 40%, transparent 85%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse at 50% 50%, black 40%, transparent 85%)",
+          }}
+        />
+
+        {/* Persona glow accents */}
+        <div
+          className="absolute -top-40 -left-40 w-[560px] h-[560px] rounded-full pointer-events-none"
+          aria-hidden="true"
+          style={{ background: PERSONA, filter: "blur(160px)", opacity: 0.18 }}
+        />
+        <div
+          className="absolute -bottom-40 -right-40 w-[480px] h-[480px] rounded-full pointer-events-none"
+          aria-hidden="true"
+          style={{ background: PERSONA_DEEP, filter: "blur(160px)", opacity: 0.25 }}
+        />
+
+        <div className="relative grid lg:grid-cols-[1fr_1.1fr] lg:min-h-[720px]">
+          {/* LEFT: Content */}
+          <div className="relative flex flex-col justify-center px-6 md:px-10 lg:px-14 py-14 md:py-16 lg:py-20 order-2 lg:order-1">
             <div className="flex items-center gap-3 mb-6">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.28em]" style={{ color: PERSONA }}>
-                NAD+ Therapy
+              <span
+                className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em]"
+                style={{ color: PERSONA_SOFT }}
+              >
+                NAD+ Therapy \u00B7 Halo Rx 001
               </span>
             </div>
 
-            <h1 className="headline-hero text-[36px] md:text-[52px] lg:text-[60px] text-halo-charcoal leading-[1.02] tracking-tight mb-5">
+            <h1 className="headline-hero text-[36px] md:text-[52px] lg:text-[62px] text-white leading-[1.02] tracking-tight mb-5">
               Take on{" "}
-              <span className="italic" style={{ color: PERSONA }}>
+              <span className="italic" style={{ color: PERSONA_SOFT }}>
                 Father Time.
               </span>
             </h1>
 
-            <p className="text-[16px] md:text-[17px] text-halo-charcoal/70 leading-relaxed mb-8 max-w-md">
+            <p className="text-[16px] md:text-[17px] text-white/65 leading-relaxed mb-8 max-w-md">
               NAD+ drops 50% by age 60. Halo prescribes, measures, and restores
               it &mdash; monthly, at home.
             </p>
@@ -544,8 +699,11 @@ export default function NadTherapyPage() {
                 "Paired with Glutathione. Monitored every 90 days.",
               ].map((bullet) => (
                 <li key={bullet} className="flex items-start gap-3">
-                  <span className="mt-[10px] flex-shrink-0 w-5 h-px" style={{ background: PERSONA }} />
-                  <span className="text-[14px] md:text-[15px] text-halo-charcoal/85 leading-snug">
+                  <span
+                    className="mt-[10px] flex-shrink-0 w-5 h-px"
+                    style={{ background: PERSONA_SOFT }}
+                  />
+                  <span className="text-[14px] md:text-[15px] text-white/85 leading-snug">
                     {bullet}
                   </span>
                 </li>
@@ -555,10 +713,11 @@ export default function NadTherapyPage() {
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
                 href="/quiz?from=nad"
-                className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+                className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:brightness-105"
                 style={{
-                  backgroundColor: PERSONA,
-                  boxShadow: `0 8px 28px ${PERSONA}45`,
+                  backgroundColor: "white",
+                  color: "#0B1020",
+                  boxShadow: `0 8px 28px rgba(63,90,138,0.35)`,
                 }}
               >
                 Start my assessment
@@ -566,64 +725,74 @@ export default function NadTherapyPage() {
               </Link>
               <Link
                 href="/quiz?from=nad"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-sm hover:border-halo-charcoal/40 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-white/25 text-white font-semibold text-sm hover:border-white/50 transition-colors"
               >
                 See if I qualify
               </Link>
             </div>
 
-            <p className="text-[12px] text-halo-charcoal/50 italic">
+            <p className="text-[12px] text-white/45 italic">
               Starts at $179/mo. Free physician consultation before any prescription.
             </p>
           </div>
 
+          {/* RIGHT: Lab panel stack */}
           <div
-            className="relative order-1 lg:order-2 min-h-[400px] md:min-h-[500px] lg:min-h-0 overflow-hidden"
-            style={{
-              background: `linear-gradient(165deg, #E8EEF8 0%, #B8C8E0 50%, ${PERSONA_SOFT} 100%)`,
-            }}
+            className="relative order-1 lg:order-2 min-h-[520px] md:min-h-[600px] lg:min-h-0 flex items-center px-6 md:px-10 lg:px-14 py-10 md:py-14 lg:py-20"
           >
             {/* Mobile CTA overlay */}
             <div className="md:hidden absolute bottom-5 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none">
               <Link
                 href="/quiz?from=nad"
-                className="pointer-events-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
-                style={{ backgroundColor: PERSONA }}
+                className="pointer-events-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+                style={{ backgroundColor: "white", color: "#0B1020" }}
               >
                 Start my assessment
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/nad/hero-portrait.jpg"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ objectPosition: "center 35%" }}
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: "linear-gradient(180deg, transparent 70%, rgba(20,25,40,0.22) 100%)",
-              }}
-            />
+            <div className="relative w-full max-w-[440px] mx-auto">
+              {/* BACK panel — "At 90 days" peeks behind */}
+              <div
+                className="absolute top-10 md:top-14 -right-5 md:-right-8 w-[88%] md:w-[92%] opacity-[0.88] pointer-events-none"
+                aria-hidden="true"
+                style={{ filter: "blur(0.4px) saturate(0.95)" }}
+              >
+                <LabPanel markers={afterPanel} badge="At 90 days \u00B7 Optimal" />
+              </div>
+
+              {/* FRONT panel — Before */}
+              <div className="relative">
+                <LabPanel markers={beforePanel} badge="Before protocol" />
+              </div>
+
+              {/* Annotation caption */}
+              <p
+                className="plex-mono text-[10px] uppercase tracking-[0.22em] text-white/35 mt-6 text-center"
+                aria-hidden="true"
+              >
+                Sample panel \u00B7 representative of member results
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Trust strip */}
-        <div className="border-t border-halo-charcoal/[0.08] bg-white/60 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/60">
+        {/* Trust strip (dark variant) */}
+        <div
+          className="relative border-t backdrop-blur-sm"
+          style={{
+            borderColor: "rgba(123,142,179,0.15)",
+            background: "rgba(11,16,32,0.6)",
+          }}
+        >
+          <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 plex-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">
             <span>Board-certified physicians</span>
-            <span className="text-halo-charcoal/20">&middot;</span>
+            <span className="text-white/20">&middot;</span>
             <span>US-licensed 503A pharmacy</span>
-            <span className="text-halo-charcoal/20">&middot;</span>
+            <span className="text-white/20">&middot;</span>
             <span>Lab-monitored</span>
-            <span className="text-halo-charcoal/20">&middot;</span>
+            <span className="text-white/20">&middot;</span>
             <span>Available in 30+ states</span>
           </div>
         </div>
@@ -646,7 +815,7 @@ export default function NadTherapyPage() {
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 The cost gap
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
@@ -703,7 +872,7 @@ export default function NadTherapyPage() {
         <div className="max-w-4xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-10 md:mb-14">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 The science
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
@@ -779,7 +948,7 @@ export default function NadTherapyPage() {
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 What changes
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.08] max-w-3xl mx-auto">
@@ -806,7 +975,7 @@ export default function NadTherapyPage() {
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-14">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 How it&rsquo;s delivered
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
@@ -855,7 +1024,7 @@ export default function NadTherapyPage() {
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-14">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 The protocol
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
@@ -913,41 +1082,13 @@ export default function NadTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          10 · HALO VS IV CLINIC
-          ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light" style={{ background: "#FAF8F4" }}>
-        <div className="max-w-5xl mx-auto">
-          <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-14">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
-                The difference
-              </p>
-              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
-                NAD+ without{" "}
-                <span className="italic" style={{ color: PERSONA }}>
-                  the four-hour chair.
-                </span>
-              </h2>
-              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-xl mx-auto mt-5 leading-relaxed">
-                What you&rsquo;d get at a boutique longevity clinic, vs what
-                you get at Halo.
-              </p>
-            </div>
-          </AnimateOnScroll>
-          <AnimateOnScroll>
-            <HaloVsTypicalTable />
-          </AnimateOnScroll>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          11 · OUTCOMES
+          10 · OUTCOMES
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 What members report
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
@@ -986,7 +1127,7 @@ export default function NadTherapyPage() {
         <div className="max-w-4xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-10 md:mb-12">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 The research
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
@@ -1058,7 +1199,7 @@ export default function NadTherapyPage() {
                 />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-3" style={{ color: PERSONA }}>
+                <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-3" style={{ color: PERSONA }}>
                   Your physician
                 </p>
                 <h3 className="headline-section text-2xl md:text-3xl text-halo-charcoal leading-[1.15] mb-3">
@@ -1087,7 +1228,7 @@ export default function NadTherapyPage() {
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+              <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 Terms
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
@@ -1154,7 +1295,7 @@ export default function NadTherapyPage() {
 
             <AnimateOnScroll>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+                <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                   Questions
                 </p>
                 <h3 className="headline-section text-2xl md:text-3xl text-halo-charcoal leading-[1.15] mb-8">
@@ -1174,7 +1315,7 @@ export default function NadTherapyPage() {
         <HaloPattern variant="default" intensity={1.8} color={PERSONA} showCore={false} className="absolute inset-0 w-full h-full" />
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <AnimateOnScroll>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-5" style={{ color: PERSONA_SOFT }}>
+            <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-5" style={{ color: PERSONA_SOFT }}>
               Aging isn&rsquo;t optional. The drift is.
             </p>
             <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white leading-[1.1] mb-6">
