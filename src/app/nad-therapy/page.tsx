@@ -1624,7 +1624,7 @@ function CellularAgeQuiz() {
                 <div className="flex flex-col sm:flex-row gap-2.5 justify-center">
                   {/* TODO: Swap to /quiz/nad once the focused NAD+ qualification quiz ships */}
                   <Link
-                    href="/quiz?from=nad-estimator"
+                    href="/quiz/nad"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                     style={{ backgroundColor: PERSONA }}
                   >
@@ -1665,7 +1665,7 @@ function CellularAgeQuiz() {
                 </p>
                 {/* TODO: Swap to /quiz/nad once the focused NAD+ qualification quiz ships */}
                 <Link
-                  href="/quiz?from=nad-estimator"
+                  href="/quiz/nad"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                   style={{ backgroundColor: PERSONA }}
                 >
@@ -1990,7 +1990,7 @@ export default function NadTherapyPage() {
 
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
-                href="/quiz?from=nad"
+                href="/quiz/nad"
                 className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all hover:brightness-105"
                 style={{
                   backgroundColor: "white",
@@ -2028,7 +2028,7 @@ export default function NadTherapyPage() {
             {/* Mobile CTA overlay */}
             <div className="md:hidden absolute bottom-5 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none">
               <Link
-                href="/quiz?from=nad"
+                href="/quiz/nad"
                 className="pointer-events-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
                 style={{ backgroundColor: "white", color: "#0B1020" }}
               >
@@ -2549,7 +2549,7 @@ export default function NadTherapyPage() {
                 </div>
 
                 <Link
-                  href="/quiz?from=nad"
+                  href="/quiz/nad"
                   className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                   style={{
                     backgroundColor: PERSONA,
@@ -2601,7 +2601,7 @@ export default function NadTherapyPage() {
               prescription. Cancel anytime.
             </p>
             <Link
-              href="/quiz?from=nad"
+              href="/quiz/nad"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-[#0D1220] font-semibold text-sm transition-all hover:brightness-95"
               style={{ backgroundColor: "white" }}
             >

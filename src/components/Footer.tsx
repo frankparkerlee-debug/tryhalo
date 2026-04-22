@@ -28,6 +28,7 @@ const footerColumns = [
     links: [
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
+      { label: "SMS Terms", href: "/sms-terms" },
       { label: "HIPAA Notice", href: "/hipaa" },
     ],
   },
@@ -126,9 +127,12 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/[0.06] pt-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-            <p className="text-xs text-white/25">
-              &copy; 2026 Halo Health Inc. All rights reserved.
-            </p>
+            <div className="text-xs text-white/25 space-y-1">
+              <p>&copy; 2026 Halo Health Inc. All rights reserved.</p>
+              <p className="text-white/20">
+                Halo Health Inc. &middot; PO Box 600715, Dallas, TX 75206
+              </p>
+            </div>
             <p className="text-xs text-white/20 leading-relaxed max-w-2xl md:text-right">
               Halo is a technology platform that connects patients with licensed
               healthcare providers. All clinical decisions are made by

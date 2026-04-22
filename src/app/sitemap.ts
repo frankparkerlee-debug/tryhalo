@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     { path: "", priority: 1.0, changeFrequency: "weekly" as const },
     { path: "/quiz", priority: 0.9, changeFrequency: "monthly" as const },
+    { path: "/stack", priority: 0.9, changeFrequency: "weekly" as const },
     { path: "/hormone-therapy", priority: 0.8, changeFrequency: "monthly" as const },
     { path: "/testosterone-therapy", priority: 0.8, changeFrequency: "monthly" as const },
     { path: "/peptide-therapy", priority: 0.8, changeFrequency: "monthly" as const },

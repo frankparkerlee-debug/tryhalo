@@ -105,7 +105,17 @@ export type SubmitQuizInput = Omit<QuizSubmission, "source" | "meta"> & {
 };
 
 export type SubmitQuizResult =
-  | { ok: true; id: string; deduped?: boolean }
+  | {
+      ok: true;
+      id: string;
+      deduped?: boolean;
+      /**
+       * Waitlist position assigned by the server — present when `quiz` was
+       * "waitlist_joined" AND Upstash Redis is configured. Null otherwise.
+       * Idempotent: resubmitting the same email returns the same position.
+       */
+      position?: number | null;
+    }
   | { ok: false; error: string; fields?: string[] };
 
 export async function submitQuiz(
@@ -164,10 +174,19 @@ export async function submitQuiz(
       };
     }
 
-    const body = json as { ok?: boolean; id?: string; error?: string };
+    const body = json as {
+      ok?: boolean;
+      id?: string;
+      error?: string;
+      position?: number | null;
+    };
     if (body.ok && body.id) {
       markSubmitted(input.quiz, email, body.id);
-      return { ok: true, id: body.id };
+      return {
+        ok: true,
+        id: body.id,
+        position: typeof body.position === "number" ? body.position : null,
+      };
     }
     return { ok: false, error: body.error ?? "unknown_response" };
   } catch (err) {

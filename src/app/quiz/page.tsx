@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, Plus, Minus } from "lucide-react";
 import HaloLogo from "@/components/HaloLogo";
 import FoundingCircleForm from "@/components/FoundingCircleForm";
@@ -108,22 +108,6 @@ const programs = {
     ],
     href: "#",
     available: false,
-  },
-  consultation: {
-    name: "Physician Consultation",
-    compounds: "No commitment \u00B7 Free for founding members",
-    price: "From $99",
-    foundingPrice: "Free (founding)",
-    description:
-      "Let's start with a conversation. Our physicians will review your intake, order the right labs, and design a protocol around your specific biology and goals.",
-    includes: [
-      "30-minute video visit",
-      "Baseline labs review",
-      "Personalized roadmap",
-      "No commitment",
-    ],
-    href: "#founding-circle",
-    available: true,
   },
 };
 
@@ -277,7 +261,6 @@ const RED_FLAGS = new Set([
 const PERSONA_COLORS: Record<string, string> = {
   Woman: "#D4836B", // terracotta rose (matches HRT anchor card)
   Man: "#5A7394", // slate blue (matches TRT anchor card)
-  "Prefer not to say": "#C8A96E", // gold (default brand)
 };
 
 const NEUTRAL_COLOR = "#C8A96E";
@@ -425,9 +408,41 @@ const TOTAL_STEPS = 9;
    QUIZ PAGE
    ============================== */
 
+/**
+ * Map the legacy programs-object key (how the quiz records its pick) to the
+ * canonical Program slug the /stack builder and /api/quiz-submission schema
+ * both speak. Keep this in sync with the keys in the `programs` object above.
+ * Returning null means "no specific primary" — /stack renders with no
+ * pre-selected card, same as a direct visit.
+ */
+function primaryRecToStackSlug(
+  key: keyof typeof programs | null
+): string | null {
+  switch (key) {
+    case "hormoneTherapy":
+      return "hrt";
+    case "testosterone":
+      return "trt";
+    case "peptideTherapy":
+      return "peptides";
+    case "nadTherapy":
+      return "nad";
+    case "weightLoss":
+      return "weight_loss";
+    case "sexualWellness":
+      return "sexual_wellness";
+    case null:
+    case undefined:
+      return null;
+    default:
+      return null;
+  }
+}
+
 function QuizPageInner() {
   /* ---- URL context (?from=hrt | ?from=trt | none) ---- */
   const searchParams = useSearchParams();
+  const router = useRouter();
   const quizContext = useMemo(() => {
     const from = searchParams?.get("from");
     if (from === "hrt" || from === "trt" || from === "peptide" || from === "nad") {
@@ -543,15 +558,16 @@ function QuizPageInner() {
         "Skin, hair & aging",
       ].filter((g) => goalSet.has(g)).length;
 
-      // 35+ OR strong signal (2+ hormone-related goals): recommend HRT
+      // 35+ with any hormone signal: HRT is the right primary.
       if (ageNum >= 35 && hormoneSignals >= 1) {
         recs.push("hormoneTherapy");
       } else if (ageNum < 35 && hormoneSignals >= 2) {
-        // Under 35: require stronger signal
+        // Under 35: require stronger signal (2+) to anchor on HRT.
         recs.push("hormoneTherapy");
       } else if (ageNum < 35 && hormoneSignals === 1) {
-        // Route to a consultation instead of pushing HRT prematurely
-        recs.push("consultation");
+        // Under 35 with only one signal: offer NAD+ as the entry point
+        // and let the clinician decide whether HRT is appropriate at intake.
+        recs.push("nadTherapy");
       }
     }
 
@@ -564,19 +580,17 @@ function QuizPageInner() {
         "Mood & mental clarity",
       ].filter((g) => goalSet.has(g)).length;
 
-      if (ageNum >= 30 && trtSignals >= 1) {
+      // 35+ with any TRT signal: TRT is the right primary.
+      if (ageNum >= 35 && trtSignals >= 1) {
         recs.push("testosterone");
-      } else if (ageNum < 30 && trtSignals >= 2) {
+      } else if (ageNum < 35 && trtSignals >= 2) {
+        // Under 35: require stronger signal (2+) to anchor on TRT.
         recs.push("testosterone");
-      } else if (ageNum < 30 && trtSignals === 1) {
-        recs.push("consultation");
+      } else if (ageNum < 35 && trtSignals === 1) {
+        // Under 35 with only one signal: offer NAD+ as the entry point
+        // and let the clinician decide whether TRT is appropriate at intake.
+        recs.push("nadTherapy");
       }
-    }
-
-    // ---- "Prefer not to say" ----
-    if (gender === "Prefer not to say") {
-      // No gender-specific primary. Route to consultation as the primary.
-      recs.push("consultation");
     }
 
     // ---- Peptide Therapy ----
@@ -620,11 +634,17 @@ function QuizPageInner() {
     }
 
     // ---- Final fallback ----
+    // If the router came up empty, honor the originating product page
+    // (e.g. ?from=hrt / trt / peptide / nad) as the primary. The clinician
+    // will refine at intake — we never punt the user to a generic consult.
     if (recs.length === 0) {
-      recs.push("consultation");
+      if (quizContext === "hrt") recs.push("hormoneTherapy");
+      else if (quizContext === "trt") recs.push("testosterone");
+      else if (quizContext === "peptide") recs.push("peptideTherapy");
+      else if (quizContext === "nad") recs.push("nadTherapy");
     }
 
-    const primary = recs[0];
+    const primary = recs[0] ?? null;
     const secondary = recs.slice(1);
 
     setPrimaryRec(primary);
@@ -646,7 +666,7 @@ function QuizPageInner() {
         }),
       );
     } catch {}
-  }, [gender, age, goals, hasContraindications]);
+  }, [gender, age, goals, hasContraindications, quizContext]);
 
   /* ---- Auto-skip gender step when launched from HRT or TRT page ---- */
   useEffect(() => {
@@ -955,7 +975,7 @@ function QuizPageInner() {
                   Takes about two minutes. Every answer shapes your care.
                 </QuestionSub>
                 <div className="flex flex-col gap-2.5">
-                  {["Woman", "Man", "Prefer not to say"].map((option) => (
+                  {["Woman", "Man"].map((option) => (
                     <PillOption
                       key={option}
                       label={option}
@@ -1369,226 +1389,99 @@ function QuizPageInner() {
               </div>
             )}
 
-            {/* ============ STEP 8: RESULTS ============ */}
+            {/* ============ STEP 9: LEAD CAPTURE ============ */}
+            {/*
+              The funnel deliberately hides the recommendation cards at this
+              step. The stack builder (/stack) IS the reveal — we don't want
+              the user to see the protocol preview and bounce before their
+              contact info is captured. Submit → router.push('/stack') below.
+            */}
             {step === 9 && (
-              <div className="w-full">
-                <h1 className="font-serif text-[30px] md:text-[38px] leading-[1.1] text-halo-charcoal tracking-tight mb-2 text-center">
-                  Based on your answers,
+              <div className="w-full max-w-lg mx-auto">
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.28em] text-center mb-4"
+                  style={{ color: personaColor }}
+                >
+                  Your protocol is ready
+                </p>
+                <h1 className="font-serif text-[30px] md:text-[38px] leading-[1.1] text-halo-charcoal tracking-tight mb-3 text-center">
+                  Let&rsquo;s line up{" "}
+                  <span className="italic text-halo-charcoal/70">your protocol.</span>
                 </h1>
-                <p className="font-serif italic text-[20px] md:text-[24px] text-halo-charcoal/65 mb-10 text-center">
-                  here&rsquo;s what we&rsquo;d recommend.
+                <p className="text-[14px] md:text-[15px] text-halo-charcoal/55 mb-8 text-center leading-relaxed">
+                  Enter your email to unlock your recommendation and lock in
+                  your founding rate. 999 spots. Reduced pricing for life.
                 </p>
 
-                {/* Contraindication notice */}
+                {/* Contraindication notice — lightweight, no "consultation" framing */}
                 {hasContraindications && (
                   <div className="mb-6 p-5 rounded-2xl border border-[#C8A96E]/40 bg-[#FEF8E9]">
                     <p className="text-[13px] font-semibold uppercase tracking-[0.15em] text-[#9C7F3E] mb-2">
                       Physician review
                     </p>
                     <p className="text-[14px] text-halo-charcoal/70 leading-relaxed">
-                      You flagged a condition that warrants careful review. Your
-                      consultation will cover this directly, and any protocol will be
-                      tailored to your history. Nothing below is a prescription — just
+                      You flagged a condition that warrants careful review.
+                      Your clinician will tailor any protocol to your history
+                      at intake. Nothing you see next is a prescription — it&rsquo;s
                       a starting point for the conversation.
                     </p>
                   </div>
                 )}
 
-                {/* PRIMARY RECOMMENDATION */}
-                {primaryRec && (
-                  <div className="rounded-[20px] border border-halo-charcoal/[0.08] bg-white p-7 md:p-8 mb-5 shadow-[0_10px_40px_-20px_rgba(0,0,0,0.12)]">
-                    <p
-                      className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-4"
-                      style={{ color: personaColor }}
-                    >
-                      {primaryRec === "consultation"
-                        ? "Start here"
-                        : "Recommended for you"}
-                    </p>
-                    <h2 className="font-serif text-[26px] md:text-[30px] text-halo-charcoal tracking-tight mb-1 leading-tight">
-                      {programs[primaryRec].name}
-                    </h2>
-                    {programs[primaryRec].compounds && (
-                      <p className="text-halo-charcoal/45 text-[13px] mb-4">
-                        {programs[primaryRec].compounds}
-                      </p>
-                    )}
-                    <p className="text-[14px] text-halo-charcoal/65 leading-relaxed mb-6">
-                      {programs[primaryRec].description}
-                    </p>
+                <FoundingCircleForm
+                  variant="light"
+                  onSubmitted={({ email, phone }) => {
+                    // Fire a separate "Completed Homepage Intake" event
+                    // carrying the full quiz answers. The founding-circle
+                    // signup is its own event; this is the intake record
+                    // physicians/marketing can segment on.
+                    const stackSlug = primaryRecToStackSlug(primaryRec);
+                    void submitQuiz({
+                      quiz: "homepage",
+                      contact: { email, phone },
+                      answers: {
+                        gender,
+                        age,
+                        goals,
+                        symptoms,
+                        taking_medications: takingMedications,
+                        medication_details: medicationDetails || undefined,
+                        quiz_context: quizContext,
+                      },
+                      derived: {
+                        // Stamp the canonical Program slug for Klaviyo
+                        // segmentation ("halo_primary_program").
+                        primary_program: (stackSlug as
+                          | "hrt"
+                          | "trt"
+                          | "peptides"
+                          | "nad"
+                          | "weight_loss"
+                          | "sexual_wellness"
+                          | undefined) ?? undefined,
+                      },
+                    });
 
-                    {/* Price */}
-                    <div className="flex items-baseline gap-2 mb-5">
-                      {programs[primaryRec].price &&
-                        programs[primaryRec].foundingPrice &&
-                        primaryRec !== "consultation" && (
-                          <span className="text-halo-charcoal/30 line-through text-[13px]">
-                            {programs[primaryRec].price}
-                          </span>
-                        )}
-                      <span className="text-halo-charcoal font-semibold text-[20px] tracking-tight">
-                        {programs[primaryRec].foundingPrice ||
-                          programs[primaryRec].price}
-                      </span>
-                      <span className="text-halo-charcoal/40 text-[11px] uppercase tracking-[0.12em] font-semibold">
-                        {primaryRec === "consultation"
-                          ? "intake"
-                          : "founding price"}
-                      </span>
-                    </div>
+                    // Forward the user into the stack builder so the
+                    // funnel terminates there: quiz → lead capture → stack.
+                    // Preserve the primary recommendation as ?primary so
+                    // the card grid highlights it and orders it first.
+                    const params = new URLSearchParams();
+                    params.set("from", "homepage");
+                    if (stackSlug) params.set("primary", stackSlug);
+                    if (gender === "Woman") params.set("gender", "female");
+                    else if (gender === "Man") params.set("gender", "male");
+                    router.push(`/stack?${params.toString()}`);
+                  }}
+                />
 
-                    {/* Includes */}
-                    <div className="mb-6">
-                      <p className="text-[10px] font-semibold text-halo-charcoal/50 uppercase tracking-[0.2em] mb-3">
-                        What&rsquo;s included
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {programs[primaryRec].includes.map((item) => (
-                          <span
-                            key={item}
-                            className="text-[12px] px-3 py-1.5 rounded-full bg-halo-charcoal/[0.04] text-halo-charcoal/65"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* CTA */}
-                    <Link
-                      href={programs[primaryRec].href}
-                      className="inline-flex items-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-[13px] hover:brightness-95 transition-all"
-                      style={{
-                        backgroundColor: personaColor,
-                        boxShadow: `0 6px 24px ${personaColor}47`,
-                      }}
-                    >
-                      {primaryRec === "consultation"
-                        ? "Start with a conversation"
-                        : "Claim your founding spot"}
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                )}
-
-                {/* SECONDARY RECOMMENDATIONS */}
-                {secondaryRecs.length > 0 && (
-                  <div className="mb-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3 px-1">
-                      Also recommended
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {secondaryRecs.map((key) => (
-                        <Link
-                          key={key}
-                          href={programs[key].href}
-                          className="rounded-2xl border border-halo-charcoal/[0.08] bg-white p-5 hover:border-halo-charcoal/20 hover:shadow-[0_6px_24px_-10px_rgba(0,0,0,0.1)] transition-all group"
-                        >
-                          <h3 className="font-serif text-[18px] text-halo-charcoal mb-1 leading-tight">
-                            {programs[key].name}
-                          </h3>
-                          {programs[key].compounds && (
-                            <p className="text-halo-charcoal/45 text-[12px] mb-3">
-                              {programs[key].compounds}
-                            </p>
-                          )}
-                          <div className="flex items-baseline gap-2 mb-3">
-                            {programs[key].price &&
-                              programs[key].foundingPrice && (
-                                <span className="text-halo-charcoal/30 line-through text-[12px]">
-                                  {programs[key].price}
-                                </span>
-                              )}
-                            <span className="text-halo-charcoal font-semibold text-[14px]">
-                              {programs[key].foundingPrice ||
-                                programs[key].price}
-                            </span>
-                          </div>
-                          <span className="inline-flex items-center gap-1 text-[12px] text-[#C8A96E] font-semibold uppercase tracking-[0.15em]">
-                            Learn more <ArrowRight className="w-3 h-3" />
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* COMING SOON */}
-                {comingSoonRecs.length > 0 && (
-                  <div className="mb-10">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-3 px-1">
-                      Coming soon
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {comingSoonRecs.map((key) => (
-                        <div
-                          key={key}
-                          className="rounded-2xl border border-halo-charcoal/[0.08] bg-white/70 p-5"
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-serif text-[18px] text-halo-charcoal leading-tight">
-                              {programs[key].name}
-                            </h3>
-                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-halo-charcoal/[0.06] text-halo-charcoal/45 font-semibold uppercase tracking-[0.15em]">
-                              Soon
-                            </span>
-                          </div>
-                          <p className="text-halo-charcoal/45 text-[12px] mb-3">
-                            {programs[key].compounds}
-                          </p>
-                          <a
-                            href="/#founding-circle"
-                            className="inline-flex items-center gap-1 text-[12px] text-[#C8A96E] font-semibold uppercase tracking-[0.15em] hover:underline"
-                          >
-                            Join the waitlist <ArrowRight className="w-3 h-3" />
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* EMAIL CAPTURE */}
-                <div className="mt-10 pt-10 border-t border-halo-charcoal/[0.08]">
-                  <div className="text-center mb-6">
-                    <h3 className="font-serif text-[22px] md:text-[26px] text-halo-charcoal tracking-tight mb-2">
-                      Lock in your <span className="italic">founding rate.</span>
-                    </h3>
-                    <p className="text-[14px] text-halo-charcoal/50">
-                      999 spots. Reduced pricing for life. First access to
-                      everything.
-                    </p>
-                  </div>
-                  <div className="max-w-lg mx-auto">
-                    <FoundingCircleForm
-                      variant="light"
-                      onSubmitted={({ email, phone }) => {
-                        // Fire a separate "Completed Homepage Intake" event
-                        // carrying the full quiz answers. The founding-circle
-                        // signup is its own event; this is the intake record
-                        // physicians/marketing can segment on.
-                        void submitQuiz({
-                          quiz: "homepage",
-                          contact: { email, phone },
-                          answers: {
-                            gender,
-                            age,
-                            goals,
-                            symptoms,
-                            taking_medications: takingMedications,
-                            medication_details: medicationDetails || undefined,
-                            quiz_context: quizContext,
-                          },
-                          derived: {
-                            primary_program: primaryRec ?? undefined,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                </div>
+                <p className="text-[11px] text-halo-charcoal/40 text-center mt-6 leading-relaxed">
+                  No charges now. Your clinician reviews every intake and
+                  designs your protocol around your labs and goals.
+                </p>
               </div>
             )}
+
           </div>
         </main>
 

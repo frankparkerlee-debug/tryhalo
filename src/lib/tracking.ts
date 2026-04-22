@@ -32,6 +32,20 @@ export type EventName =
   | "nad_lead_success"
   | "nad_lead_error"
   | "nad_lead_duplicate"
+  // Stack builder (/stack)
+  | "stack_viewed"
+  | "stack_toggle"
+  | "stack_formulation_change"
+  | "stack_cadence_change"
+  | "stack_term_change"
+  | "stack_variant_change"
+  | "stack_built"
+  // Waitlist / intake milestones
+  | "waitlist_joined"
+  | "intake_started"
+  // Engagement tool estimators (top-of-funnel)
+  | "estimator_start"
+  | "estimator_complete"
   // Navigation / engagement
   | "cta_click"
   | "program_view";

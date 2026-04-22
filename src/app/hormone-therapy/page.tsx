@@ -8,6 +8,7 @@ import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import CountUpNumber from "@/components/CountUpNumber";
+import EngagementTool from "@/components/quiz/EngagementTool";
 
 /* ==============================
    PERSONA COLOR — HRT = terracotta rose
@@ -891,7 +892,7 @@ export default function HormoneTherapyPage() {
             {/* Mobile-only CTA overlay on the image */}
             <div className="md:hidden absolute bottom-5 left-0 right-0 z-10 flex justify-center px-4">
               <Link
-                href="/quiz?from=hrt"
+                href="/quiz/hrt"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
                 style={{
                   backgroundColor: PERSONA,
@@ -992,7 +993,7 @@ export default function HormoneTherapyPage() {
             {/* Dual CTA — primary hidden on mobile (already on hero image) */}
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
-                href="/quiz?from=hrt"
+                href="/quiz/hrt"
                 className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                 style={{
                   backgroundColor: PERSONA,
@@ -1003,7 +1004,7 @@ export default function HormoneTherapyPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/quiz?from=hrt"
+                href="/quiz/hrt"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-sm hover:border-halo-charcoal/40 transition-colors"
               >
                 Is HRT right for me?
@@ -1223,7 +1224,7 @@ export default function HormoneTherapyPage() {
                 yourself.
               </p>
               <Link
-                href="/quiz?from=hrt"
+                href="/quiz/hrt"
                 className="inline-flex items-center gap-2 text-sm font-medium border-b pb-0.5 transition-colors hover:opacity-75"
                 style={{
                   color: PERSONA,
@@ -1276,6 +1277,19 @@ export default function HormoneTherapyPage() {
                 </div>
               ))}
             </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          6.5 · SEVERITY SCALE (engagement tool)
+          After science + compounds, let her self-assess severity
+          before we walk her through the process.
+          ═══════════════════════════════════════════════ */}
+      <section className="py-16 md:py-24 px-6 section-light">
+        <div className="max-w-2xl mx-auto">
+          <AnimateOnScroll>
+            <EngagementTool slug="hrt_severity" variant="light" />
           </AnimateOnScroll>
         </div>
       </section>
@@ -1539,7 +1553,7 @@ export default function HormoneTherapyPage() {
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Link
-                  href="/quiz?from=hrt"
+                  href="/quiz/hrt"
                   className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95 flex-1"
                   style={{
                     backgroundColor: PERSONA,
@@ -1625,7 +1639,7 @@ export default function HormoneTherapyPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
-                href="/quiz?from=hrt"
+                href="/quiz/hrt"
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-110"
                 style={{
                   backgroundColor: PERSONA,
@@ -1636,7 +1650,7 @@ export default function HormoneTherapyPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/quiz?from=hrt"
+                href="/quiz/hrt"
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full border border-white/25 text-white font-semibold text-sm hover:border-white/50 transition-colors"
               >
                 Is HRT right for me?

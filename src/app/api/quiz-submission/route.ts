@@ -35,6 +35,7 @@ import {
   isKlaviyoConfigured,
 } from "@/lib/klaviyo";
 import { check as rateLimitCheck, clientIpFromRequest } from "@/lib/rate-limit";
+import { reserveWaitlistPosition } from "@/lib/redis";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -72,10 +73,13 @@ function isOriginAllowed(req: NextRequest): boolean {
   allowed.add("https://tryhalo.co");
   allowed.add("https://www.tryhalo.co");
 
-  // Dev origins — only accepted outside production
+  // Dev origins — only accepted outside production.
+  // Next.js may fall back to an alternate port (3001, 3002…) when 3000 is taken,
+  // so allow any localhost/127.0.0.1 origin in non-prod rather than a fixed port.
   if (process.env.NODE_ENV !== "production") {
-    allowed.add("http://localhost:3000");
-    allowed.add("http://127.0.0.1:3000");
+    if (originUrl.hostname === "localhost" || originUrl.hostname === "127.0.0.1") {
+      return true;
+    }
   }
 
   // Render preview / review apps — allow any *.onrender.com origin
@@ -127,12 +131,26 @@ function auditLog(
    ────────────────────────────────────────────────────────── */
 
 function buildProfileProperties(submission: QuizSubmission): Record<string, unknown> {
+  const submittedAt = submission.submittedAt ?? new Date().toISOString();
   const p: Record<string, unknown> = {
     [PROFILE_PROP.LAST_QUIZ]: submission.quiz,
     [PROFILE_PROP.LAST_QUIZ_SOURCE_URL]: submission.source,
-    [PROFILE_PROP.LAST_QUIZ_SUBMITTED_AT]:
-      submission.submittedAt ?? new Date().toISOString(),
+    [PROFILE_PROP.LAST_QUIZ_SUBMITTED_AT]: submittedAt,
+    // Email consent is implicit by submitting the form (CAN-SPAM). Stamp the
+    // moment so suppression decisions have a provable timestamp.
+    [PROFILE_PROP.EMAIL_CONSENT_AT]: submittedAt,
   };
+
+  // TCPA express written consent — only true when the user checked the SMS
+  // opt-in AND provided a phone number. Stamp the moment so marketing-SMS
+  // segments have a provable consent timestamp tied to this submission.
+  const c = submission.consent;
+  if (c?.acceptedSms === true && submission.contact.phone) {
+    p[PROFILE_PROP.SMS_CONSENT] = true;
+    p[PROFILE_PROP.SMS_CONSENT_AT] = submittedAt;
+  } else if (c?.acceptedSms === false) {
+    p[PROFILE_PROP.SMS_CONSENT] = false;
+  }
 
   const d = submission.derived;
   if (d) {
@@ -150,6 +168,29 @@ function buildProfileProperties(submission: QuizSubmission): Record<string, unkn
     }
     if (typeof d.nad_deficit_percent === "number") {
       p[PROFILE_PROP.NAD_DEFICIT_PERCENT] = d.nad_deficit_percent;
+    }
+    if (typeof d.bmi === "number") p[PROFILE_PROP.BMI] = d.bmi;
+    if (typeof d.projected_weight_lbs_6mo === "number") {
+      p[PROFILE_PROP.PROJECTED_WEIGHT_LBS_6MO] = d.projected_weight_lbs_6mo;
+    }
+    if (typeof d.symptom_score === "number") {
+      p[PROFILE_PROP.SYMPTOM_SCORE] = d.symptom_score;
+    }
+    if (typeof d.severity_score === "number") {
+      p[PROFILE_PROP.SEVERITY_SCORE] = d.severity_score;
+    }
+    if (typeof d.recovery_quotient === "number") {
+      p[PROFILE_PROP.RECOVERY_QUOTIENT] = d.recovery_quotient;
+    }
+    if (d.stack && d.stack.length > 0) p[PROFILE_PROP.STACK] = d.stack;
+    if (typeof d.monthly_total === "number") {
+      p[PROFILE_PROP.MONTHLY_TOTAL] = d.monthly_total;
+    }
+    if (d.formulation_preference) {
+      p[PROFILE_PROP.FORMULATION_PREFERENCE] = d.formulation_preference;
+    }
+    if (typeof d.waitlist_position === "number") {
+      p[PROFILE_PROP.WAITLIST_POSITION] = d.waitlist_position;
     }
   }
 
@@ -194,6 +235,24 @@ function buildEventProperties(
     }
     if (typeof d.nad_deficit_percent === "number") {
       props.nad_deficit_percent = d.nad_deficit_percent;
+    }
+    if (typeof d.bmi === "number") props.bmi = d.bmi;
+    if (typeof d.projected_weight_lbs_6mo === "number") {
+      props.projected_weight_lbs_6mo = d.projected_weight_lbs_6mo;
+    }
+    if (d.pace_preference) props.pace_preference = d.pace_preference;
+    if (typeof d.symptom_score === "number") props.symptom_score = d.symptom_score;
+    if (typeof d.severity_score === "number") props.severity_score = d.severity_score;
+    if (typeof d.recovery_quotient === "number") {
+      props.recovery_quotient = d.recovery_quotient;
+    }
+    if (d.stack) props.stack = d.stack;
+    if (typeof d.monthly_total === "number") props.monthly_total = d.monthly_total;
+    if (d.formulation_preference) {
+      props.formulation_preference = d.formulation_preference;
+    }
+    if (typeof d.waitlist_position === "number") {
+      props.waitlist_position = d.waitlist_position;
     }
   }
 
@@ -378,13 +437,49 @@ export async function POST(req: NextRequest) {
   const submission = parsed.data;
   const submissionId = randomUUID();
 
-  // 6) Forward to Klaviyo (best-effort; failures logged but don't block)
+  // 6) Waitlist position — if this is a waitlist signup, atomically reserve
+  // (or look up) the member's position BEFORE forwarding to Klaviyo so the
+  // position lands on the profile/event in a single round-trip and the client
+  // receives it on the same response (no follow-up /api/waitlist-count fetch).
+  //
+  // Idempotent: replays for the same email return the same number. Graceful:
+  // when Redis isn't configured, position stays null and the UI falls back to
+  // "Your spot is reserved" copy.
+  let waitlistPosition: number | null = null;
+  if (submission.quiz === "waitlist_joined") {
+    try {
+      const reservation = await reserveWaitlistPosition(submission.contact.email);
+      if (reservation) {
+        waitlistPosition = reservation.position;
+        submission.derived = {
+          ...(submission.derived ?? {}),
+          waitlist_position: reservation.position,
+        };
+      }
+    } catch (err) {
+      // Never block the signup on a Redis hiccup; just log and move on.
+      console.warn(
+        JSON.stringify({
+          at: new Date().toISOString(),
+          kind: "waitlist_reserve_threw",
+          submission_id: submissionId,
+          error: err instanceof Error ? err.message : "unknown",
+        })
+      );
+    }
+  }
+
+  // 7) Forward to Klaviyo (best-effort; failures logged but don't block)
   const klaviyo = await forwardToKlaviyo(submission, submissionId);
 
-  // 7) Audit log
+  // 8) Audit log
   auditLog(submissionId, submission, klaviyo);
 
-  return NextResponse.json({ ok: true, id: submissionId });
+  return NextResponse.json({
+    ok: true,
+    id: submissionId,
+    position: waitlistPosition,
+  });
 }
 
 export async function GET() {

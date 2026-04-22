@@ -135,24 +135,55 @@ export default function TermsPage() {
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              10. Changes to Terms
+              10. Electronic Communications (Email &amp; SMS)
             </h2>
+            <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
+              By providing your email address, you consent to receive electronic
+              communications from Halo, including marketing updates, account
+              notifications, and service-related messages. You may opt out of
+              marketing email at any time using the unsubscribe link in any
+              message. Transactional emails related to an active membership may
+              continue regardless of marketing preferences.
+            </p>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
-              We reserve the right to modify these Terms at any time. We will notify you of material
-              changes by posting the updated Terms on our website. Your continued use of our Services
-              after changes are posted constitutes acceptance of the modified Terms.
+              SMS messaging is a separate opt-in. If you provide your mobile
+              number and check the SMS consent box, you agree to receive
+              recurring automated marketing text messages from Halo at that
+              number. Consent is not a condition of purchase. Message frequency
+              varies. Message and data rates may apply. Reply STOP to
+              unsubscribe, HELP for help. See our{" "}
+              <a href="/sms-terms" className="text-[#6B7B6E] hover:underline">
+                SMS Terms
+              </a>{" "}
+              for full details.
             </p>
           </section>
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              11. Contact
+              11. Changes to Terms
+            </h2>
+            <p className="text-sm text-halo-charcoal/70 leading-relaxed">
+              We reserve the right to modify these Terms at any time. We will
+              notify you of material changes by posting the updated Terms on our
+              website. Your continued use of our Services after changes are
+              posted constitutes acceptance of the modified Terms.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
+              12. Contact
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               Questions about these Terms should be directed to:
             </p>
             <p className="text-sm text-halo-charcoal/70 mt-2">
               Halo Health Inc.
+              <br />
+              PO Box 600715
+              <br />
+              Dallas, TX 75206
               <br />
               Email:{" "}
               <a href="mailto:legal@tryhalo.co" className="text-[#6B7B6E] hover:underline">

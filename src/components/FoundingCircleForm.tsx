@@ -22,6 +22,7 @@ export default function FoundingCircleForm({
 }: FoundingCircleFormProps) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [smsConsent, setSmsConsent] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<
     "idle" | "submitting" | "success" | "duplicate" | "error"
@@ -58,6 +59,7 @@ export default function FoundingCircleForm({
       track("founding_signup_attempt", {
         variant,
         has_phone: !!phone.trim(),
+        sms_consent: smsConsent,
       });
 
       // Honeypot check — silently reject bots
@@ -116,6 +118,11 @@ export default function FoundingCircleForm({
         },
         answers: {
           variant,
+          sms_consent: smsConsent,
+        },
+        consent: {
+          acceptedTerms: true,
+          acceptedSms: smsConsent && !!phone.trim(),
         },
       });
 
@@ -239,10 +246,42 @@ export default function FoundingCircleForm({
         value={phone}
         onChange={(e) => {
           setPhone(e.target.value);
+          if (!e.target.value.trim()) setSmsConsent(false);
           if (status === "error") setStatus("idle");
         }}
         className={inputBaseClass}
       />
+      {phone.trim() && (
+        <label
+          className={`flex items-start gap-2.5 pt-1 cursor-pointer select-none ${
+            isDark ? "text-white/55" : "text-halo-charcoal/60"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={smsConsent}
+            onChange={(e) => setSmsConsent(e.target.checked)}
+            className={`mt-0.5 h-3.5 w-3.5 rounded border flex-shrink-0 ${
+              isDark ? "border-white/30 bg-white/10" : "border-[#C9C7C0] bg-white"
+            }`}
+          />
+          <span className="text-[10px] leading-snug">
+            Send me text updates. Msg frequency varies. Msg &amp; data rates may
+            apply. Reply STOP to cancel.{" "}
+            <a
+              href="/sms-terms"
+              target="_blank"
+              rel="noopener"
+              className={`underline ${
+                isDark ? "text-white/70" : "text-halo-charcoal/75"
+              }`}
+            >
+              SMS Terms
+            </a>
+            .
+          </span>
+        </label>
+      )}
       <button
         type="submit"
         disabled={status === "submitting"}
@@ -262,8 +301,30 @@ export default function FoundingCircleForm({
           {errorMessage}
         </p>
       )}
-      <p className={`text-[10px] text-center pt-1 ${isDark ? "text-white/35" : "text-halo-charcoal/40"}`}>
-        By submitting, you agree to receive occasional updates from Halo. Unsubscribe anytime.
+      <p
+        className={`text-[10px] text-center leading-snug pt-1 ${
+          isDark ? "text-white/35" : "text-halo-charcoal/40"
+        }`}
+      >
+        By submitting, you agree to Halo&apos;s{" "}
+        <a
+          href="/terms"
+          target="_blank"
+          rel="noopener"
+          className="underline"
+        >
+          Terms
+        </a>{" "}
+        and{" "}
+        <a
+          href="/privacy"
+          target="_blank"
+          rel="noopener"
+          className="underline"
+        >
+          Privacy Policy
+        </a>
+        , and to receive emails from Halo. Unsubscribe anytime.
       </p>
     </form>
   );

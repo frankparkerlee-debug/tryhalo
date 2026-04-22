@@ -12,7 +12,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="text-sm text-halo-charcoal/40 mb-12">
-          Effective Date: April 1, 2026
+          Effective Date: April 22, 2026
         </p>
 
         <div className="prose-halo space-y-8">
@@ -39,6 +39,12 @@ export default function PrivacyPage() {
               <li>
                 <strong>Personal Information:</strong> Name, email address, date of birth, phone number,
                 shipping address, and payment information.
+              </li>
+              <li>
+                <strong>SMS/Text Messaging Data:</strong> When you provide a mobile number and opt in to
+                receive text messages, we retain a record of your consent (the date, the page where consent
+                was given, and the exact language you agreed to), along with your message history for
+                support and compliance purposes.
               </li>
               <li>
                 <strong>Health Information:</strong> Medical history, symptoms, lab results, treatment
@@ -102,7 +108,65 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              5. HIPAA Compliance
+              5. Text Messaging (SMS)
+            </h2>
+            <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
+              Halo offers text message (SMS) communications to patients who provide a mobile phone
+              number and expressly opt in. SMS consent is handled separately from email consent and
+              is never implied by any other interaction with Halo.
+            </p>
+            <ul className="list-disc pl-5 space-y-2 text-sm text-halo-charcoal/70">
+              <li>
+                <strong>Consent (TCPA).</strong> By checking the SMS opt-in box at signup or intake, you
+                agree that Halo may send you text messages about your care, appointments, orders,
+                shipments, and — if you have opted in — promotional updates. Consent is not a condition
+                of purchase or of receiving care.
+              </li>
+              <li>
+                <strong>Message types.</strong> Transactional (appointment reminders, shipping updates,
+                two-factor codes, provider messages) and, where you have opted in, marketing (new
+                programs, price changes, founding-member offers).
+              </li>
+              <li>
+                <strong>Frequency &amp; cost.</strong> Message frequency varies by care stage. Message and
+                data rates may apply based on your mobile plan — Halo does not charge for text messages.
+              </li>
+              <li>
+                <strong>Opting out.</strong> Reply <strong>STOP</strong> to any Halo text message to
+                unsubscribe from that message category. Reply <strong>HELP</strong> for support. You may
+                also contact{" "}
+                <a
+                  href="mailto:privacy@tryhalo.co"
+                  className="text-[#6B7B6E] hover:underline"
+                >
+                  privacy@tryhalo.co
+                </a>{" "}
+                to remove your number from all SMS lists.
+              </li>
+              <li>
+                <strong>Mobile opt-in data is not shared or sold.</strong> No mobile information
+                (including your phone number, SMS consent record, or message content) will be shared
+                with third parties or affiliates for their marketing or promotional purposes. Information
+                is shared only with service providers acting on Halo&rsquo;s behalf to deliver the
+                messages (e.g. our SMS gateway) and only as required to provide the Services.
+              </li>
+              <li>
+                <strong>Carriers.</strong> T-Mobile, AT&amp;T, Verizon, and other carriers are not
+                liable for delayed or undelivered messages.
+              </li>
+            </ul>
+            <p className="text-sm text-halo-charcoal/70 leading-relaxed mt-3">
+              For the full terms governing Halo&rsquo;s SMS program, see our{" "}
+              <a href="/sms-terms" className="text-[#6B7B6E] hover:underline">
+                SMS Terms
+              </a>
+              .
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
+              6. HIPAA Compliance
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               Halo complies with the Health Insurance Portability and Accountability Act (HIPAA).
@@ -115,7 +179,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              6. Data Security
+              7. Data Security
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               We implement industry-standard security measures to protect your information, including
@@ -127,7 +191,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              7. Your Rights
+              8. Your Rights
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed mb-3">
               You have the right to:
@@ -144,7 +208,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              8. Cookies and Tracking
+              9. Cookies and Tracking
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               We use cookies and similar technologies to improve your experience, analyze usage
@@ -155,7 +219,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              9. Changes to This Policy
+              10. Changes to This Policy
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               We may update this Privacy Policy from time to time. We will notify you of any
@@ -167,7 +231,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="font-sans text-xl font-semibold text-halo-charcoal mb-3">
-              10. Contact Us
+              11. Contact Us
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               If you have questions about this Privacy Policy or our data practices, please contact us at:

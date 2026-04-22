@@ -6,6 +6,7 @@ import StepCard from "@/components/StepCard";
 import PricingCard from "@/components/PricingCard";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
+import EngagementTool from "@/components/quiz/EngagementTool";
 
 const faqItems = [
   {
@@ -140,6 +141,17 @@ export default function RestorePage() {
               Founding members will receive first access when availability is
               restored. Sermorelin is available now.
             </p>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      <div className="gold-divider" />
+
+      {/* RECOVERY QUOTIENT — engagement tool */}
+      <section className="py-20 px-6 section-light">
+        <div className="max-w-2xl mx-auto">
+          <AnimateOnScroll>
+            <EngagementTool slug="peptides_recovery" variant="light" />
           </AnimateOnScroll>
         </div>
       </section>
@@ -300,7 +312,7 @@ export default function RestorePage() {
             <p className="text-white/50 mb-10">
               Founding members get first access to new peptides as they become available.
             </p>
-            <Link href="/quiz" className="btn-gold-filled">
+            <Link href="/quiz/peptides" className="btn-gold-filled">
               Get started
               <ArrowRight className="w-4 h-4 btn-arrow" />
             </Link>

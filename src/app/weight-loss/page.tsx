@@ -9,6 +9,7 @@ import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import ScrollRotate from "@/components/ScrollRotate";
 import BenefitScroller from "@/components/BenefitScroller";
+import EngagementTool from "@/components/quiz/EngagementTool";
 
 /* ==============================
    PERSONA — GLP-1 = burnt terracotta (change + energy)
@@ -474,7 +475,7 @@ function ProductCard({ product }: { product: (typeof products)[number] }) {
         </div>
 
         <Link
-          href="/quiz?from=weight-loss"
+          href="/quiz/weight_loss"
           className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-[13px] hover:border-halo-charcoal/50 transition-colors"
         >
           Get started
@@ -685,7 +686,7 @@ export default function WeightLossPage() {
 
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
-                href="/quiz?from=weight-loss"
+                href="/quiz/weight_loss"
                 className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                 style={{
                   backgroundColor: PERSONA,
@@ -696,7 +697,7 @@ export default function WeightLossPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/quiz?from=weight-loss"
+                href="/quiz/weight_loss"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-sm hover:border-halo-charcoal/40 transition-colors"
               >
                 See if I qualify
@@ -718,7 +719,7 @@ export default function WeightLossPage() {
             {/* Mobile-only CTA overlay — above the fold on phones */}
             <div className="md:hidden absolute bottom-5 left-0 right-0 z-20 flex justify-center px-4 pointer-events-none">
               <Link
-                href="/quiz?from=weight-loss"
+                href="/quiz/weight_loss"
                 className="pointer-events-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
                 style={{ backgroundColor: PERSONA }}
               >
@@ -969,6 +970,19 @@ export default function WeightLossPage() {
                 </div>
               ))}
             </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          6.5 · 6-MONTH PROJECTION (engagement tool)
+          Visitor has the science; let them self-assess a realistic
+          6-month number before we show qualitative results.
+          ═══════════════════════════════════════════════ */}
+      <section className="py-16 md:py-24 px-6 section-light">
+        <div className="max-w-2xl mx-auto">
+          <AnimateOnScroll>
+            <EngagementTool slug="weight_loss_projection" variant="light" />
           </AnimateOnScroll>
         </div>
       </section>
@@ -1240,7 +1254,7 @@ export default function WeightLossPage() {
                 </div>
 
                 <Link
-                  href="/quiz?from=weight-loss"
+                  href="/quiz/weight_loss"
                   className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                   style={{
                     backgroundColor: PERSONA,
@@ -1292,7 +1306,7 @@ export default function WeightLossPage() {
               physician reviews your metabolic panel.
             </p>
             <Link
-              href="/quiz?from=weight-loss"
+              href="/quiz/weight_loss"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-[#1C1817] font-semibold text-sm transition-all hover:brightness-95"
               style={{ backgroundColor: "white" }}
             >

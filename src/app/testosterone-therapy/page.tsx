@@ -7,6 +7,7 @@ import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
+import EngagementTool from "@/components/quiz/EngagementTool";
 
 /* ==============================
    PERSONA — TRT = steel blue
@@ -609,7 +610,7 @@ function FormatCard({ format }: { format: (typeof treatmentFormats)[number] }) {
         </div>
 
         <Link
-          href="/quiz?from=trt"
+          href="/quiz/trt"
           className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-[13px] hover:border-halo-charcoal/50 transition-colors"
         >
           Get started
@@ -798,7 +799,7 @@ export default function TestosteroneTherapyPage() {
             {/* Dual CTA — primary hidden on mobile (already on hero image) */}
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <Link
-                href="/quiz?from=trt"
+                href="/quiz/trt"
                 className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                 style={{
                   backgroundColor: PERSONA,
@@ -809,7 +810,7 @@ export default function TestosteroneTherapyPage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/quiz?from=trt"
+                href="/quiz/trt"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-sm hover:border-halo-charcoal/40 transition-colors"
               >
                 Is TRT right for me?
@@ -850,7 +851,7 @@ export default function TestosteroneTherapyPage() {
             {/* Mobile-only CTA overlay — keeps "Start my assessment" above the fold on phones */}
             <div className="md:hidden absolute bottom-5 left-0 right-0 z-10 flex justify-center px-4">
               <Link
-                href="/quiz?from=trt"
+                href="/quiz/trt"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
                 style={{ backgroundColor: PERSONA }}
               >
@@ -985,6 +986,19 @@ export default function TestosteroneTherapyPage() {
           </AnimateOnScroll>
           <AnimateOnScroll>
             <SymptomFlipCards />
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          6.5 · DRAG SCORE (engagement tool)
+          After science + reassurance, let the visitor self-assess before
+          they hit the treatment options.
+          ═══════════════════════════════════════════════ */}
+      <section className="py-16 md:py-24 px-6 section-light">
+        <div className="max-w-2xl mx-auto">
+          <AnimateOnScroll>
+            <EngagementTool slug="trt_drag" variant="light" />
           </AnimateOnScroll>
         </div>
       </section>
@@ -1256,7 +1270,7 @@ export default function TestosteroneTherapyPage() {
                 </div>
 
                 <Link
-                  href="/quiz?from=trt"
+                  href="/quiz/trt"
                   className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                   style={{
                     backgroundColor: PERSONA,
@@ -1316,7 +1330,7 @@ export default function TestosteroneTherapyPage() {
               First lab panel is free for founding members. No commitment until your physician reviews the numbers.
             </p>
             <Link
-              href="/quiz?from=trt"
+              href="/quiz/trt"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-[#1C1817] font-semibold text-sm transition-all hover:brightness-95"
               style={{ backgroundColor: "white" }}
             >
