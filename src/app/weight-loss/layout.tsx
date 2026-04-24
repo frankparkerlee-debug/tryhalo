@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
+import {
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
 
 const TITLE = "GLP-1 Weight Loss";
+const GLP_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("weight_loss")!).price
+);
 const DESCRIPTION =
-  "Physician-led GLP-1 weight loss for men and women. Compounded semaglutide and tirzepatide, branded Wegovy and Zepbound. Full metabolic panel, physician-designed titration, ongoing monitoring. Board-certified physicians and US-licensed 503A pharmacy. From $199/mo.";
+  `Physician-led GLP-1 weight loss for men and women. Compounded semaglutide, plus branded Ozempic® and Zepbound® as indicated. Full metabolic panel, physician-designed titration, ongoing monitoring. Board-certified physicians and US-licensed 503A pharmacy. Founding pricing from ${GLP_FROM}/mo for compounded.`;
 const URL = "https://tryhalo.co/weight-loss";
 const OG_IMAGE = "/glp/og-weight-loss.jpg";
 
@@ -12,12 +20,11 @@ export const metadata: Metadata = {
   keywords: [
     "GLP-1 weight loss",
     "compounded semaglutide",
-    "compounded tirzepatide",
     "weight loss online",
     "telehealth weight loss",
-    "Wegovy online",
     "Zepbound online",
     "Ozempic weight loss",
+    "Ozempic online",
     "metabolic health",
     "physician-led weight loss",
     "prescription weight loss",

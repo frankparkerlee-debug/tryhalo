@@ -117,6 +117,7 @@ export const PROGRAMS = [
   "nad",
   "trt",
   "hrt",
+  "womens_testosterone",
   "peptides",
   "weight_loss",
   "sexual_wellness",

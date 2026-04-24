@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
+import {
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
 
 const TITLE = "Hormone Therapy (HRT)";
+const HRT_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("hrt")!).price
+);
 const DESCRIPTION =
-  "Physician-led hormone replacement therapy for women in perimenopause and menopause. Estradiol, progesterone, testosterone, and DHEA \u2014 bioidentical and compounded to your labs. Board-certified physicians and US-licensed 503A pharmacy. From $129/mo for founding members.";
+  `Physician-led hormone replacement therapy for women in perimenopause and menopause. Estradiol and progesterone \u2014 bioidentical and compounded to your labs. Low-dose testosterone for women available separately. Board-certified physicians and US-licensed 503A pharmacy. From ${HRT_FROM}/mo for founding members.`;
 const URL = "https://tryhalo.co/hormone-therapy";
 const OG_IMAGE = "/hrt/hero-portrait.png";
 

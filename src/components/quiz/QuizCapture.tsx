@@ -21,7 +21,7 @@
  *      happens here and everywhere gets it.
  *   2. Caller provides `quiz` (QuizType) + `answers` + optional `derived` —
  *      we pass these straight to submitQuiz(). The server handles schema
- *      validation, rate limiting, honeypot, Klaviyo forwarding, and (for
+ *      validation, rate limiting, Klaviyo forwarding, and (for
  *      `waitlist_joined`) the atomic waitlist counter.
  *   3. Success UX is a render prop. Engagement tools render their result
  *      inline (cellular age number, projected weight curve, etc.). Full
@@ -40,7 +40,7 @@
  *     an `onSuccess` handler.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { submitQuiz } from "@/lib/quiz-client";
 import { track, type EventName } from "@/lib/tracking";
@@ -174,22 +174,24 @@ export default function QuizCapture({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [smsConsent, setSmsConsent] = useState(false);
-  const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [result, setResult] = useState<QuizCaptureResult | null>(null);
+  const errorRef = useRef<HTMLParagraphElement>(null);
 
   const isDark = variant === "dark";
+
+  // When validation fails, scroll the error into view — on a long mobile
+  // viewport the error renders below the button and is easy to miss.
+  useEffect(() => {
+    if (status === "error" && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [status]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-
-      // Honeypot — bots trip this, we silent-200 to avoid leaking it.
-      if (honeypot) {
-        setStatus("success");
-        return;
-      }
 
       const emailTrimmed = email.trim();
       const phoneTrimmed = phone.trim();
@@ -266,7 +268,6 @@ export default function QuizCapture({
       onSuccess?.(completed);
     },
     [
-      honeypot,
       email,
       phone,
       quiz,
@@ -330,23 +331,6 @@ export default function QuizCapture({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-2.5 w-full">
-        {/* Honeypot — invisible to humans, bots fill it and get silent-200'd */}
-        <input
-          type="text"
-          name="website"
-          tabIndex={-1}
-          autoComplete="off"
-          value={honeypot}
-          onChange={(e) => setHoneypot(e.target.value)}
-          style={{
-            position: "absolute",
-            left: "-9999px",
-            opacity: 0,
-            height: 0,
-            width: 0,
-            overflow: "hidden",
-          }}
-        />
 
         <input
           type="email"
@@ -433,7 +417,10 @@ export default function QuizCapture({
 
         {status === "error" && (
           <p
-            className={`text-xs pl-1 ${
+            ref={errorRef}
+            role="alert"
+            aria-live="polite"
+            className={`text-xs pl-1 font-medium ${
               isDark ? "text-red-300" : "text-red-500"
             }`}
           >

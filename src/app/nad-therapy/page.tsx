@@ -11,6 +11,16 @@ import BenefitScroller from "@/components/BenefitScroller";
 import CountUpNumber from "@/components/CountUpNumber";
 import { track } from "@/lib/tracking";
 import { submitQuiz } from "@/lib/quiz-client";
+import {
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
+
+// Founding-member "from $X/mo" — cheapest effective monthly across all terms.
+const NAD_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("nad")!).price
+);
 
 /* ==============================
    PERSONA — NAD+ = deep sapphire (clinical, longevity)
@@ -53,21 +63,14 @@ const impactStats: Array<{
   {
     value: 50,
     suffix: "%",
-    label: "decline in tissue NAD+ between ages 30 and 60.",
-    source: "Massudi et al., J Biol Chem, 2012",
+    label: "decline in tissue NAD+ between the third and seventh decades of life.",
+    source: "Massudi et al., PLOS ONE, 2012",
   },
   {
-    value: 40,
+    value: 60,
     suffix: "%",
-    label: "average increase in whole-blood NAD+ with physician-dosed NR therapy.",
+    label: "increase in whole-blood NAD+ with oral NAD+ precursor (NR) supplementation in healthy middle-aged and older adults.",
     source: "Martens et al., Nature Communications, 2018",
-  },
-  {
-    value: 2,
-    prefix: "<",
-    suffix: "%",
-    label: "of longevity-curious adults have ever had their NAD+ markers measured.",
-    source: "Halo provider network estimate, 2025",
   },
 ];
 
@@ -77,7 +80,7 @@ const deliveryComparison = [
   { label: "Time per dose", iv: "2\u20134 hours", halo: "10 seconds", oral: "Daily pill" },
   { label: "Physician oversight", iv: "In-office", halo: "Telehealth, async", oral: "None" },
   { label: "Lab monitoring", iv: "Rarely", halo: "Every 90 days", oral: "None" },
-  { label: "Typical monthly cost", iv: "$800", halo: "$179", oral: "$40\u2013$90" },
+  { label: "Typical monthly cost", iv: "$800", halo: `${NAD_FROM}+`, oral: "$40\u2013$90" },
 ];
 
 const flipSymptoms = [
@@ -91,22 +94,24 @@ const flipSymptoms = [
 
 const outcomes = [
   {
-    stat: "Energy",
-    label: "Sustained",
+    stat: "Mitochondria",
+    label: "Cellular energy",
     claim:
-      "Most members report sustained daily energy within 4\u20136 weeks as mitochondrial function improves.",
+      "NAD+ is the cofactor your mitochondria use to turn food into ATP. When NAD+ drops, the energy-production machinery slows.",
     image: "/nad/life-energy.jpg",
   },
   {
-    stat: "Cognition",
-    label: "Clarity",
-    claim: "Reduced brain fog and sharper focus typically reported within 8 weeks.",
+    stat: "DNA repair",
+    label: "PARP pathway",
+    claim:
+      "PARP enzymes use NAD+ to repair daily oxidative damage to DNA. Declining NAD+ means declining repair throughput.",
     image: "/nad/life-clarity.jpg",
   },
   {
-    stat: "Recovery",
-    label: "Faster",
-    claim: "Faster recovery from training and cognitive load. Most members feel it within 30 days.",
+    stat: "Sirtuins",
+    label: "Metabolic regulation",
+    claim:
+      "Sirtuin enzymes regulate cellular stress response and metabolic health — and they're strictly NAD+-dependent.",
     image: "/nad/life-recovery.jpg",
   },
 ];
@@ -189,7 +194,7 @@ const faqItems = [
       "Same molecule. Same pharmacy grade. Different delivery. IV therapy ties you to 2\u20134 hour sessions at $600\u2013$800 each. Halo sends you a weekly subcutaneous injection you self-administer at home in about 10 seconds. Bioavailability is comparable (~95% vs ~100%). Lab monitoring is included, which IV clinics rarely offer.",
   },
   {
-    question: "How is this different from Tru Niagen or oral NAD+ supplements?",
+    question: "How is this different from oral NAD+ precursor supplements?",
     answer:
       "Oral precursors (NR, NMN) have real research behind them, but bioavailability is roughly 30\u201350% due to first-pass metabolism. Subcutaneous NAD+ bypasses the gut and liver, reaching cellular targets more efficiently. More importantly, Halo runs a full metabolic panel to confirm you\u2019re a candidate and adjusts your protocol based on follow-up labs. Supplement brands can\u2019t.",
   },
@@ -211,7 +216,7 @@ const faqItems = [
   {
     question: "How fast will I feel it?",
     answer:
-      "Recovery improvements and mental clarity are typically reported within 2\u20134 weeks. Energy and sleep quality often follow at 6\u20138 weeks. NAD+ is slower than caffeine or testosterone \u2014 it restores systems rather than stimulating them.",
+      "This depends on your baseline labs and how fast your body rebuilds substrate pools. In human trials of NAD+ precursor supplementation, blood NAD+ levels rise within weeks (Martens 2018); subjective effects are harder to predict and peer-reviewed trials have been mixed. Halo's position: we measure whether your labs move and your physician decides what that means. We don't promise you'll feel a specific thing by a specific date.",
   },
   {
     question: "Can I cancel anytime?",
@@ -784,13 +789,13 @@ const primaryDragOptions: OptionItem<PrimaryDrag>[] = [
    would render literally, so use real Unicode characters instead. */
 const DRAG_NARRATIVE: Record<PrimaryDrag, string> = {
   energy:
-    "Most members report sustained daily energy within 4\u20136 weeks as mitochondrial output improves. It\u2019s usually the first thing they feel.",
+    "Energy production is NAD+-dependent at the mitochondrial level — every ATP molecule your cells make requires NAD+ as a cofactor. Halo's protocol restores the substrate so your physician can measure whether your labs move.",
   clarity:
-    "Brain fog tends to clear first. Restored sirtuin activity and reduced CD38 consumption typically show up cognitively within 6\u20138 weeks.",
+    "Cognitive function depends on sirtuin and PARP activity in neurons — both strictly NAD+-dependent. Halo measures the inputs (whole-blood NAD+, homocysteine, hs-CRP) rather than promising how you'll feel.",
   recovery:
-    "Recovery is where the biological age gap shows up fastest. NAD+ supports mitochondrial rebuilding post-stress \u2014 most members notice it inside 30 days.",
+    "Post-stress cellular rebuilding is NAD+-intensive — PARP enzymes consume it heavily during DNA repair. Halo's protocol pairs NAD+ with glutathione to support the oxidative-stress pathway.",
   mood:
-    "Mood stabilization often follows cognitive clearing. Serotonin synthesis depends on NAD+ pools; members report steadier affect within 6\u20138 weeks.",
+    "Serotonin synthesis and mitochondrial function in mood-regulating brain regions both depend on NAD+. Halo's physicians evaluate whether a lab-guided protocol makes sense for your baseline.",
 };
 
 interface CellularAgeInputs {
@@ -2017,7 +2022,7 @@ export default function NadTherapyPage() {
             </div>
 
             <p className="text-[12px] text-white/45 italic">
-              Starts at $179/mo. Free physician consultation before any prescription.
+              Founding members from {NAD_FROM}/mo. Free physician consultation before any prescription.
             </p>
           </div>
 
@@ -2054,7 +2059,7 @@ export default function NadTherapyPage() {
                 Tap &ldquo;90 days&rdquo; to see the shift
               </p>
               <p className="plex-mono text-[9px] uppercase tracking-[0.18em] text-white/25 mt-2 text-center">
-                Sample panel &middot; representative of member results
+                Illustrative protocol targets &middot; individual results vary
               </p>
             </div>
           </div>
@@ -2361,12 +2366,12 @@ export default function NadTherapyPage() {
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
               <p className="plex-mono text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
-                What members report
+                Why the molecule matters
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1] max-w-3xl mx-auto">
                 Not a lifespan claim.{" "}
                 <span className="italic" style={{ color: PERSONA }}>
-                  A capability one.
+                  A biochemistry one.
                 </span>
               </h2>
             </div>
@@ -2384,9 +2389,9 @@ export default function NadTherapyPage() {
 
           <AnimateOnScroll>
             <p className="text-center text-[11px] italic text-halo-charcoal/40 mt-10 max-w-2xl mx-auto">
-              Patient-reported outcomes. Individual response varies. Halo
-              positions NAD+ as metabolic resilience support, not as treatment
-              for any specific disease. Not evaluated by the FDA.
+              NAD+ is a cofactor in over 500 known enzymatic reactions. Halo
+              positions NAD+ therapy as metabolic substrate support, not as
+              treatment for any specific disease. Compounded NAD+ is not FDA-approved.
             </p>
           </AnimateOnScroll>
         </div>
@@ -2504,7 +2509,7 @@ export default function NadTherapyPage() {
                 Terms
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
-                Starts at $179.{" "}
+                From {NAD_FROM}/mo for founding members.{" "}
                 <span className="italic" style={{ color: PERSONA }}>Everything in.</span>
               </h2>
             </div>
@@ -2518,7 +2523,7 @@ export default function NadTherapyPage() {
                     From
                   </span>
                   <span className="font-serif text-[44px] md:text-[64px] font-light leading-none" style={{ color: PERSONA }}>
-                    $179
+                    {NAD_FROM}
                   </span>
                   <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">/month</span>
                 </div>
@@ -2597,7 +2602,7 @@ export default function NadTherapyPage() {
               </span>
             </h2>
             <p className="text-[15px] md:text-base text-white/60 leading-relaxed mb-10 max-w-xl mx-auto">
-              Starts at $179/mo. Free physician consultation before any
+              Founding members from {NAD_FROM}/mo. Free physician consultation before any
               prescription. Cancel anytime.
             </p>
             <Link

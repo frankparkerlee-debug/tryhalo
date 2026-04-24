@@ -10,6 +10,23 @@ import HaloMarquee from "@/components/HaloMarquee";
 import ScrollRotate from "@/components/ScrollRotate";
 import BenefitScroller from "@/components/BenefitScroller";
 import EngagementTool from "@/components/quiz/EngagementTool";
+import {
+  applyFoundingDiscount,
+  formatPrice,
+  getProgram,
+} from "@/lib/programs";
+
+// Compounded GLP-1 is the default variant — branded Ozempic/Zepbound priced separately.
+const GLP_COMPOUND_STD = formatPrice(getProgram("weight_loss")!.pricing.monthly);
+const GLP_COMPOUND_FOUNDING = formatPrice(
+  applyFoundingDiscount(getProgram("weight_loss")!.pricing.monthly)
+);
+const OZEMPIC_PRICE = formatPrice(
+  getProgram("weight_loss")!.variants!.find((v) => v.id === "ozempic")!.pricing.monthly
+);
+const ZEPBOUND_PRICE = formatPrice(
+  getProgram("weight_loss")!.variants!.find((v) => v.id === "zepbound")!.pricing.monthly
+);
 
 /* ==============================
    PERSONA — GLP-1 = burnt terracotta (change + energy)
@@ -28,38 +45,38 @@ const products = [
     badge: "Most prescribed",
     stock: "In stock",
     stockColor: "#4A7A4A",
-    price: "$199",
+    price: GLP_COMPOUND_FOUNDING,
     image: "/glp/product-semaglutide.jpg",
     bullets: [
-      "Same active ingredient as Wegovy®",
+      "Same active ingredient as Ozempic®",
       "Weekly subcutaneous injection",
       "Titrated over 16 weeks",
     ],
   },
   {
-    name: "Compounded Tirzepatide",
+    name: "Branded Ozempic®",
     badge: null,
-    stock: "In stock",
-    stockColor: "#4A7A4A",
-    price: "$249",
-    image: "/glp/product-tirzepatide.jpg",
+    stock: "Direct-pay",
+    stockColor: "#B8974E",
+    price: OZEMPIC_PRICE,
+    image: "/glp/product-branded.jpg",
     bullets: [
-      "Same active ingredient as Zepbound®",
-      "Dual GLP-1 / GIP receptor agonist",
-      "Higher average weight loss",
+      "FDA-approved branded semaglutide",
+      "Flat monthly pricing — no founding discount",
+      "Requires current prescription",
     ],
   },
   {
-    name: "Branded Wegovy® / Zepbound®",
+    name: "Branded Zepbound®",
     badge: null,
-    stock: "Insurance-dependent",
+    stock: "Direct-pay",
     stockColor: "#B8974E",
-    price: "Varies",
+    price: ZEPBOUND_PRICE,
     image: "/glp/product-branded.jpg",
     bullets: [
-      "FDA-approved brand medication",
-      "Pricing through your insurance",
-      "We handle prior authorization",
+      "FDA-approved tirzepatide (dual GLP-1 / GIP agonist)",
+      "Flat monthly pricing — no founding discount",
+      "Requires current prescription",
     ],
   },
 ];
@@ -93,28 +110,28 @@ const flipSymptoms = [
 
 const outcomes = [
   {
-    stat: "15%",
+    stat: "Up to 15%",
     label: "Body weight",
     claim:
-      "Average reduction at 68 weeks on semaglutide 2.4mg. Tirzepatide averages 20%.",
+      "mean body weight reduction at 68 weeks on semaglutide 2.4 mg — with up to ~34 lbs lost in the STEP 1 trial (N=1,961).",
     image: "/glp/life-appetite.jpg",
-    source: "Wilding et al., NEJM, 2021",
+    source: "Wilding et al., NEJM, 2021 (STEP 1)",
   },
   {
-    stat: "68%",
+    stat: "62% → 16%",
     label: "Food noise",
     claim:
-      "Of patients report reduced food intrusion and cravings within 8 weeks.",
+      "drop in the share of patients reporting constant food-related thoughts after starting semaglutide — a 46-point reduction in the INFORM patient survey (N=550).",
     image: "/glp/life-energy.jpg",
-    source: "Patient-reported outcomes, published trial data",
+    source: "INFORM survey, Novo Nordisk, EASD 2025",
   },
   {
-    stat: "1.7%",
-    label: "HbA1c",
+    stat: "Up to 1.2",
+    label: "HbA1c (T2D)",
     claim:
-      "Average reduction in A1c for pre-diabetic patients on GLP-1 therapy.",
+      "percentage-point HbA1c reduction in adults with type 2 diabetes on semaglutide 2.4 mg over 68 weeks.",
     image: "/glp/life-metabolic.jpg",
-    source: "STEP 2 Trial, Lancet, 2021",
+    source: "Davies et al., Lancet, 2021 (STEP 2)",
   },
 ];
 
@@ -198,7 +215,7 @@ const faqItems = [
   {
     question: "Compounded vs branded \u2014 what\u2019s the difference?",
     answer:
-      "Compounded semaglutide and tirzepatide use the same active ingredients as Wegovy and Zepbound, prepared by a US-licensed 503A pharmacy. They\u2019re not FDA-approved as finished products, but the active ingredients and pharmacy standards are. Compounded is significantly less expensive and in stock. Branded is FDA-approved; pricing depends on your insurance.",
+      "Our compounded semaglutide uses the same active ingredient as branded Ozempic®, prepared by a US-licensed 503A pharmacy. It\u2019s not FDA-approved as a finished product, but the active ingredient and pharmacy standards are. Compounded is significantly less expensive and in stock. If you prefer the branded route, we offer Ozempic® and Zepbound® direct-pay.",
   },
   {
     question: "What are the side effects?",
@@ -213,12 +230,12 @@ const faqItems = [
   {
     question: "Will my insurance cover this?",
     answer:
-      "Maybe. Branded Wegovy and Zepbound are sometimes covered for obesity. Compounded versions aren\u2019t insurance-billed but are significantly less expensive. We handle prior authorization paperwork for the branded route if you want to try your insurance first.",
+      "Maybe. Branded Ozempic® and Zepbound® are sometimes covered when prescribed for an FDA-approved indication. Compounded semaglutide isn\u2019t insurance-billed but is significantly less expensive. We handle prior authorization paperwork for the branded route if you want to try your insurance first.",
   },
   {
     question: "How fast will I lose weight?",
     answer:
-      "Most people see 1\u20132 lbs per week during dose escalation. Full results accrue over 6\u201312 months. Semaglutide averages 15% body weight at 68 weeks; tirzepatide averages 20%.",
+      "Most people see 1\u20132 lbs per week during dose escalation. Full results accrue over 6\u201312 months. Semaglutide averages ~15% of body weight at 68 weeks in published trials.",
   },
   {
     question: "What labs do you run?",
@@ -668,7 +685,7 @@ export default function WeightLossPage() {
 
             <ul className="space-y-2.5 mb-9 max-w-md">
               {[
-                "Compounded semaglutide or tirzepatide, or branded.",
+                "Compounded semaglutide, or branded Ozempic® / Zepbound®.",
                 "Physician reviews a full metabolic panel first.",
                 "Dose escalated and monitored every 90 days.",
               ].map((bullet) => (
@@ -1221,14 +1238,17 @@ export default function WeightLossPage() {
               <div className="rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.15)] lg:sticky lg:top-24">
                 <div className="flex items-baseline gap-2 md:gap-3 mb-2 flex-wrap">
                   <span className="font-serif text-[44px] md:text-[64px] font-light leading-none" style={{ color: PERSONA }}>
-                    $199
+                    {GLP_COMPOUND_FOUNDING}
                   </span>
                   <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">
                     /month
                   </span>
+                  <span className="text-halo-charcoal/30 line-through text-[13px] md:text-[14px] md:ml-2">
+                    {GLP_COMPOUND_STD}
+                  </span>
                 </div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-6" style={{ color: PERSONA_DEEP }}>
-                  Starting price, compounded semaglutide
+                  Founding price &middot; compounded GLP-1
                 </p>
 
                 <div className="border-t border-halo-charcoal/[0.08] pt-6">

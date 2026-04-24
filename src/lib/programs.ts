@@ -11,11 +11,20 @@
  *     covers 12 months. The displayed per-month headline updates to the
  *     effective per-month rate for whatever term the user picks.
  *   - Some programs have product-level variants (peptides → Sermorelin vs
- *     B12-stack; weight_loss → Compounded GLP-1 vs Ozempic vs Zepbound). Each
- *     variant has its own pricing. The card's variant picker replaces the
- *     formulation picker for these programs.
+ *     B12-stack; weight_loss → Compounded Semaglutide vs Ozempic® vs
+ *     Zepbound®). Each variant has its own pricing. The card's variant picker
+ *     replaces the formulation picker for these programs.
  *   - `flat: true` on a variant means branded / no term discount: render a
  *     single monthly price with no term selector on that card.
+ *
+ * Founding pricing:
+ *   - The first FOUNDING_CAP (999) members lock in a flat FOUNDING_DISCOUNT
+ *     (10%) off every term on every program — EXCEPT variants marked
+ *     `foundingExempt: true` (branded Ozempic®/Zepbound® — pass-through costs).
+ *   - Founding total = round(standardTotal × 0.9). Effective monthly derives
+ *     from the discounted total as usual. Helper: resolveFoundingPrice().
+ *   - Once the cap is hit the discount toggles off at the server; the client
+ *     can read liveSlotsRemaining() to decide which price to headline.
  *
  * Add-ons:
  *   - Care Coach ($10/mo) is a gated supplemental that only appears in the
@@ -71,6 +80,9 @@ export interface ProgramVariant {
   /** Branded / flat-price products have no term discount — hide the term
    *  selector's influence on this card. Always priced at `monthly`. */
   flat?: boolean;
+  /** Exempt from the founding-member discount. Used for pass-through costs
+   *  (branded Ozempic®, Zepbound®) where 10% off would cut into margin. */
+  foundingExempt?: boolean;
   /** Small-print note on the variant. */
   note?: string;
 }
@@ -105,7 +117,46 @@ export interface ProgramCard {
   /** If set, this card is only rendered in /stack when the listed program
    *  slug is currently selected. Used for add-ons like Care Coach. */
   requiresStackSlug?: Program;
+  /** Exempt from the founding-member discount at the whole-card level.
+   *  Variant-level `foundingExempt` wins if both are set. */
+  foundingExempt?: boolean;
 }
+
+/* ──────────────────────────────────────────────────────────
+   Founding-member pricing
+   ────────────────────────────────────────────────────────── */
+
+/**
+ * Flat discount off every term on every program for founding members.
+ * Applied by resolveFoundingPrice() to the total for the selected term;
+ * the effective monthly derives from the discounted total.
+ */
+export const FOUNDING_DISCOUNT = 0.10;
+
+/**
+ * Number of founding-member slots available. After this many waitlist
+ * entrants, the discount toggles off. Marketing copy pairs this with
+ * FOUNDING_OPEN — when that flips, this number becomes the claimed ceiling.
+ */
+export const FOUNDING_CAP = 999;
+
+/**
+ * MASTER TOGGLE for founding pricing across the entire site.
+ *
+ * While `true` (pre-launch and during the first FOUNDING_CAP signups), every
+ * catalog-derived price helper applies the 10% founding discount. When the
+ * FOUNDING_CAP is reached, flip this to `false` and redeploy — every
+ * marketing surface, product page, and /stack card will show standard pricing
+ * automatically because the helpers below gate on this flag.
+ *
+ * Branded Ozempic®/Zepbound® variants are `foundingExempt` regardless of this
+ * flag and always render at their standard monthly price.
+ *
+ * NOTE: flipping to `false` does NOT auto-rewrite user-facing copy that says
+ * "Founding members from…" — do a one-pass sweep at cutover to soften that
+ * language. Numbers update automatically; narrative does not.
+ */
+export const FOUNDING_OPEN = true;
 
 /* ──────────────────────────────────────────────────────────
    Catalog
@@ -145,7 +196,7 @@ export const PROGRAM_CATALOG: ProgramCard[] = [
   {
     slug: "hrt",
     name: "Hormone Therapy (Women)",
-    compound: "Estradiol, progesterone, testosterone as indicated",
+    compound: "Estradiol and progesterone as indicated",
     benefit: "Hot flashes, sleep, mood, and libido — rebalanced",
     gender: "female",
     formulations: ["pill", "patch", "cream"],
@@ -156,6 +207,22 @@ export const PROGRAM_CATALOG: ProgramCard[] = [
     },
     labsIncluded: true,
     href: "/hormone-therapy",
+  },
+  {
+    slug: "womens_testosterone",
+    name: "Testosterone (Women)",
+    compound: "Low-dose testosterone cypionate or compounded cream",
+    benefit: "Libido, energy, mood, and lean-mass support",
+    gender: "female",
+    formulations: ["cream", "injection", "pill"],
+    pricing: {
+      monthly: 149,
+      quarterly: 447,
+      yearly: 1650,
+    },
+    labsIncluded: true,
+    href: "/hormone-therapy",
+    pricingNote: "Dosed at ~1/10th of male TRT. Often paired with HRT.",
   },
   {
     slug: "weight_loss",
@@ -172,13 +239,13 @@ export const PROGRAM_CATALOG: ProgramCard[] = [
     variants: [
       {
         id: "compound_glp1",
-        label: "Compounded GLP-1",
-        subtitle: "Semaglutide or tirzepatide (503A/503B)",
+        label: "Compounded Semaglutide",
+        subtitle: "503A/503B compounded semaglutide",
         pricing: {
           monthly: 219,
           quarterly: 657,
         },
-        note: "Compounded formulation — broad availability.",
+        note: "Compounded formulation — same active ingredient as Ozempic®.",
       },
       {
         id: "ozempic",
@@ -188,7 +255,8 @@ export const PROGRAM_CATALOG: ProgramCard[] = [
           monthly: 1299,
         },
         flat: true,
-        note: "Requires prescription. Flat monthly price — no term discount.",
+        foundingExempt: true,
+        note: "Requires prescription. Flat monthly price — no term or founding discount.",
       },
       {
         id: "zepbound",
@@ -198,7 +266,8 @@ export const PROGRAM_CATALOG: ProgramCard[] = [
           monthly: 1399,
         },
         flat: true,
-        note: "Requires prescription. Flat monthly price — no term discount.",
+        foundingExempt: true,
+        note: "Requires prescription. Flat monthly price — no term or founding discount.",
       },
     ],
     labsIncluded: true,
@@ -370,6 +439,108 @@ export function cheapestMonthly(program: ProgramCard): {
   return best;
 }
 
+/* ──────────────────────────────────────────────────────────
+   Founding-member pricing helpers
+   ────────────────────────────────────────────────────────── */
+
+/**
+ * True if the given program + variant combination is eligible for the
+ * founding-member discount. Variant-level `foundingExempt` wins over the
+ * card-level flag, so a card can mix discounted and exempt variants (as
+ * Medical Weight Loss does: compounded is discounted, branded is not).
+ *
+ * Gated on FOUNDING_OPEN — once the master toggle flips, nothing is eligible.
+ */
+export function isFoundingEligible(
+  program: ProgramCard,
+  variant: ProgramVariant | null
+): boolean {
+  if (!FOUNDING_OPEN) return false;
+  if (variant?.foundingExempt) return false;
+  if (program.foundingExempt && !variant) return false;
+  return true;
+}
+
+/**
+ * Apply the founding discount to a single total dollar amount. Rounds to the
+ * nearest whole dollar so the displayed total is always clean. When
+ * FOUNDING_OPEN is false this is a no-op — the input is returned unchanged,
+ * so callers that reach for this helper directly (without checking variant
+ * exemption) still get the right behavior after cutover.
+ */
+export function applyFoundingDiscount(total: number): number {
+  if (!FOUNDING_OPEN) return total;
+  return Math.round(total * (1 - FOUNDING_DISCOUNT));
+}
+
+/**
+ * Founding-member equivalent of resolveProgramPrice(). Returns the discounted
+ * total + effective monthly for the selected program/variant/term. If the
+ * variant (or card) is founding-exempt, returns the standard pricing as-is
+ * with `discounted: false`, so callers can decide whether to show a founding
+ * badge.
+ */
+export function resolveFoundingPrice(
+  program: ProgramCard,
+  variantId: string | null,
+  term: BillingTerm
+): {
+  total: number;
+  effectiveMonthly: number;
+  appliedTerm: BillingTerm;
+  variant: ProgramVariant | null;
+  discounted: boolean;
+} {
+  const standard = resolveProgramPrice(program, variantId, term);
+  const eligible = isFoundingEligible(program, standard.variant);
+  if (!eligible) {
+    return { ...standard, discounted: false };
+  }
+  const total = applyFoundingDiscount(standard.total);
+  return {
+    total,
+    effectiveMonthly: effectiveMonthly(total, standard.appliedTerm),
+    appliedTerm: standard.appliedTerm,
+    variant: standard.variant,
+    discounted: true,
+  };
+}
+
+/**
+ * Founding-member version of cheapestMonthly(). Returns the lowest founding
+ * effective-monthly across offered terms. Falls back to standard pricing for
+ * founding-exempt programs/variants.
+ */
+export function cheapestMonthlyFounding(program: ProgramCard): {
+  price: number;
+  term: BillingTerm;
+  discounted: boolean;
+} {
+  const variant = defaultVariant(program);
+  const eligible = isFoundingEligible(program, variant);
+  const std = cheapestMonthly(program);
+  if (!eligible) {
+    return { ...std, discounted: false };
+  }
+  const pricing = variant?.pricing ?? program.pricing;
+  const offered: BillingTerm[] = (["monthly", "quarterly", "yearly"] as const).filter(
+    (t) => pricing[t] !== undefined
+  );
+  // Flat variants can't enjoy term discounts — only the monthly price.
+  const terms = variant?.flat ? (["monthly"] as const) : offered;
+  let best: { price: number; term: BillingTerm } = {
+    price: effectiveMonthly(applyFoundingDiscount(pricing.monthly), "monthly"),
+    term: "monthly",
+  };
+  for (const t of terms) {
+    const totalStd = pricing[t]!;
+    const totalFounding = applyFoundingDiscount(totalStd);
+    const eff = effectiveMonthly(totalFounding, t);
+    if (eff < best.price) best = { price: eff, term: t };
+  }
+  return { ...best, discounted: true };
+}
+
 /**
  * Look up a program by slug. Returns null if the slug isn't in the catalog —
  * safer than throwing for URL-driven routing.
@@ -436,6 +607,15 @@ export function formatMonthly(n: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
+}
+
+/**
+ * Always-whole-dollar formatter for marketing headlines — collapses effective
+ * monthly math (e.g. $1937/12 = $161.42) to a clean "$161/mo". Prefer this
+ * over formatMonthly() in meta descriptions and marketing page copy.
+ */
+export function formatMonthlyRounded(n: number): string {
+  return `$${Math.round(n).toLocaleString("en-US")}`;
 }
 
 /**

@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
+import {
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
 
 const TITLE = "NAD+ Therapy";
+const NAD_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("nad")!).price
+);
 const DESCRIPTION =
-  "Physician-prescribed NAD+ injection therapy delivered monthly. Full metabolic panel, lab-monitored protocol, paired glutathione, cancel anytime. Starts at $179/mo \u2014 a fraction of IV clinic pricing. Board-certified physicians and US-licensed 503A pharmacy.";
+  `Physician-prescribed NAD+ injection therapy delivered monthly. Full metabolic panel, lab-monitored protocol, paired glutathione, cancel anytime. Founding pricing from ${NAD_FROM}/mo \u2014 a fraction of IV clinic pricing. Board-certified physicians and US-licensed 503A pharmacy.`;
 const URL = "https://tryhalo.co/nad-therapy";
 const OG_IMAGE = "/nad/og-nad-therapy.jpg";
 

@@ -232,7 +232,7 @@ function isQuestionComplete(q: IntakeQuestion, answers: IntakeAnswers): boolean 
    Main component
    ────────────────────────────────────────────────────────── */
 
-type Step = { kind: "intro" } | { kind: "question"; index: number } | { kind: "capture" };
+type Step = { kind: "question"; index: number } | { kind: "capture" };
 
 export interface IntakeQuizProps {
   config: IntakeConfig;
@@ -241,7 +241,7 @@ export interface IntakeQuizProps {
 export default function IntakeQuiz({ config }: IntakeQuizProps) {
   const router = useRouter();
   const [answers, setAnswers] = useState<IntakeAnswers>({});
-  const [step, setStep] = useState<Step>({ kind: "intro" });
+  const [step, setStep] = useState<Step>({ kind: "question", index: 0 });
   const [numberError, setNumberError] = useState<string>("");
 
   /* ── Visible questions recompute whenever answers change.
@@ -273,7 +273,7 @@ export default function IntakeQuiz({ config }: IntakeQuizProps) {
       if (step.kind !== "capture") {
         track("quiz_abandoned", {
           quiz: config.slug,
-          step: step.kind === "intro" ? "intro" : (step as { index: number }).index + 1,
+          step: step.index + 1,
         });
       }
     };
@@ -303,9 +303,9 @@ export default function IntakeQuiz({ config }: IntakeQuizProps) {
       goToQuestion(visibleQuestions.length - 1);
     } else if (step.kind === "question" && step.index > 0) {
       goToQuestion(step.index - 1);
-    } else {
-      setStep({ kind: "intro" });
     }
+    // At Q1 (index 0), the header renders the Home link instead of a Back
+    // button, so there's nothing to fall through to here.
   }, [step, visibleQuestions.length, goToQuestion]);
 
   /* ── Answer setters ── */
@@ -398,10 +398,10 @@ export default function IntakeQuiz({ config }: IntakeQuizProps) {
     return payload;
   }, [config, answers, tier]);
 
-  /* ── Progress dots (intro + N questions + capture) ── */
-  const totalDots = visibleQuestions.length + 2;
+  /* ── Progress dots (N questions + capture) ── */
+  const totalDots = visibleQuestions.length + 1;
   const currentDot =
-    step.kind === "intro" ? 0 : step.kind === "question" ? step.index + 1 : totalDots - 1;
+    step.kind === "question" ? step.index : totalDots - 1;
 
   /* ──────────────────────────────────────────────────────────
      Render
@@ -434,7 +434,15 @@ export default function IntakeQuiz({ config }: IntakeQuizProps) {
 
         {/* ── TOP BAR ── */}
         <header className="relative z-20 flex items-center justify-between px-6 py-5 md:px-8 md:py-6">
-          {step.kind !== "intro" ? (
+          {step.kind === "question" && step.index === 0 ? (
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-[13px] font-medium text-halo-charcoal/50 hover:text-halo-charcoal transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Home
+            </Link>
+          ) : (
             <button
               type="button"
               onClick={goBack}
@@ -443,14 +451,6 @@ export default function IntakeQuiz({ config }: IntakeQuizProps) {
               <ArrowLeft className="w-4 h-4" />
               Back
             </button>
-          ) : (
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-[13px] font-medium text-halo-charcoal/50 hover:text-halo-charcoal transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Home
-            </Link>
           )}
 
           <Link href="/" className="flex items-center">
@@ -500,13 +500,6 @@ export default function IntakeQuiz({ config }: IntakeQuizProps) {
         {/* ── MAIN ── */}
         <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-8 md:py-12 w-full">
           <div className="w-full max-w-xl mx-auto">
-            {step.kind === "intro" && (
-              <IntroCard
-                config={config}
-                onStart={() => goToQuestion(0)}
-              />
-            )}
-
             {step.kind === "question" && visibleQuestions[step.index] && (
               <QuestionCard
                 question={visibleQuestions[step.index]}
@@ -589,43 +582,6 @@ export default function IntakeQuiz({ config }: IntakeQuizProps) {
         </main>
       </div>
     </>
-  );
-}
-
-/* ──────────────────────────────────────────────────────────
-   Intro card — eyebrow + headline + subhead + CTA
-   ────────────────────────────────────────────────────────── */
-
-function IntroCard({ config, onStart }: { config: IntakeConfig; onStart: () => void }) {
-  return (
-    <div className="text-center">
-      <p
-        className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-5"
-        style={{ color: "#6B7B6E" }}
-      >
-        {config.eyebrow}
-      </p>
-      <h1
-        className="font-serif text-[34px] md:text-[42px] lg:text-[48px] leading-[1.08] text-halo-charcoal tracking-tight mb-4"
-        style={{ fontFeatureSettings: '"kern", "liga"' }}
-      >
-        {config.headline}
-      </h1>
-      <p className="text-[15px] text-halo-charcoal/60 mb-10 max-w-md mx-auto leading-relaxed">
-        {config.subhead}
-      </p>
-      <button
-        type="button"
-        onClick={onStart}
-        className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#1C1C1E] text-white font-semibold text-sm transition-all duration-300 hover:bg-[#333]"
-      >
-        {config.introCta ?? "Start assessment"}
-        <ArrowRight className="w-4 h-4" />
-      </button>
-      <p className="text-[11px] text-halo-charcoal/40 mt-8 leading-relaxed max-w-sm mx-auto">
-        Takes about two minutes. Every answer shapes your care.
-      </p>
-    </div>
   );
 }
 

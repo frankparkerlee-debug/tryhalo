@@ -449,28 +449,11 @@ const hrtConfig: IntakeConfig = {
         },
       ],
     },
-    {
-      id: "lab_history",
-      label: "Labs",
-      prompt: "Have you had hormone panels drawn in the last year?",
-      type: "single",
-      options: [
-        { label: "Yes, I have results", value: "yes_recent", score: 2 },
-        { label: "Yes, but over a year ago", value: "yes_old", score: 1 },
-        { label: "No, I haven't", value: "no", score: 1 },
-      ],
-      whyWeAsk:
-        "If you have recent labs you can share, the physician can move faster. If not, we'll order them.",
-    },
-    {
-      id: "readiness",
-      label: "Timing",
-      prompt: "When are you looking to get started?",
-      type: "single",
-      options: READINESS_OPTIONS,
-    },
   ],
-  computeTier: (answers) => tierFromFlagsAndScore(hrtConfig, answers, { strong: 9 }),
+  // Threshold lowered from 9 → 7 on 2026-04-22 when `lab_history` (max +2)
+  // and `readiness` (max +3) questions were removed — preserves roughly the
+  // same strong-tier pass rate against the new max total of 12 (vs prior 17).
+  computeTier: (answers) => tierFromFlagsAndScore(hrtConfig, answers, { strong: 7 }),
   computeDerived: (answers) => {
     const primaryDriver =
       typeof answers.primary_symptom === "string"

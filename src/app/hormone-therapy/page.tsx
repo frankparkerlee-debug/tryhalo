@@ -9,6 +9,18 @@ import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import CountUpNumber from "@/components/CountUpNumber";
 import EngagementTool from "@/components/quiz/EngagementTool";
+import {
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
+
+const HRT_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("hrt")!).price
+);
+const WOMENS_T_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("womens_testosterone")!).price
+);
 
 /* ==============================
    PERSONA COLOR — HRT = terracotta rose
@@ -87,24 +99,27 @@ const compounds = [
 const subjectiveCharts = [
   {
     title: "Mood",
-    stat: "74%",
-    claim: "report reduced irritability and emotional volatility",
+    stat: "Up to 68%",
+    claim: "remission of depressive symptoms in perimenopausal women on transdermal estradiol",
+    source: "Soares et al., Arch Gen Psychiatry, 2001",
     lifeImage: "/hrt/life-mood.png",
     type: "mood" as const,
   },
   {
-    title: "Energy",
-    stat: "69%",
-    claim: "report sustained daily energy without afternoon collapse",
-    lifeImage: "/hrt/life-energy.png",
-    type: "energy" as const,
-  },
-  {
     title: "Sleep",
-    stat: "82%",
-    claim: "of women report uninterrupted sleep within 4 weeks",
+    stat: "4 yrs",
+    claim: "of sustained sleep-quality improvement on transdermal estradiol + oral micronized progesterone — Halo's exact formulation.",
+    source: "KEEPS trial, Cintron et al., Menopause, 2017",
     lifeImage: "/hrt/life-sleep.png",
     type: "sleep" as const,
+  },
+  {
+    title: "Hot flashes",
+    stat: "Up to 75%",
+    claim: "reduction in hot flash frequency versus placebo across 24 randomized trials",
+    source: "MacLennan et al., Cochrane Review, 2004",
+    lifeImage: "/hrt/life-energy.png",
+    type: "energy" as const,
   },
 ];
 
@@ -1398,8 +1413,7 @@ export default function HormoneTherapyPage() {
                         {chart.type === "energy" && <EnergyChart />}
                       </div>
                       <p className="text-[11px] italic text-halo-charcoal/40 mt-3">
-                        Based on patient-reported outcomes from clinical trials
-                        of bioidentical hormone therapy.
+                        {chart.source}. Individual response varies.
                       </p>
                     </div>
                   </div>
@@ -1510,7 +1524,7 @@ export default function HormoneTherapyPage() {
                   className="font-serif text-[44px] md:text-[64px] font-light leading-none"
                   style={{ color: PERSONA }}
                 >
-                  $79
+                  {HRT_FROM}
                 </span>
                 <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">
                   /month
@@ -1520,7 +1534,7 @@ export default function HormoneTherapyPage() {
                 className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-6"
                 style={{ color: "#9C7F3E" }}
               >
-                Estradiol from $79/mo &middot; Testosterone from $149/mo
+                HRT from {HRT_FROM}/mo &middot; Women&rsquo;s Testosterone from {WOMENS_T_FROM}/mo
               </p>
 
               <div className="border-t border-halo-charcoal/[0.08] pt-6">

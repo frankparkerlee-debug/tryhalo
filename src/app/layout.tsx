@@ -6,6 +6,30 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import {
+  PROGRAM_CATALOG,
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
+
+// Derive marketing copy from the program catalog so prices can never drift.
+const HRT_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("hrt")!).price
+);
+const NAD_STD_MONTHLY = getProgram("nad")!.pricing.monthly;
+const PRICE_FLOOR = Math.min(
+  ...PROGRAM_CATALOG.filter(
+    (p) =>
+      p.slug !== "care_coach" &&
+      p.slug !== "sexual_wellness" &&
+      !p.comingSoon
+  ).map((p) => cheapestMonthlyFounding(p).price)
+);
+const PRICE_CEIL = Math.max(
+  NAD_STD_MONTHLY,
+  getProgram("peptides")!.pricing.monthly
+);
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -29,9 +53,9 @@ const plexMono = IBM_Plex_Mono({
 
 const SITE_URL = "https://tryhalo.co";
 const SITE_NAME = "Halo";
-const TITLE = "Halo | Hormone Optimization, TRT, HRT, GLP-1 & Longevity";
+const TITLE = "Halo | HRT, NAD+, TRT, Peptides & Longevity Medicine";
 const DESCRIPTION =
-  "Physician-led hormone optimization for adults 40-55. Testosterone replacement therapy (TRT), hormone replacement therapy (HRT), GLP-1 weight management, peptide therapy, and NAD+ — personalized, monitored, and adjusted to your biology. Board-certified physicians, US-licensed compounding pharmacy, no insurance needed. Founding pricing from $149/mo.";
+  `Physician-led hormone therapy and longevity medicine. Hormone replacement therapy (HRT) for women, NAD+ therapy, testosterone replacement (TRT) for men, peptide therapy, and GLP-1 weight management — personalized, monitored, and adjusted to your biology. Board-certified physicians, US-licensed compounding pharmacy, no insurance needed. Founding pricing from ${HRT_FROM}/mo for the first 999 members.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -50,7 +74,6 @@ export const metadata: Metadata = {
     "bioidentical hormones",
     "GLP-1 weight loss",
     "compounded semaglutide",
-    "compounded tirzepatide",
     "peptide therapy",
     "sermorelin",
     "NAD+ therapy",
@@ -143,9 +166,9 @@ const STRUCTURED_DATA = {
       "@id": `${SITE_URL}#business`,
       name: SITE_NAME,
       description:
-        "Telehealth platform providing physician-led hormone optimization, TRT, HRT, GLP-1 weight management, peptide therapy, and NAD+ protocols.",
+        "Telehealth platform providing physician-led hormone replacement therapy (HRT), NAD+ therapy, testosterone optimization (TRT), peptide therapy, and GLP-1 weight management.",
       url: SITE_URL,
-      priceRange: "$109-$249/mo",
+      priceRange: `$${PRICE_FLOOR}-$${PRICE_CEIL}/mo`,
       medicalSpecialty: [
         "Endocrinology",
         "Internal Medicine",

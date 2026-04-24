@@ -9,7 +9,6 @@ import {
   Activity,
   Stethoscope,
   GraduationCap,
-  Droplet,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
@@ -23,6 +22,20 @@ import AnchorDataOverlay from "@/components/AnchorDataOverlay";
 import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import { usePersonalization } from "@/hooks/usePersonalization";
+import {
+  FOUNDING_CAP,
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
+
+// Catalog-derived founding "from $X/mo" strings. Drift-proof.
+const HRT_FROM = formatMonthlyRounded(cheapestMonthlyFounding(getProgram("hrt")!).price);
+const NAD_FROM = formatMonthlyRounded(cheapestMonthlyFounding(getProgram("nad")!).price);
+const TRT_FROM = formatMonthlyRounded(cheapestMonthlyFounding(getProgram("trt")!).price);
+const PEPTIDES_FROM = formatMonthlyRounded(cheapestMonthlyFounding(getProgram("peptides")!).price);
+const WEIGHT_LOSS_FROM = formatMonthlyRounded(cheapestMonthlyFounding(getProgram("weight_loss")!).price);
+const WOMENS_T_FROM = formatMonthlyRounded(cheapestMonthlyFounding(getProgram("womens_testosterone")!).price);
 
 /* ─── DATA ────────────────────────────────────────────────────── */
 
@@ -87,7 +100,7 @@ const faqItems = [
   {
     question: "What GLP-1 medications does Halo offer?",
     answer:
-      "Halo offers compounded semaglutide and tirzepatide, the active ingredients in brand-name Wegovy, Ozempic, Mounjaro, and Zepbound. Compounded GLP-1 is produced by a licensed US compounding pharmacy and is pharmaceutically equivalent to the branded versions. Your physician titrates your dose up gradually over several months to minimize side effects and maximize weight loss. Most members lose 15-20% of body weight over 12 months.",
+      "Halo offers compounded semaglutide (the active ingredient in branded Ozempic®), produced by a US-licensed 503A compounding pharmacy. For patients who prefer the branded route, we also offer direct-pay Ozempic® and Zepbound®. Your physician titrates your dose up gradually over several months to minimize side effects and maximize weight loss. Most members lose 10\u201315% of body weight over 12 months on compounded semaglutide in published trials.",
     category: "Programs",
   },
   {
@@ -107,7 +120,7 @@ const faqItems = [
   {
     question: "How much does Halo cost?",
     answer:
-      "Pricing depends on what your physician prescribes. Hormone Therapy (HRT) starts at $79/mo for Estradiol; women's testosterone is $149/mo. Testosterone Therapy (TRT) for men starts at $129/mo. GLP-1 Weight Loss starts at $199/mo. Peptide Therapy and NAD+ start at $179/mo. Vitamin Injections start at $109/mo. Every plan includes physician consultations, compounded or branded medications, lab ordering, ongoing adjustments, and shipping. No hidden fees.",
+      `Pricing depends on what your physician prescribes. Founding-member rates: Hormone Therapy (HRT) from ${HRT_FROM}/mo; NAD+ Therapy from ${NAD_FROM}/mo; Testosterone for Women from ${WOMENS_T_FROM}/mo; Testosterone (TRT) for men from ${TRT_FROM}/mo; Peptide Therapy from ${PEPTIDES_FROM}/mo; Medical Weight Loss from ${WEIGHT_LOSS_FROM}/mo for compounded GLP-1. Branded Ozempic® and Zepbound® are priced separately. Every plan includes physician consultations, compounded or branded medications, lab ordering, ongoing adjustments, and shipping. No hidden fees.`,
     category: "Pricing",
   },
   {
@@ -137,7 +150,7 @@ const faqItems = [
   {
     question: "What is the founding member pricing?",
     answer:
-      "The first 999 members lock in our lowest per-compound pricing for the entire life of their membership, regardless of future price increases \u2014 starting as low as $79/mo for HRT Estradiol. Founding members also receive their baseline comprehensive hormone panel free (normally $300), priority onboarding, and first access to new programs as we launch them.",
+      `The first ${FOUNDING_CAP} members lock in a flat 10% discount on every term for the entire life of their membership, regardless of future price increases \u2014 as low as ${HRT_FROM}/mo for Hormone Therapy on the annual term. Founding members also receive their baseline comprehensive hormone panel free (normally $300), priority onboarding, and first access to new programs as we launch them. Branded Ozempic® and Zepbound® are excluded from the founding discount.`,
     category: "Pricing",
   },
 
@@ -187,17 +200,14 @@ const faqItems = [
 ];
 
 const programs = [
-  // ─── ANCHOR PROGRAMS ─────────────────────────
+  // ─── ANCHOR PROGRAMS — HRT + NAD+ lead the launch narrative ──
   {
     name: "Hormone Therapy",
     outcome: "Feel like yourself again",
     desc: "For women experiencing fatigue, mood shifts, and sleep issues.",
     label: "Physician-prescribed",
-    compounds: "Estradiol \u00B7 Progesterone \u00B7 Testosterone",
-    price: "From $79/mo",
-    startingPrice: "from $79/mo",
-    monthly: "$79/mo",
-    quarterly: "$99/mo",
+    compounds: "Estradiol \u00B7 Progesterone",
+    startingPrice: `from ${HRT_FROM}/mo`,
     href: "/hormone-therapy",
     colorClass: "",
     color: "#D4836B",
@@ -216,15 +226,30 @@ const programs = [
     safety: "Hormone therapy may increase risk of blood clots, stroke, and certain cancers. Not suitable during pregnancy. Requires ongoing lab monitoring.",
   },
   {
+    name: "NAD+ Therapy",
+    outcome: "Unlock steady energy",
+    desc: "Cellular energy that lasts all day \u2014 no crashes.",
+    label: "Cellular therapy",
+    compounds: "NAD+ Injection \u00B7 Glutathione",
+    startingPrice: `from ${NAD_FROM}/mo`,
+    href: "/nad-therapy",
+    colorClass: "",
+    color: "#7B6B8F",
+    cardBg: "#E8E3ED",
+    accent: "#7B6B8F",
+    icon: Brain,
+    image: "/support-nad.jpg",
+    tier: "anchor",
+    safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment.",
+  },
+  // ─── SUPPORTING PROGRAMS ─────────────────────
+  {
     name: "Testosterone Therapy",
     outcome: "Get your edge back",
     desc: "For men dealing with low energy, slow recovery, and brain fog.",
     label: "Physician-prescribed",
     compounds: "Testosterone Cypionate \u00B7 HCG \u00B7 Anastrozole",
-    price: "$149/mo",
-    startingPrice: "from $149/mo",
-    monthly: "$149/mo",
-    quarterly: "$179/mo",
+    startingPrice: `from ${TRT_FROM}/mo`,
     href: "/testosterone-therapy",
     colorClass: "",
     color: "#5A7394",
@@ -239,29 +264,8 @@ const programs = [
         { label: "Recovery", iconKey: "rotate" as const },
       ],
     },
-    tier: "anchor",
-    safety: "TRT may affect fertility and is not appropriate for men planning conception. May increase red blood cell count. Requires regular lab monitoring.",
-  },
-  // ─── SUPPORTING PROGRAMS ─────────────────────
-  {
-    name: "GLP-1 Weight Management",
-    outcome: "Sustainable weight loss",
-    desc: "Physician-supervised GLP-1 protocol with labs and follow-up.",
-    label: "GLP-1 therapy",
-    compounds: "Semaglutide \u00B7 Tirzepatide",
-    price: "$179/mo",
-    startingPrice: "from $179/mo",
-    monthly: "$179/mo",
-    quarterly: "$229/mo",
-    href: "/weight-loss",
-    colorClass: "",
-    color: "#B8974E",
-    cardBg: "#EDE8DC",
-    accent: "#B8974E",
-    icon: Activity,
-    image: "/support-glp1.jpg",
     tier: "support",
-    safety: "GLP-1 medications may cause nausea, vomiting, diarrhea, or pancreatitis. Not for personal or family history of MTC or MEN 2. Requires lab monitoring.",
+    safety: "TRT may affect fertility and is not appropriate for men planning conception. May increase red blood cell count. Requires regular lab monitoring.",
   },
   {
     name: "Peptide Therapy",
@@ -269,10 +273,7 @@ const programs = [
     desc: "Deeper sleep, faster recovery, better body composition.",
     label: "Growth hormone peptides",
     compounds: "Sermorelin",
-    price: "$149/mo",
-    startingPrice: "from $149/mo",
-    monthly: "$149/mo",
-    quarterly: "$179/mo",
+    startingPrice: `from ${PEPTIDES_FROM}/mo`,
     href: "/peptide-therapy",
     colorClass: "",
     color: "#6B8F68",
@@ -284,43 +285,21 @@ const programs = [
     safety: "Peptide therapy is prescribed off-label. Not FDA-approved for anti-aging. May cause injection site reactions, headache, or flushing.",
   },
   {
-    name: "NAD+ Therapy",
-    outcome: "Unlock steady energy",
-    desc: "Cellular energy that lasts all day \u2014 no crashes.",
-    label: "Cellular therapy",
-    compounds: "NAD+ Injection \u00B7 Oral \u00B7 Nasal",
-    price: "$149/mo",
-    startingPrice: "from $149/mo",
-    monthly: "$149/mo",
-    quarterly: "$179/mo",
-    href: "/nad-therapy",
+    name: "GLP-1 Weight Management",
+    outcome: "Sustainable weight loss",
+    desc: "Physician-supervised GLP-1 protocol with labs and follow-up.",
+    label: "GLP-1 therapy",
+    compounds: "Compounded Semaglutide \u00B7 Branded Ozempic® \u00B7 Branded Zepbound®",
+    startingPrice: `from ${WEIGHT_LOSS_FROM}/mo`,
+    href: "/weight-loss",
     colorClass: "",
-    color: "#7B6B8F",
-    cardBg: "#E8E3ED",
-    accent: "#7B6B8F",
-    icon: Brain,
-    image: "/support-nad.jpg",
+    color: "#B8974E",
+    cardBg: "#EDE8DC",
+    accent: "#B8974E",
+    icon: Activity,
+    image: "/support-glp1.jpg",
     tier: "support",
-    safety: "NAD+ injections may cause discomfort, nausea, or flushing during administration. Not FDA-approved as an anti-aging treatment.",
-  },
-  {
-    name: "Vitamin Injections",
-    outcome: "Targeted wellness support",
-    desc: "B12, Glutathione, Methylene Blue, Lipo-C, L-Carnitine.",
-    label: "Wellness add-ons",
-    compounds: "B12 MIC \u00B7 Glutathione \u00B7 Methylene Blue \u00B7 Lipo-C",
-    price: "$109/mo",
-    startingPrice: "from $109/mo",
-    monthly: "$109/mo",
-    quarterly: "$129/mo",
-    href: "/vitamin-injections",
-    colorClass: "",
-    color: "#6B8F68",
-    cardBg: "#EAEBE5",
-    accent: "#6B8F68",
-    icon: Droplet,
-    tier: "support",
-    safety: "Vitamin injections are compounded and not FDA-approved for specific health claims. May cause injection site reactions.",
+    safety: "GLP-1 medications may cause nausea, vomiting, diarrhea, or pancreatitis. Not for personal or family history of MTC or MEN 2. Requires lab monitoring.",
   },
 ];
 
@@ -481,8 +460,8 @@ const testimonials = [
 
 const foundingBenefits = [
   {
-    title: "Up to 20% off \u2014 for life",
-    desc: "Founding rate on every core program \u2014 hormone therapy, TRT, peptides, NAD+. Your price never goes up.",
+    title: "10% off every term \u2014 for life",
+    desc: "Founding rate on every core program \u2014 HRT, NAD+, TRT, peptides, and compounded GLP-1. Your price never goes up.",
   },
   {
     title: "Free baseline labs",
@@ -494,7 +473,7 @@ const foundingBenefits = [
   },
   {
     title: "First access to new programs",
-    desc: "Sexual wellness and future protocols, before they launch publicly",
+    desc: "Sexual wellness, vitamin injections, and future protocols before they launch publicly",
   },
 ];
 
@@ -1320,7 +1299,7 @@ export default function Home() {
                   />
                   <p className="text-[13px] text-white/55">
                     of{" "}
-                    <span className="text-white/85 font-semibold">999</span>{" "}
+                    <span className="text-white/85 font-semibold">{FOUNDING_CAP}</span>{" "}
                     spots claimed
                   </p>
                 </div>
@@ -1361,7 +1340,7 @@ export default function Home() {
                   </p>
                 </div>
                 <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white mb-5">
-                  The first 999 get in at the best price. Permanently.
+                  The first {FOUNDING_CAP} get in at the best price. Permanently.
                 </h2>
                 <p className="text-base text-white/30 mb-8 leading-relaxed">
                   Lock in founding pricing for life, get your first labs free, and be the first to access every new program we launch.{" "}

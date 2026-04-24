@@ -1,12 +1,22 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import StatRow from "@/components/StatRow";
 import TreatmentCard from "@/components/TreatmentCard";
 import StepCard from "@/components/StepCard";
 import PricingCard from "@/components/PricingCard";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import EngagementTool from "@/components/quiz/EngagementTool";
+import {
+  applyFoundingDiscount,
+  formatPrice,
+  getProgram,
+} from "@/lib/programs";
+
+// Sermorelin is the default/featured variant for peptides.
+const PEPTIDES_STD = formatPrice(getProgram("peptides")!.pricing.monthly);
+const PEPTIDES_FOUNDING = formatPrice(
+  applyFoundingDiscount(getProgram("peptides")!.pricing.monthly)
+);
 
 const faqItems = [
   {
@@ -94,15 +104,6 @@ export default function RestorePage() {
                 fraction of your younger self.
               </p>
             </div>
-          </AnimateOnScroll>
-          <AnimateOnScroll stagger>
-            <StatRow
-              stats={[
-                { value: "~14%", label: "GH production decline per decade after age 25" },
-                { value: "35%", label: "of adults over 40 report poor sleep quality" },
-                { value: "2x", label: "recovery time increase between ages 30 and 50" },
-              ]}
-            />
           </AnimateOnScroll>
         </div>
       </section>
@@ -238,9 +239,9 @@ export default function RestorePage() {
           </AnimateOnScroll>
           <AnimateOnScroll>
             <PricingCard
-              programName="Halo Peptide Therapy"
-              founderPrice="$179"
-              standardPrice="$229"
+              programName="Halo Peptide Therapy (Sermorelin)"
+              founderPrice={PEPTIDES_FOUNDING}
+              standardPrice={PEPTIDES_STD}
               includes={[
                 "Clinical evaluation",
                 "Provider consultation",

@@ -9,8 +9,9 @@ const footerColumns = [
       { label: "Testosterone", href: "/testosterone-therapy" },
       { label: "Peptide Therapy", href: "/peptide-therapy" },
       { label: "NAD+ Therapy", href: "/nad-therapy" },
-      { label: "Weight Loss", href: "/#founding-circle", comingSoon: true },
-      { label: "Sexual Wellness", href: "/#founding-circle", comingSoon: true },
+      { label: "Weight Loss", href: "/weight-loss" },
+      { label: "Vitamin Injections", href: null, comingSoon: true },
+      { label: "Sexual Wellness", href: null, comingSoon: true },
     ],
   },
   {
@@ -58,30 +59,40 @@ export default function Footer() {
                 {col.title}
               </h4>
               <ul className="space-y-2.5">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    {link.href.startsWith("mailto:") ? (
-                      <a
-                        href={link.href}
-                        className="text-sm text-white/50 hover:text-white transition-colors duration-300"
-                      >
-                        {link.label}
-                      </a>
-                    ) : (
-                      <Link
-                        href={link.href}
-                        className="text-sm text-white/50 hover:text-white transition-colors duration-300 inline-flex items-center gap-2"
-                      >
-                        {link.label}
-                        {"comingSoon" in link && link.comingSoon && (
+                {col.links.map((link) => {
+                  const isComingSoon = "comingSoon" in link && link.comingSoon;
+                  if (isComingSoon || link.href === null) {
+                    return (
+                      <li key={link.label}>
+                        <span className="text-sm text-white/35 inline-flex items-center gap-2 cursor-default">
+                          {link.label}
                           <span className="text-[10px] text-white/25 font-medium">
                             Soon
                           </span>
-                        )}
-                      </Link>
-                    )}
-                  </li>
-                ))}
+                        </span>
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={link.label}>
+                      {link.href!.startsWith("mailto:") ? (
+                        <a
+                          href={link.href!}
+                          className="text-sm text-white/50 hover:text-white transition-colors duration-300"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.href!}
+                          className="text-sm text-white/50 hover:text-white transition-colors duration-300 inline-flex items-center gap-2"
+                        >
+                          {link.label}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

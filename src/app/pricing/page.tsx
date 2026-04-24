@@ -2,6 +2,12 @@ import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import FAQ from "@/components/FAQ";
+import {
+  FOUNDING_CAP,
+  applyFoundingDiscount,
+  formatPrice,
+  getProgram,
+} from "@/lib/programs";
 
 export const metadata = {
   title: "Pricing — Halo Health",
@@ -9,52 +15,76 @@ export const metadata = {
     "Transparent pricing for all Halo programs. Medications, labs, provider visits, and shipping included. No hidden fees.",
 };
 
-const programs = [
-  {
-    name: "Hormone Therapy",
-    description: "For women navigating perimenopause, menopause, and hormonal imbalance. Estradiol from $79/mo, women's testosterone from $149/mo.",
-    compounds: "Estradiol, Progesterone, Testosterone",
-    standardPrice: "$99",
-    foundingPrice: "$79",
-    href: "/hormone-therapy",
-    available: true,
-  },
-  {
-    name: "Testosterone",
-    description: "Lab-driven testosterone optimization with ongoing monitoring.",
-    compounds: "Testosterone Cypionate, HCG, Anastrozole",
-    standardPrice: "$149",
-    foundingPrice: "$129",
-    href: "/testosterone-therapy",
-    available: true,
-  },
-  {
-    name: "Peptide Therapy",
-    description: "Growth hormone peptide therapy for recovery, sleep, and body composition.",
-    compounds: "Sermorelin",
-    standardPrice: "$229",
-    foundingPrice: "$179",
-    href: "/peptide-therapy",
-    available: true,
-  },
-  {
-    name: "NAD+ Therapy",
-    description: "Clinical-grade NAD+ for energy, mental clarity, and cellular health.",
+// Build the pricing table from the catalog so numbers can't drift. Order
+// reflects the marketing strategy: HRT + NAD+ lead, then everything else.
+type PricingRow = {
+  name: string;
+  description: string;
+  compounds: string;
+  standardPrice: string;
+  foundingPrice: string;
+  href: string;
+  available: boolean;
+};
+
+const row = (
+  slug: Parameters<typeof getProgram>[0],
+  display: {
+    name?: string;
+    description: string;
+    compounds: string;
+  }
+): PricingRow => {
+  const program = getProgram(slug)!;
+  const stdMonthly = program.pricing.monthly;
+  const foundingMonthly = program.foundingExempt
+    ? stdMonthly
+    : applyFoundingDiscount(stdMonthly);
+  return {
+    name: display.name ?? program.name,
+    description: display.description,
+    compounds: display.compounds,
+    standardPrice: formatPrice(stdMonthly),
+    foundingPrice: formatPrice(foundingMonthly),
+    href: program.href,
+    available: !program.comingSoon,
+  };
+};
+
+const programs: PricingRow[] = [
+  row("hrt", {
+    name: "Hormone Therapy (HRT)",
+    description:
+      "For women navigating perimenopause and menopause. Bioidentical estradiol and progesterone, compounded to your labs.",
+    compounds: "Estradiol, Progesterone",
+  }),
+  row("nad", {
+    description:
+      "Clinical-grade NAD+ for cellular energy, cognitive clarity, and recovery. Lab-monitored.",
     compounds: "NAD+ Injection, Glutathione",
-    standardPrice: "$229",
-    foundingPrice: "$179",
-    href: "/nad-therapy",
-    available: true,
-  },
-  {
-    name: "Weight Loss",
-    description: "GLP-1 therapy for sustainable weight management.",
-    compounds: "Semaglutide, Tirzepatide",
-    standardPrice: "$249",
-    foundingPrice: "$199",
-    href: "#",
-    available: false,
-  },
+  }),
+  row("trt", {
+    name: "Testosterone (Men)",
+    description:
+      "Lab-driven testosterone optimization for men 35–65 with ongoing monitoring.",
+    compounds: "Testosterone Cypionate, HCG, Anastrozole",
+  }),
+  row("womens_testosterone", {
+    description:
+      "Low-dose testosterone for women — libido, energy, mood, and lean-mass support. Often paired with HRT.",
+    compounds: "Testosterone Cypionate (low-dose) or compounded cream",
+  }),
+  row("peptides", {
+    description:
+      "Growth-hormone peptide therapy for recovery, sleep depth, and body composition.",
+    compounds: "Sermorelin (featured) · B12/Glutathione/Lipo-C available",
+  }),
+  row("weight_loss", {
+    name: "Medical Weight Loss",
+    description:
+      "GLP-1 therapy for sustainable weight management. Compounded semaglutide with physician-designed titration, or branded Ozempic® / Zepbound® direct-pay.",
+    compounds: "Compounded semaglutide · Branded Ozempic® / Zepbound®",
+  }),
 ];
 
 const included = [
@@ -76,7 +106,7 @@ const faqItems = [
   {
     question: "What is the founding member rate?",
     answer:
-      "Founding members receive a reduced monthly rate that is locked in for life. This rate applies as long as your membership remains active. Once the 999 founding spots are filled, pricing increases to standard rates.",
+      `Founding members receive a flat 10% discount on every term that is locked in for life. This rate applies as long as your membership remains active. Once the ${FOUNDING_CAP} founding spots are filled, pricing returns to standard rates. Branded Ozempic® and Zepbound® are excluded.`,
     category: "General",
   },
   {
@@ -277,8 +307,8 @@ export default function PricingPage() {
               Lock in your founding rate.
             </h2>
             <p className="text-white/50 mb-10 leading-relaxed">
-              999 spots at reduced pricing. Once they are filled, prices
-              increase.
+              {FOUNDING_CAP} spots at a flat 10% off every term, locked in for
+              life. Once they are filled, pricing returns to standard.
             </p>
             <Link href="/quiz" className="btn-gold-filled">
               Take the quiz

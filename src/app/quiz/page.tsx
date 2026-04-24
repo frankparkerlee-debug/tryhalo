@@ -9,17 +9,57 @@ import FoundingCircleForm from "@/components/FoundingCircleForm";
 import HormoneBalanceChart from "@/components/HormoneBalanceChart";
 import { track } from "@/lib/tracking";
 import { submitQuiz } from "@/lib/quiz-client";
+import {
+  applyFoundingDiscount,
+  formatPrice,
+  getProgram,
+  type ProgramCard,
+} from "@/lib/programs";
 
 /* ==============================
-   PROGRAM DATA
+   PROGRAM DATA — derived from programs.ts so prices can never drift.
    ============================== */
 
-const programs = {
+type QuizProgram = {
+  name: string;
+  compounds: string;
+  price: string;
+  foundingPrice: string;
+  description: string;
+  includes: string[];
+  href: string;
+  available: boolean;
+};
+
+const priceFromCatalog = (p: ProgramCard): { price: string; founding: string } => {
+  const std = p.pricing.monthly;
+  const founding = p.foundingExempt ? std : applyFoundingDiscount(std);
+  return {
+    price: `${formatPrice(std)}/mo`,
+    founding: `${formatPrice(founding)}/mo`,
+  };
+};
+
+const hrtCatalog = getProgram("hrt")!;
+const trtCatalog = getProgram("trt")!;
+const peptidesCatalog = getProgram("peptides")!;
+const nadCatalog = getProgram("nad")!;
+const weightLossCatalog = getProgram("weight_loss")!;
+const sexualWellnessCatalog = getProgram("sexual_wellness")!;
+
+const hrtPr = priceFromCatalog(hrtCatalog);
+const trtPr = priceFromCatalog(trtCatalog);
+const peptidesPr = priceFromCatalog(peptidesCatalog);
+const nadPr = priceFromCatalog(nadCatalog);
+const weightLossPr = priceFromCatalog(weightLossCatalog);
+const sexualWellnessPr = priceFromCatalog(sexualWellnessCatalog);
+
+const programs: Record<string, QuizProgram> = {
   hormoneTherapy: {
     name: "Hormone Therapy",
-    compounds: "Estradiol \u00B7 Progesterone \u00B7 Testosterone",
-    price: "$149/mo",
-    foundingPrice: "$129/mo",
+    compounds: "Estradiol \u00B7 Progesterone",
+    price: hrtPr.price,
+    foundingPrice: hrtPr.founding,
     description:
       "Personalized hormone optimization for women navigating perimenopause, menopause, and hormonal imbalance.",
     includes: [
@@ -28,14 +68,14 @@ const programs = {
       "Provider consultations",
       "Free shipping",
     ],
-    href: "/hormone-therapy",
-    available: true,
+    href: hrtCatalog.href,
+    available: !hrtCatalog.comingSoon,
   },
   testosterone: {
     name: "Testosterone",
     compounds: "Testosterone Cypionate \u00B7 HCG \u00B7 Anastrozole",
-    price: "$149/mo",
-    foundingPrice: "$129/mo",
+    price: trtPr.price,
+    foundingPrice: trtPr.founding,
     description:
       "Lab-driven testosterone optimization with ongoing provider monitoring.",
     includes: [
@@ -44,14 +84,14 @@ const programs = {
       "Provider consultations",
       "Free shipping",
     ],
-    href: "/testosterone-therapy",
-    available: true,
+    href: trtCatalog.href,
+    available: !trtCatalog.comingSoon,
   },
   peptideTherapy: {
     name: "Peptide Therapy",
     compounds: "Sermorelin",
-    price: "$229/mo",
-    foundingPrice: "$179/mo",
+    price: peptidesPr.price,
+    foundingPrice: peptidesPr.founding,
     description:
       "Growth hormone peptide therapy for recovery, sleep, and body composition.",
     includes: [
@@ -60,14 +100,14 @@ const programs = {
       "Protocol adjustments",
       "Free shipping",
     ],
-    href: "/peptide-therapy",
-    available: true,
+    href: peptidesCatalog.href,
+    available: !peptidesCatalog.comingSoon,
   },
   nadTherapy: {
     name: "NAD+ Therapy",
     compounds: "NAD+ Injection \u00B7 Glutathione",
-    price: "$229/mo",
-    foundingPrice: "$179/mo",
+    price: nadPr.price,
+    foundingPrice: nadPr.founding,
     description:
       "Clinical-grade NAD+ for energy, mental clarity, and cellular health.",
     includes: [
@@ -76,14 +116,14 @@ const programs = {
       "Dosing optimization",
       "Free shipping",
     ],
-    href: "/nad-therapy",
-    available: true,
+    href: nadCatalog.href,
+    available: !nadCatalog.comingSoon,
   },
   weightLoss: {
-    name: "Weight Loss",
-    compounds: "Semaglutide \u00B7 Tirzepatide",
-    price: "$249/mo",
-    foundingPrice: "$199/mo",
+    name: "Medical Weight Loss",
+    compounds: "Compounded Semaglutide \u00B7 Branded Ozempic® / Zepbound®",
+    price: weightLossPr.price,
+    foundingPrice: weightLossPr.founding,
     description: "GLP-1 therapy for sustainable weight management.",
     includes: [
       "GLP-1 medication",
@@ -91,23 +131,23 @@ const programs = {
       "Metabolic monitoring",
       "Free shipping",
     ],
-    href: "#",
-    available: false,
+    href: weightLossCatalog.href,
+    available: !weightLossCatalog.comingSoon,
   },
   sexualWellness: {
     name: "Sexual Wellness",
-    compounds: "PT-141 (Bremelanotide) \u00B7 Oxytocin",
-    price: "TBD",
-    foundingPrice: "",
-    description: "FDA-approved therapies for desire and sexual wellness.",
+    compounds: "Sildenafil \u00B7 Tadalafil",
+    price: sexualWellnessPr.price,
+    foundingPrice: sexualWellnessPr.founding,
+    description: "Physician-prescribed therapies for performance and desire.",
     includes: [
       "Prescribed medications",
       "Provider consultations",
       "Ongoing support",
       "Free shipping",
     ],
-    href: "#",
-    available: false,
+    href: sexualWellnessCatalog.href,
+    available: !sexualWellnessCatalog.comingSoon,
   },
 };
 

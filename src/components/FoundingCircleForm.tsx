@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { track } from "@/lib/tracking";
 import { submitQuiz } from "@/lib/quiz-client";
@@ -163,9 +164,27 @@ export default function FoundingCircleForm({
         <p className="text-[#6B7B6E] font-semibold text-lg mb-1">
           You&apos;re already on the list.
         </p>
-        <p className={`text-sm ${isDark ? "text-white/50" : "text-halo-charcoal/50"}`}>
-          We&apos;ll be in touch soon.
+        <p
+          className={`text-sm mb-5 ${
+            isDark ? "text-white/50" : "text-halo-charcoal/50"
+          }`}
+        >
+          Ready to pick your programs? Build your stack to lock in founding pricing.
         </p>
+        <Link
+          href="/stack"
+          onClick={() =>
+            track("founding_duplicate_continue_to_stack", { variant })
+          }
+          className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-colors ${
+            isDark
+              ? "bg-white text-halo-charcoal hover:bg-white/90"
+              : "bg-halo-charcoal text-white hover:bg-halo-charcoal/85"
+          }`}
+        >
+          Build your stack
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     );
   }

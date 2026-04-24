@@ -26,6 +26,7 @@ export type EventName =
   | "founding_signup_success"
   | "founding_signup_error"
   | "founding_signup_duplicate"
+  | "founding_duplicate_continue_to_stack"
   // NAD+ estimator (mini-quiz on /nad-therapy)
   | "nad_estimator_submit"
   | "nad_lead_attempt"

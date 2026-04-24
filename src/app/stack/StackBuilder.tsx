@@ -38,7 +38,7 @@ import {
   formatPrice,
   formatMonthly,
   primaryFromQuiz,
-  resolveProgramPrice,
+  resolveFoundingPrice,
   defaultVariant,
   TERM_LABEL,
   TERM_MONTHS,
@@ -160,7 +160,7 @@ function StackBuilderInner() {
       if (p.comingSoon) continue;
       // Effective monthly for a term, using the default variant.
       for (const term of TERM_ORDER) {
-        const { effectiveMonthly } = resolveProgramPrice(
+        const { effectiveMonthly } = resolveFoundingPrice(
           p,
           defaultVariant(p)?.id ?? null,
           term
@@ -237,7 +237,7 @@ function StackBuilderInner() {
         .filter((p) => cardState[p.slug]?.selected && !p.comingSoon)
         .map((p) => {
           const state = cardState[p.slug];
-          const price = resolveProgramPrice(p, state.variantId, term);
+          const price = resolveFoundingPrice(p, state.variantId, term);
           return {
             slug: p.slug,
             formulation: state.formulation,
@@ -431,7 +431,7 @@ function CardGrid({
     if (!state) return null;
     const isPrimary = program.slug === primary;
     const comingSoon = !!program.comingSoon;
-    const price = resolveProgramPrice(program, state.variantId, term);
+    const price = resolveFoundingPrice(program, state.variantId, term);
 
     return (
       <StackCard

@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
+import {
+  cheapestMonthlyFounding,
+  formatMonthlyRounded,
+  getProgram,
+} from "@/lib/programs";
 
 const TITLE = "Testosterone Therapy (TRT)";
+const TRT_FROM = formatMonthlyRounded(
+  cheapestMonthlyFounding(getProgram("trt")!).price
+);
 const DESCRIPTION =
-  "Physician-led testosterone replacement therapy for men 35\u201365. Full hormone panel, personalized protocol, medication delivered in 14 days. Injection, cream, or pill formats. Board-certified physicians and US-licensed 503A pharmacy. From $129/mo for founding members.";
+  `Physician-led testosterone replacement therapy for men 35\u201365. Full hormone panel, personalized protocol, medication delivered in 14 days. Injection, cream, or pill formats. Board-certified physicians and US-licensed 503A pharmacy. From ${TRT_FROM}/mo for founding members.`;
 const URL = "https://tryhalo.co/testosterone-therapy";
 const OG_IMAGE = "/trt/hero-portrait.png";
 

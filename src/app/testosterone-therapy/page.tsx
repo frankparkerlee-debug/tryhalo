@@ -8,6 +8,16 @@ import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import EngagementTool from "@/components/quiz/EngagementTool";
+import {
+  applyFoundingDiscount,
+  formatPrice,
+  getProgram,
+} from "@/lib/programs";
+
+const TRT_STD = formatPrice(getProgram("trt")!.pricing.monthly);
+const TRT_FOUNDING = formatPrice(
+  applyFoundingDiscount(getProgram("trt")!.pricing.monthly)
+);
 
 /* ==============================
    PERSONA — TRT = steel blue
@@ -25,7 +35,6 @@ const treatmentFormats = [
     name: "Injection",
     desc: "Weekly subcutaneous",
     body: "The gold standard. Most precise dosing. Most studied. A small needle, once a week.",
-    price: "$129",
     image: "/trt/format-injection.png",
     badge: "Most prescribed",
     bullets: [
@@ -38,7 +47,6 @@ const treatmentFormats = [
     name: "Cream",
     desc: "Daily transdermal",
     body: "Applied to shoulders or upper arms. Smooth levels, no needles. Absorbs in minutes.",
-    price: "$139",
     image: "/trt/format-cream.png",
     bullets: [
       "No needles",
@@ -50,7 +58,6 @@ const treatmentFormats = [
     name: "Pill",
     desc: "Daily oral capsule",
     body: "Simple routine. No needles. A steady daily format that moves with your life.",
-    price: "$149",
     image: "/trt/format-pill.png",
     bullets: [
       "No needles",
@@ -90,22 +97,25 @@ const symptomFlips = [
 
 const outcomes = [
   {
-    stat: "78%",
-    label: "Drive",
-    claim: "Renewed motivation and focus. Most men feel it within six weeks.",
+    stat: "790",
+    label: "Drive & libido",
+    claim: "men studied. Significant improvements in sexual activity, desire, and erectile function on testosterone therapy over 12 months.",
+    source: "Snyder et al., NEJM, 2016 (Testosterone Trials)",
     image: "/trt/life-drive.png",
   },
   {
-    stat: "74%",
-    label: "Energy",
-    claim: "Daily energy sustained through afternoon. No 3pm crash.",
-    image: "/trt/life-energy.png",
+    stat: "+4 lbs",
+    label: "Body composition",
+    claim: "lean mass gain (and ~6.6 lbs fat mass loss) in men with low testosterone over 3 years.",
+    source: "Snyder et al., JCEM, 1999",
+    image: "/trt/life-recovery.png",
   },
   {
-    stat: "82%",
-    label: "Recovery",
-    claim: "Deeper sleep. Faster recovery from training.",
-    image: "/trt/life-recovery.png",
+    stat: "Up to 54%",
+    label: "Anemia corrected",
+    claim: "of anemic men with low testosterone had their anemia corrected after 12 months of therapy.",
+    source: "Roy et al., JAMA Internal Medicine, 2017 (TTrials Anemia Trial)",
+    image: "/trt/life-energy.png",
   },
 ];
 
@@ -559,21 +569,10 @@ function FormatCard({ format }: { format: (typeof treatmentFormats)[number] }) {
 
       {/* Content */}
       <div className="p-5 md:p-6">
-        <div className="flex items-baseline justify-between mb-1">
+        <div className="mb-1">
           <h3 className="font-serif text-[22px] text-halo-charcoal leading-tight tracking-tight">
             {format.name}
           </h3>
-          <div className="flex items-baseline gap-1">
-            <span className="text-[10px] text-halo-charcoal/40 uppercase tracking-[0.15em]">
-              From
-            </span>
-            <span className="font-serif text-[20px] font-light" style={{ color: PERSONA_DEEP }}>
-              {format.price}
-            </span>
-            <span className="text-[10px] text-halo-charcoal/50">
-              /mo
-            </span>
-          </div>
         </div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-4" style={{ color: PERSONA }}>
           {format.desc}
@@ -669,6 +668,9 @@ function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
         </div>
         <p className="text-[14px] text-halo-charcoal/70 leading-relaxed">
           {outcome.claim}
+        </p>
+        <p className="text-[11px] italic text-halo-charcoal/40 mt-3">
+          {outcome.source}
         </p>
       </div>
     </div>
@@ -1146,7 +1148,7 @@ export default function TestosteroneTherapyPage() {
 
           <AnimateOnScroll>
             <p className="text-center text-[11px] italic text-halo-charcoal/40 mt-10 max-w-2xl mx-auto">
-              Based on patient-reported outcomes from clinical trials of testosterone replacement therapy. Individual response varies.
+              Sources cited per outcome card above. Individual response varies. Not all patients experience the magnitude or timeframe shown in published trials.
             </p>
           </AnimateOnScroll>
         </div>
@@ -1231,13 +1233,13 @@ export default function TestosteroneTherapyPage() {
               <div className="rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.15)] lg:sticky lg:top-24">
                 <div className="flex items-baseline gap-2 md:gap-3 mb-2 flex-wrap">
                   <span className="font-serif text-[44px] md:text-[64px] font-light leading-none" style={{ color: PERSONA }}>
-                    $129
+                    {TRT_FOUNDING}
                   </span>
                   <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">
                     /month
                   </span>
                   <span className="text-halo-charcoal/30 line-through text-[13px] md:text-[14px] md:ml-2">
-                    $149
+                    {TRT_STD}
                   </span>
                 </div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-6" style={{ color: PERSONA_DEEP }}>
