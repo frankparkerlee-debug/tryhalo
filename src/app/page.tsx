@@ -654,30 +654,19 @@ export default function Home() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/hero-trt-person.jpg"
+                src="/hero-home-portrait.jpg"
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{
-                  objectPosition: "center 30%",
-                  filter: "contrast(1.05) saturate(0.7) brightness(0.92)",
-                }}
+                style={{ objectPosition: "center 30%" }}
               />
+              {/* Very subtle bottom vignette — just enough to anchor the card edge */}
               <div
                 aria-hidden
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
                 style={{
                   background:
-                    "linear-gradient(155deg, rgba(28,28,30,0.30) 0%, rgba(15,17,21,0.05) 45%, rgba(15,17,21,0.45) 100%)",
-                  mixBlendMode: "multiply",
-                }}
-              />
-              <div
-                aria-hidden
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(15,17,21,0.4) 100%)",
+                    "linear-gradient(180deg, transparent 0%, rgba(15,17,21,0.18) 100%)",
                 }}
               />
             </div>
