@@ -599,124 +599,204 @@ export default function Home() {
       <MobileQuizBanner />
 
       {/* ═══════════════════════════════════════════════
-          1 · HERO — Action Grid (Hims-style)
+          1 · HERO — 4-card bento (HRT + TRT as core, plus hero text + portrait)
+              + slim NAD+/Peptides/GLP-1 row below
           ═══════════════════════════════════════════════ */}
       <section className="px-6 md:px-12 lg:px-20 pt-20 md:pt-28 pb-12 section-light">
         <div className="max-w-7xl mx-auto">
-          {/* Headline — short, direct, serif */}
-          <h1 className="headline-hero text-4xl md:text-5xl lg:text-6xl text-halo-charcoal mb-6">
-            {heroHeadline.line1}
-            <br />
-            {heroHeadline.line2}
-          </h1>
+          {/* ── BENTO HERO ──────────────────────────────── */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 md:gap-4 mb-10 md:mb-14">
+            {/* Hero text card — cols 1–7 */}
+            <div className="lg:col-span-7 rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-10 lg:p-12 flex flex-col justify-center min-h-[360px] md:min-h-[400px]">
+              <div className="flex items-center gap-3 mb-5">
+                <span className="block w-8 h-px bg-halo-charcoal/30" aria-hidden />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-halo-charcoal/65">
+                  Longevity Intelligence
+                </span>
+              </div>
+              <h1
+                className="headline-hero text-halo-charcoal mb-5"
+                style={{
+                  fontSize: "clamp(2.25rem, 5.2vw, 4rem)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.04em",
+                  lineHeight: 0.98,
+                }}
+              >
+                {heroHeadline.line1}
+                <br />
+                {heroHeadline.line2}
+              </h1>
+              <p className="text-[15px] md:text-[17px] text-halo-charcoal/70 leading-relaxed mb-7 max-w-md">
+                Comprehensive labs, adaptive protocols, and physician oversight — designed around what you&rsquo;re actually trying to change.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href="/quiz"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-halo-charcoal text-white font-semibold text-sm hover:bg-halo-charcoal/85 transition-colors shadow-[0_8px_28px_rgba(0,0,0,0.15)]"
+                >
+                  Take the 2-minute quiz
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="#programs"
+                  className="inline-flex items-center justify-center gap-2 px-2 py-2 text-halo-charcoal/80 font-semibold text-sm border-b border-halo-charcoal/30 hover:border-halo-charcoal/60 transition-colors"
+                >
+                  See the programs
+                </Link>
+              </div>
+            </div>
 
-          {/* Primary hero CTA — route to the quiz as the main call to action */}
-          <div className="flex flex-wrap items-center gap-4 mb-10">
-            <Link
-              href="/quiz"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-halo-charcoal text-white font-semibold text-sm hover:bg-halo-charcoal/85 transition-colors shadow-[0_8px_28px_rgba(0,0,0,0.15)]"
+            {/* Portrait card — cols 8–12, spans both rows */}
+            <div
+              className="lg:col-span-5 lg:row-span-2 rounded-[24px] overflow-hidden relative min-h-[360px] md:min-h-[440px] lg:min-h-0"
+              style={{ background: "#1A1A1F" }}
             >
-              Take the 2-minute quiz
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <p className="text-[13px] text-halo-charcoal/55">
-              Personalized to your biology. No commitment.
-            </p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/hero-trt-person.jpg"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  objectPosition: "center 30%",
+                  filter: "contrast(1.05) saturate(0.7) brightness(0.92)",
+                }}
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(155deg, rgba(28,28,30,0.30) 0%, rgba(15,17,21,0.05) 45%, rgba(15,17,21,0.45) 100%)",
+                  mixBlendMode: "multiply",
+                }}
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(15,17,21,0.4) 100%)",
+                }}
+              />
+            </div>
+
+            {/* HRT + TRT — the two core bentos (pinned by program name) */}
+            {(["Hormone Therapy", "Testosterone Therapy"] as const)
+              .map((targetName) =>
+                personalizedPrograms.find((p) => p.name === targetName)
+              )
+              .filter((p): p is NonNullable<typeof p> => p !== undefined)
+              .map((program, idx) => {
+                const Icon = program.icon;
+                const hasImage = Boolean(program.image);
+                const colSpan = idx === 0 ? "lg:col-span-4" : "lg:col-span-3";
+                return (
+                  <Link
+                    key={program.name}
+                    href={program.href}
+                    className={`group relative ${colSpan} rounded-[24px] overflow-hidden flex flex-col justify-end min-h-[200px] transition-shadow hover:shadow-[0_18px_44px_-22px_rgba(0,0,0,0.32)]`}
+                    style={{ background: program.cardBg }}
+                  >
+                    {hasImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={program.image}
+                        alt={`${program.name} — ${program.outcome}`}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        loading="eager"
+                        fetchPriority="high"
+                        decoding="async"
+                        draggable={false}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Icon className="w-12 h-12 opacity-15" style={{ color: program.accent }} />
+                      </div>
+                    )}
+                    <div
+                      aria-hidden
+                      className="absolute inset-x-0 bottom-0 h-[55%] pointer-events-none"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, transparent 0%, rgba(15,17,21,0.78) 100%)",
+                      }}
+                    />
+                    <div className="relative p-5 md:p-6 flex items-end justify-between gap-3">
+                      <div className="min-w-0">
+                        <span
+                          className="block text-[10px] font-semibold uppercase tracking-[0.22em] mb-1.5"
+                          style={{ color: program.accent }}
+                        >
+                          {program.name.replace(" Therapy", "").replace(" Weight Management", "")}
+                        </span>
+                        <p className="font-serif text-[20px] md:text-[24px] text-white leading-tight tracking-tight">
+                          {program.outcome}
+                        </p>
+                        <p className="text-[12px] text-white/65 mt-1">
+                          {program.startingPrice}
+                        </p>
+                      </div>
+                      <span
+                        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm border border-white/20 group-hover:bg-white/20 transition-colors"
+                        aria-hidden
+                      >
+                        <ArrowRight className="w-4 h-4 text-white" />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
           </div>
 
-          {/* Hero grid — anchor programs get the spotlight */}
-          <div className="space-y-3">
-            {/* Row 1: ANCHOR program cards — mobile: horizontal swipe carousel, desktop: 2-col grid */}
-            <div className="anchor-row">
-              {personalizedPrograms
-                .filter((p) => p.tier === "anchor")
-                .slice(0, 2)
+          {/* Programs supporting tier — slim NAD+ / Peptides / GLP-1 row + "also available" */}
+          <div id="programs" className="space-y-3 scroll-mt-24">
+            {/* SUPPORT programs — slim horizontal cards (image · name · arrow).
+                Pinned to NAD+ / Peptides / GLP-1 in that order. */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+              {(["NAD+ Therapy", "Peptide Therapy", "GLP-1 Weight Management"] as const)
+                .map((targetName) =>
+                  personalizedPrograms.find((p) => p.name === targetName)
+                )
+                .filter((p): p is NonNullable<typeof p> => p !== undefined)
                 .map((program) => {
                   const Icon = program.icon;
-                  const hasImage = Boolean(program.image);
                   return (
-                    <Link key={program.name} href={program.href} className="anchor-card product-card group" style={{ background: program.cardBg }}>
-                      <div className="product-card-image relative">
-                        {hasImage ? (
-                          <>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={program.image}
-                              alt={`${program.name} — ${program.outcome}`}
-                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                              loading="eager"
-                              fetchPriority="high"
-                              decoding="async"
-                              draggable={false}
-                            />
-                            {/* Code-built glassmorphic data overlay — pixel-perfect, never rendered by AI */}
-                            {program.overlay && (
-                              <AnchorDataOverlay
-                                {...program.overlay}
-                                accentColor={program.accent}
-                                atmosphereTint={program.cardBg}
-                              />
-                            )}
-                          </>
+                    <Link
+                      key={program.name}
+                      href={program.href}
+                      className="group flex items-center gap-3 p-3 rounded-[14px] bg-white border border-halo-charcoal/[0.08] hover:border-halo-charcoal/20 hover:shadow-[0_8px_22px_-12px_rgba(0,0,0,0.18)] transition-all"
+                    >
+                      <div
+                        className="relative w-14 h-14 rounded-[10px] overflow-hidden flex-shrink-0"
+                        style={{ background: program.cardBg }}
+                      >
+                        {program.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={program.image}
+                            alt=""
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                          />
                         ) : (
-                          <Icon className="w-10 h-10 opacity-15" style={{ color: program.accent }} />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Icon className="w-6 h-6 opacity-25" style={{ color: program.accent }} />
+                          </div>
                         )}
                       </div>
-                      <div className="product-card-info">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="text-sm md:text-base font-semibold text-halo-charcoal">{program.outcome}</h3>
-                            <p className="text-xs text-halo-charcoal/40">{program.name} &middot; {program.startingPrice}</p>
-                          </div>
-                          <ArrowRight className="w-4 h-4 text-halo-charcoal/20 group-hover:text-halo-charcoal/50 transition-colors" />
-                        </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[14px] font-semibold text-halo-charcoal truncate leading-tight">
+                          {program.name.replace(" Therapy", "").replace(" Weight Management", "")}
+                        </p>
+                        <p className="text-[11px] text-halo-charcoal/55 truncate mt-0.5">
+                          {program.outcome} &middot; {program.startingPrice}
+                        </p>
                       </div>
-                    </Link>
-                  );
-                })}
-            </div>
-
-            {/* Mobile-only swipe hint */}
-            <div className="flex sm:hidden flex-col items-center gap-1.5 mt-1">
-              <div className="flex gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-halo-charcoal/40" />
-                <span className="w-1.5 h-1.5 rounded-full bg-halo-charcoal/15" />
-              </div>
-              <span className="text-[10px] uppercase tracking-[0.15em] text-halo-charcoal/35 font-medium">
-                Swipe to see more
-              </span>
-            </div>
-
-            {/* Row 2: PRIMARY SUPPORT programs — stacked banner + content */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {personalizedPrograms
-                .filter((p) => p.tier === "support" && p.name !== "Vitamin Injections")
-                .map((program) => {
-                  const Icon = program.icon;
-                  return (
-                    <Link key={program.name} href={program.href} className="support-card group">
-                      {/* Banner — uses image if available, otherwise color-world fallback with icon */}
-                      {program.image ? (
-                        <div className="support-card-banner">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={program.image} alt="" loading="lazy" decoding="async" draggable={false} />
-                        </div>
-                      ) : (
-                        <div
-                          className="support-card-banner-fallback"
-                          style={{ background: program.cardBg }}
-                        >
-                          <Icon className="w-8 h-8 opacity-20" style={{ color: program.accent }} />
-                        </div>
-                      )}
-                      {/* Content row */}
-                      <div className="support-card-content">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-halo-charcoal truncate">{program.outcome}</p>
-                          <p className="text-[11px] text-halo-charcoal/50">{program.name.replace(" Therapy", "").replace(" Weight Management", "")} &middot; {program.startingPrice}</p>
-                        </div>
-                        <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/25 flex-shrink-0 group-hover:text-halo-charcoal/60 transition-colors" />
-                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/25 flex-shrink-0 group-hover:text-halo-charcoal/60 group-hover:translate-x-0.5 transition-all" />
                     </Link>
                   );
                 })}
@@ -1034,82 +1114,115 @@ export default function Home() {
       <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
-          5 · TESTIMONIALS — Featured + stacked asymmetric
+          5 · TESTIMONIALS — Editorial pull-quote + supporting 2-up
           ═══════════════════════════════════════════════ */}
       <section className="py-20 md:py-24 px-6 section-light">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 md:mb-16 gap-4">
               <div>
-                <p className="label-accent mb-3">Why They Joined</p>
-                <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal">What founding members are looking for</h2>
+                <p className="label-accent mb-3">Founding members</p>
+                <h2 className="headline-section text-3xl md:text-4xl text-halo-charcoal">
+                  Why they joined.
+                </h2>
               </div>
-              <a href="#founding-circle" className="inline-flex items-center gap-2 text-sm font-medium text-[#C8A96E] hover:text-halo-charcoal transition-colors">
-                Join them <ArrowRight className="w-3.5 h-3.5" />
-              </a>
+              <Link
+                href="/quiz"
+                className="inline-flex items-center gap-2 text-sm font-medium text-[#C8A96E] hover:text-halo-charcoal transition-colors"
+              >
+                Take the 2-minute quiz <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </AnimateOnScroll>
 
-          <AnimateOnScroll stagger>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              {/* FEATURED — spans 2 cols, split layout */}
-              <div className="aos-child lg:col-span-2 testimonial-card !p-0 overflow-hidden">
-                <div className="flex flex-col md:flex-row h-full">
-                  {/* Left: Image placeholder */}
-                  <div
-                    className="md:w-1/2 min-h-[240px] md:min-h-full relative flex items-center justify-center"
-                    style={{ background: `linear-gradient(135deg, ${personalizedTestimonials[0].color}25 0%, ${personalizedTestimonials[0].color}45 100%)` }}
-                  >
-                    <div
-                      className="testimonial-avatar text-2xl"
-                      style={{ background: personalizedTestimonials[0].color, width: 80, height: 80 }}
-                    >
-                      {personalizedTestimonials[0].initials}
-                    </div>
-                  </div>
-                  {/* Right: Quote + meta + stat */}
-                  <div className="md:w-1/2 flex flex-col justify-center p-8">
-                    <p className="testimonial-quote text-lg leading-relaxed mb-6">
-                      &ldquo;{personalizedTestimonials[0].quote}&rdquo;
-                    </p>
-                    <div className="flex items-center gap-3 mb-6">
-                      <div>
-                        <p className="text-sm font-semibold text-halo-charcoal">{personalizedTestimonials[0].name}</p>
-                        <p className="text-xs text-halo-charcoal/40">{personalizedTestimonials[0].role}</p>
-                      </div>
-                      <span className="text-[10px] font-medium px-2.5 py-1 rounded-full ml-auto" style={{ background: `${personalizedTestimonials[0].color}15`, color: personalizedTestimonials[0].color }}>
-                        {personalizedTestimonials[0].program}
-                      </span>
-                    </div>
-                    <div className="pt-5 border-t border-halo-charcoal/[0.06]">
-                      <p className="stat-large text-3xl text-[#1C1C1E]">352</p>
-                      <p className="text-xs text-halo-charcoal/35 mt-0.5">founding spots left</p>
-                    </div>
-                  </div>
+          {/* Featured editorial pull-quote */}
+          <AnimateOnScroll>
+            <figure className="mb-12 md:mb-16 max-w-4xl">
+              <blockquote
+                className="text-halo-charcoal font-serif font-light leading-[1.1] tracking-tight"
+                style={{
+                  fontSize: "clamp(1.875rem, 4.4vw, 3.5rem)",
+                  letterSpacing: "-0.025em",
+                }}
+              >
+                <span
+                  aria-hidden
+                  className="font-serif inline-block leading-none mr-1"
+                  style={{
+                    color: "#C8A96E",
+                    fontSize: "1em",
+                    transform: "translateY(0.12em)",
+                  }}
+                >
+                  &ldquo;
+                </span>
+                {personalizedTestimonials[0].quote}
+                <span
+                  aria-hidden
+                  className="font-serif inline-block leading-none ml-0.5"
+                  style={{
+                    color: "#C8A96E",
+                    fontSize: "1em",
+                    transform: "translateY(0.12em)",
+                  }}
+                >
+                  &rdquo;
+                </span>
+              </blockquote>
+              <figcaption className="mt-8 flex items-center gap-4">
+                <div
+                  className="testimonial-avatar text-base flex-shrink-0"
+                  style={{
+                    background: personalizedTestimonials[0].color,
+                    width: 48,
+                    height: 48,
+                  }}
+                >
+                  {personalizedTestimonials[0].initials}
                 </div>
-              </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-halo-charcoal">
+                    {personalizedTestimonials[0].name}
+                  </p>
+                  <p className="text-xs text-halo-charcoal/55 mt-0.5">
+                    {personalizedTestimonials[0].role} &middot;{" "}
+                    <span style={{ color: personalizedTestimonials[0].color }}>
+                      {personalizedTestimonials[0].program}
+                    </span>
+                  </p>
+                </div>
+              </figcaption>
+            </figure>
+          </AnimateOnScroll>
 
-              {/* RIGHT COLUMN — 2 stacked compact cards */}
-              <div className="flex flex-col gap-5">
-                {personalizedTestimonials.slice(1).map((t) => (
-                  <div key={t.name} className="aos-child testimonial-card flex-1 flex flex-col">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div
-                        className="testimonial-avatar text-sm"
-                        style={{ background: t.color, width: 40, height: 40 }}
-                      >
-                        {t.initials}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-halo-charcoal">{t.name}</p>
-                        <p className="text-xs text-halo-charcoal/40">{t.program}</p>
-                      </div>
+          {/* Supporting 2-up — peers, not afterthoughts */}
+          <AnimateOnScroll stagger>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+              {personalizedTestimonials.slice(1, 3).map((t) => (
+                <figure
+                  key={t.name}
+                  className="aos-child rounded-[20px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-8 flex flex-col"
+                >
+                  <blockquote className="testimonial-quote font-serif italic text-[18px] md:text-[19px] leading-snug text-halo-charcoal/90 flex-1 mb-6">
+                    &ldquo;{t.quote}&rdquo;
+                  </blockquote>
+                  <figcaption className="flex items-center gap-3 pt-5 border-t border-halo-charcoal/[0.06]">
+                    <div
+                      className="testimonial-avatar text-sm flex-shrink-0"
+                      style={{ background: t.color, width: 40, height: 40 }}
+                    >
+                      {t.initials}
                     </div>
-                    <p className="testimonial-quote text-sm flex-1">&ldquo;{t.quote}&rdquo;</p>
-                    <p className="text-xs text-halo-charcoal/25 mt-4">{t.role}</p>
-                  </div>
-                ))}
-              </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-halo-charcoal truncate">{t.name}</p>
+                      <p className="text-xs text-halo-charcoal/55 mt-0.5">
+                        {t.role} &middot;{" "}
+                        <span style={{ color: t.color }}>{t.program}</span>
+                      </p>
+                    </div>
+                  </figcaption>
+                </figure>
+              ))}
             </div>
           </AnimateOnScroll>
         </div>
