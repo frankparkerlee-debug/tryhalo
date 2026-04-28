@@ -54,11 +54,11 @@ export default function HaloLogo({
       {showText && (
         <span
           style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-inter), system-ui, sans-serif",
             fontWeight: 700,
             fontSize: s.text,
             color: textColor,
-            letterSpacing: "0.02em",
+            letterSpacing: "-0.01em",
             lineHeight: 1,
           }}
         >
