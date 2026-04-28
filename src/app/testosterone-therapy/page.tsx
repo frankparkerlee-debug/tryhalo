@@ -1,22 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, X } from "lucide-react";
+import { ArrowRight, Check, X, Plus } from "lucide-react";
 import { useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
-import EngagementTool from "@/components/quiz/EngagementTool";
 import {
   applyFoundingDiscount,
   formatPrice,
   getProgram,
 } from "@/lib/programs";
 
-const TRT_STD = formatPrice(getProgram("trt")!.pricing.monthly);
-const TRT_FOUNDING = formatPrice(
-  applyFoundingDiscount(getProgram("trt")!.pricing.monthly)
+const TRT_PRICING = getProgram("trt")!.pricing;
+const TRT_STD = formatPrice(TRT_PRICING.monthly);
+const TRT_FOUNDING = formatPrice(applyFoundingDiscount(TRT_PRICING.monthly));
+
+// Bundled-fee billing — three cadences derived from the canonical pricing data.
+// Effective monthly = founding-discounted total / months. Quarterly currently
+// matches monthly per-month rate (convenience play); annual carries a real
+// per-month discount.
+const TRT_MONTHLY_TOTAL = applyFoundingDiscount(TRT_PRICING.monthly);
+const TRT_QUARTERLY_TOTAL = applyFoundingDiscount(TRT_PRICING.quarterly!);
+const TRT_YEARLY_TOTAL = applyFoundingDiscount(TRT_PRICING.yearly!);
+const TRT_QUARTERLY_PER_MO = Math.round(TRT_QUARTERLY_TOTAL / 3);
+const TRT_YEARLY_PER_MO = Math.round(TRT_YEARLY_TOTAL / 12);
+const TRT_YEARLY_SAVINGS_PCT = Math.round(
+  (1 - TRT_YEARLY_PER_MO / TRT_MONTHLY_TOTAL) * 100
 );
 
 /* ==============================
@@ -83,16 +94,6 @@ const impactStats = [
     label: "average wait from symptom onset to first lab.",
     source: "Endocrine Society Statement, 2020",
   },
-];
-
-/* Symptom flip cards — front: what you feel, back: what comes back */
-const symptomFlips = [
-  { before: "Always tired", after: "Sustained energy" },
-  { before: "Lost drive", after: "Motivation back" },
-  { before: "Poor recovery", after: "Faster rebuild" },
-  { before: "Foggy focus", after: "Sharp mind" },
-  { before: "Strength fading", after: "Stronger again" },
-  { before: "Weight won't move", after: "Composition shifts" },
 ];
 
 const outcomes = [
@@ -338,68 +339,271 @@ function BiomarkerScroll() {
 }
 
 /* ==============================
-   SYMPTOM FLIP CARDS — interactive reframe
+   OUTCOME PICKER — interactive cross-sell
    ============================== */
 
-function SymptomFlipCards() {
+const trtOutcomePicks = [
+  {
+    id: "energy",
+    label: "Energy through the day",
+    sub: "Mornings that don't take 30 minutes to start. No 3pm crash.",
+    image: "/trt/life-energy.png",
+    biomarkers: ["Free testosterone", "Cortisol", "Ferritin", "TSH"],
+  },
+  {
+    id: "recovery",
+    label: "Recovery in 24 hours",
+    sub: "Training hard without paying for it for a week.",
+    image: "/trt/life-recovery.png",
+    biomarkers: ["IGF-1", "hs-CRP", "Creatine kinase", "Hematocrit"],
+  },
+  {
+    id: "composition",
+    label: "A body that responds again",
+    sub: "Strength returning. Composition shifting.",
+    image: "/trt/life-drive.png",
+    biomarkers: ["Lean mass", "Body fat", "HbA1c", "ApoB"],
+  },
+];
+
+function OutcomePicker() {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  const toggle = (id: string) => {
+    setHasInteracted(true);
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const picks = trtOutcomePicks.filter((o) => selected.has(o.id));
+  const biomarkerSet = Array.from(new Set(picks.flatMap((o) => o.biomarkers)));
+  const hasPicks = selected.size > 0;
+  const quizHref = hasPicks
+    ? `/quiz/trt?outcomes=${Array.from(selected).join(",")}`
+    : "/quiz/trt";
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-      {symptomFlips.map((s) => (
-        <div
-          key={s.before}
-          className="flip-card relative h-[120px] md:h-[140px] rounded-[16px] cursor-pointer"
-          style={{ perspective: "1000px" }}
-        >
-          <div className="flip-inner relative w-full h-full transition-transform duration-500" style={{ transformStyle: "preserve-3d" }}>
-            {/* Front — symptom */}
-            <div
-              className="flip-front absolute inset-0 flex items-center justify-center rounded-[16px] p-4 border"
-              style={{
-                background: "#FAF8F4",
-                borderColor: "rgba(28,28,30,0.08)",
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
-              }}
-            >
-              <div className="text-center">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40 mb-2">
-                  What you feel
-                </p>
-                <p className="font-serif text-[20px] md:text-[22px] text-halo-charcoal leading-tight tracking-tight">
-                  {s.before}
-                </p>
-              </div>
-            </div>
-
-            {/* Back — outcome */}
-            <div
-              className="flip-back absolute inset-0 flex items-center justify-center rounded-[16px] p-4"
-              style={{
-                background: PERSONA,
-                transform: "rotateY(180deg)",
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
-              }}
-            >
-              <div className="text-center">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-white/65 mb-2">
-                  With treatment
-                </p>
-                <p className="font-serif italic text-[20px] md:text-[22px] text-white leading-tight tracking-tight">
-                  {s.after}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-
+    <div>
       <style jsx>{`
-        .flip-card:hover .flip-inner,
-        .flip-card:focus-within .flip-inner {
-          transform: rotateY(180deg);
+        @keyframes haloOutcomePulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74,122,184,0.55); }
+          50% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(74,122,184,0); }
+        }
+        .halo-outcome-pulse {
+          animation: haloOutcomePulse 2.2s ease-in-out infinite;
+        }
+        .halo-outcome-tile:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 18px 40px -22px rgba(58,95,148,0.35);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .halo-outcome-pulse { animation: none; }
+          .halo-outcome-tile:hover { transform: none; }
         }
       `}</style>
+
+      {/* Tiles */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+        {trtOutcomePicks.map((o, idx) => {
+          const isSelected = selected.has(o.id);
+          const shouldPulse = !hasInteracted && idx === 0;
+          return (
+            <button
+              key={o.id}
+              type="button"
+              onClick={() => toggle(o.id)}
+              aria-pressed={isSelected}
+              className="halo-outcome-tile group overflow-hidden text-left rounded-[20px]"
+              style={{
+                background: isSelected ? "#1F2940" : "#FFFFFF",
+                color: isSelected ? "#F8F8FA" : "#1C1C1E",
+                border: isSelected
+                  ? `1px solid ${PERSONA_DEEP}`
+                  : "1px solid rgba(28,28,30,0.08)",
+                cursor: "pointer",
+                boxShadow: isSelected
+                  ? `0 12px 32px -16px rgba(58,95,148,0.45)`
+                  : "0 2px 8px -2px rgba(0,0,0,0.04)",
+                transform: isSelected ? "translateY(-2px)" : "translateY(0)",
+                transition:
+                  "transform 250ms ease, box-shadow 250ms ease, background 250ms ease",
+              }}
+            >
+              <div className="relative aspect-[5/4] bg-halo-charcoal/[0.04]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={o.image}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{
+                    filter: isSelected
+                      ? "contrast(1.05) saturate(0.7) brightness(0.85)"
+                      : "none",
+                    transition: "filter 250ms",
+                  }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+                {isSelected && (
+                  <div
+                    aria-hidden
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(155deg, rgba(74,122,184,0.35) 0%, rgba(15,17,21,0.15) 60%)`,
+                      mixBlendMode: "multiply",
+                    }}
+                  />
+                )}
+                {/* Add / Check pill */}
+                <span
+                  className={`halo-outcome-pill ${shouldPulse ? "halo-outcome-pulse" : ""}`}
+                  style={{
+                    position: "absolute",
+                    top: "0.875rem",
+                    right: "0.875rem",
+                    minWidth: "44px",
+                    height: "40px",
+                    padding: isSelected ? "0" : "0 0.875rem",
+                    borderRadius: "999px",
+                    background: isSelected ? PERSONA : "rgba(255,255,255,0.96)",
+                    color: isSelected ? "#fff" : "#1C1C1E",
+                    border: isSelected
+                      ? `1px solid ${PERSONA}`
+                      : `1px solid rgba(28,28,30,0.10)`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.375rem",
+                    backdropFilter: "blur(6px)",
+                    boxShadow: "0 4px 16px -4px rgba(15,17,21,0.18)",
+                    fontSize: "0.8125rem",
+                    fontWeight: 600,
+                    letterSpacing: "-0.005em",
+                  }}
+                >
+                  {isSelected ? (
+                    <Check className="w-4 h-4" style={{ color: "#fff" }} strokeWidth={3} />
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" strokeWidth={2.5} />
+                      <span>Add</span>
+                    </>
+                  )}
+                </span>
+              </div>
+              <div className="px-5 py-5 md:px-6 md:py-6">
+                <h3
+                  className="font-serif leading-tight tracking-tight mb-1.5"
+                  style={{
+                    fontSize: "clamp(1.125rem, 1.4vw, 1.375rem)",
+                  }}
+                >
+                  {o.label}
+                </h3>
+                <p
+                  className="text-[13px] md:text-[14px] leading-relaxed mb-4"
+                  style={{
+                    color: isSelected ? "rgba(248,248,250,0.65)" : "rgba(28,28,30,0.55)",
+                  }}
+                >
+                  {o.sub}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {o.biomarkers.map((b) => (
+                    <span
+                      key={b}
+                      style={{
+                        fontSize: "0.6875rem",
+                        color: isSelected ? PERSONA_SOFT : PERSONA,
+                        background: isSelected
+                          ? "rgba(141,161,184,0.15)"
+                          : `${PERSONA}10`,
+                        border: `1px solid ${
+                          isSelected ? "rgba(141,161,184,0.30)" : `${PERSONA}25`
+                        }`,
+                        padding: "0.25rem 0.625rem",
+                        borderRadius: "999px",
+                        fontWeight: 500,
+                        letterSpacing: "-0.005em",
+                      }}
+                    >
+                      {b}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Response panel */}
+      <div
+        className="mt-6 rounded-[20px] transition-all"
+        style={{
+          background: hasPicks
+            ? `linear-gradient(155deg, ${PERSONA_DEEP} 0%, #1F2940 100%)`
+            : "#FFFFFF",
+          color: hasPicks ? "#F8F8FA" : "rgba(28,28,30,0.55)",
+          border: hasPicks
+            ? "1px solid transparent"
+            : "1px solid rgba(28,28,30,0.08)",
+          padding: hasPicks ? "1.75rem" : "1.25rem 1.5rem",
+          boxShadow: hasPicks
+            ? "0 24px 60px -32px rgba(58,95,148,0.35)"
+            : "none",
+        }}
+      >
+        {!hasPicks ? (
+          <p className="text-[13px] md:text-[14px] leading-relaxed">
+            Tap an outcome above to see which biomarkers Halo would prioritize for you — and your protocol&rsquo;s starting point.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-[1.4fr_auto] gap-5 md:gap-8 items-start">
+            <div>
+              <p
+                className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-3"
+                style={{ color: PERSONA_SOFT }}
+              >
+                Halo would prioritize
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {biomarkerSet.map((b) => (
+                  <span
+                    key={b}
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "#F8F8FA",
+                      background: "rgba(141,161,184,0.20)",
+                      border: `1px solid rgba(141,161,184,0.34)`,
+                      padding: "0.3125rem 0.75rem",
+                      borderRadius: "999px",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {b}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <Link
+              href={quizHref}
+              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 self-center justify-self-start md:justify-self-end whitespace-nowrap"
+              style={{ background: "#F8F8FA", color: "#1C1C1E", letterSpacing: "0.01em" }}
+            >
+              Continue with these
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -519,6 +723,179 @@ function TestosteroneChart() {
 /* ==============================
    FORMAT CARD — with pricing + bullets + badge
    ============================== */
+
+/* ==============================
+   FORMAT ACCORDION — split-screen, image swaps with selection
+   ============================== */
+
+function FormatAccordion() {
+  const [expanded, setExpanded] = useState<string>(treatmentFormats[0].name);
+  const [imageFailed, setImageFailed] = useState<Record<string, boolean>>({});
+  const active = treatmentFormats.find((f) => f.name === expanded) ?? treatmentFormats[0];
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 rounded-[22px] overflow-hidden border border-halo-charcoal/[0.08] bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.18)]">
+      {/* LEFT — image panel that swaps with the expanded format */}
+      <div
+        className="relative min-h-[420px] lg:min-h-[520px] overflow-hidden"
+        style={{
+          background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}40 60%, ${PERSONA}30 100%)`,
+        }}
+      >
+        {treatmentFormats.map((f) => {
+          const isActive = f.name === active.name;
+          const failed = imageFailed[f.name];
+          return (
+            <div
+              key={f.name}
+              className="absolute inset-0 transition-opacity duration-500"
+              style={{ opacity: isActive ? 1 : 0, pointerEvents: isActive ? "auto" : "none" }}
+              aria-hidden={!isActive}
+            >
+              {!failed && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={f.image}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={() => setImageFailed((s) => ({ ...s, [f.name]: true }))}
+                />
+              )}
+            </div>
+          );
+        })}
+        {/* Bottom gradient + label overlay */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(180deg, transparent 55%, rgba(15,17,21,0.55) 100%)",
+          }}
+        />
+        <div className="absolute bottom-6 left-6 right-6 text-white">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-1.5"
+            style={{ color: PERSONA_SOFT }}
+          >
+            {active.desc}
+          </p>
+          <h3 className="font-serif text-[28px] md:text-[32px] leading-tight tracking-tight">
+            {active.name}
+          </h3>
+          {active.badge && (
+            <span
+              className="inline-block mt-3 text-[9px] font-semibold uppercase tracking-[0.22em] px-2.5 py-1 rounded-full"
+              style={{ background: PERSONA, color: "white" }}
+            >
+              {active.badge}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* RIGHT — accordion stack */}
+      <div className="bg-white">
+        {treatmentFormats.map((f, idx) => {
+          const isExpanded = expanded === f.name;
+          const isLast = idx === treatmentFormats.length - 1;
+          return (
+            <div
+              key={f.name}
+              style={{
+                borderBottom: isLast ? "none" : "1px solid rgba(28,28,30,0.08)",
+                background: isExpanded ? "#FAF8F4" : "white",
+                transition: "background 200ms",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setExpanded(f.name)}
+                aria-expanded={isExpanded}
+                className="w-full text-left flex items-center gap-4"
+                style={{
+                  padding: "1.375rem 1.75rem",
+                  cursor: isExpanded ? "default" : "pointer",
+                  background: "transparent",
+                  border: "none",
+                }}
+              >
+                <span
+                  className="font-mono text-[12px] tracking-[0.16em] font-semibold flex-shrink-0"
+                  style={{ color: PERSONA, width: "32px" }}
+                >
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <span className="flex-1 font-serif text-[20px] md:text-[22px] leading-tight tracking-tight text-halo-charcoal">
+                  {f.name}
+                </span>
+                <span
+                  className="hidden sm:inline font-mono text-[10px] tracking-[0.14em] uppercase font-semibold flex-shrink-0"
+                  style={{ color: "rgba(28,28,30,0.55)" }}
+                >
+                  {f.desc}
+                </span>
+                <span
+                  className="flex items-center justify-center flex-shrink-0 rounded-full"
+                  style={{
+                    width: "26px",
+                    height: "26px",
+                    background: isExpanded ? PERSONA : "transparent",
+                    border: isExpanded ? `1px solid ${PERSONA}` : "1px solid rgba(28,28,30,0.18)",
+                    color: isExpanded ? "#fff" : "rgba(28,28,30,0.55)",
+                    transition: "all 200ms",
+                  }}
+                >
+                  {isExpanded ? (
+                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="3" y1="3" x2="11" y2="11" />
+                      <line x1="11" y1="3" x2="3" y2="11" />
+                    </svg>
+                  ) : (
+                    <Plus className="w-3 h-3" />
+                  )}
+                </span>
+              </button>
+
+              {isExpanded && (
+                <div style={{ padding: "0 1.75rem 1.5rem 4.25rem" }}>
+                  <p className="text-[14px] text-halo-charcoal/70 leading-relaxed mb-4">
+                    {f.body}
+                  </p>
+                  <ul className="m-0 p-0 list-none mb-4">
+                    {f.bullets.map((b) => (
+                      <li
+                        key={b}
+                        className="flex items-start gap-2.5 mb-2 text-[13px] text-halo-charcoal/85 leading-relaxed"
+                      >
+                        <Check
+                          className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                          style={{ color: PERSONA }}
+                          strokeWidth={2.5}
+                        />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div
+                    className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] px-3 py-1.5 rounded-full"
+                    style={{
+                      background: `${PERSONA}10`,
+                      color: PERSONA_DEEP,
+                    }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: PERSONA }} />
+                    Full lab panel included
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function FormatCard({ format }: { format: (typeof treatmentFormats)[number] }) {
   const [imageFailed, setImageFailed] = useState(false);
@@ -681,71 +1058,159 @@ function OutcomeCard({ outcome }: { outcome: (typeof outcomes)[number] }) {
    COMPARISON TABLE — Halo vs typical
    ============================== */
 
+/* Champagne accent — used ONLY for the literal halo metaphor on this
+   comparison table. Not a system color. */
+const HALO_GOLD = "#C9A862";
+const HALO_GOLD_SOFT = "#E5D49C";
+
 function ComparisonTable() {
   return (
-    <div
-      className="rounded-[22px] overflow-hidden border border-halo-charcoal/[0.08] bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.12)]"
-    >
-      {/* Column headers */}
-      <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-halo-charcoal/[0.08]">
-        <div className="p-4 md:p-5 flex items-center">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">
-            Compare
-          </span>
-        </div>
+    <div className="relative" style={{ paddingTop: "22px" }}>
+      {/* Halo crown — champagne pill above the Halo column header */}
+      <div
+        aria-hidden
+        className="absolute z-20 pointer-events-none"
+        style={{
+          top: "0",
+          left: "calc(1.3fr / (1.3fr + 1fr + 1fr) * 100%)", // visual placeholder; overridden by inline left below
+          // Above values are illustrative — actual centering handled via flex
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        {/* Center the badge over the Halo column area: column starts at 1.3/3.3 ≈ 39.4%, ends at 2.3/3.3 ≈ 69.7%, so center ≈ 54.5% */}
         <div
-          className="p-4 md:p-5 flex items-center justify-center text-center"
-          style={{ background: `${PERSONA}10` }}
+          style={{
+            position: "absolute",
+            left: "54.5%",
+            transform: "translateX(-50%)",
+            top: 0,
+          }}
         >
-          <div>
-            <p className="font-serif text-[16px] md:text-[18px] leading-tight tracking-tight" style={{ color: PERSONA_DEEP }}>
-              Halo
-            </p>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.22em]" style={{ color: PERSONA }}>
-              Your protocol
-            </p>
-          </div>
-        </div>
-        <div className="p-4 md:p-5 flex items-center justify-center text-center">
-          <div>
-            <p className="font-serif text-[16px] md:text-[18px] text-halo-charcoal/70 leading-tight tracking-tight">
-              Typical care
-            </p>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">
-              PCP / urgent care
-            </p>
-          </div>
+          <span
+            className="inline-block text-[10px] font-bold uppercase tracking-[0.28em] whitespace-nowrap rounded-full"
+            style={{
+              padding: "0.5rem 1rem",
+              color: "#1F2940",
+              background: `linear-gradient(135deg, ${HALO_GOLD_SOFT} 0%, ${HALO_GOLD} 100%)`,
+              boxShadow: `0 0 0 4px rgba(201,168,98,0.18), 0 12px 28px -10px rgba(201,168,98,0.6)`,
+              border: `1px solid ${HALO_GOLD}`,
+            }}
+          >
+            ◯ The Halo treatment
+          </span>
         </div>
       </div>
 
-      {/* Rows */}
-      {comparisonRows.map((row, i) => (
-        <div
-          key={row.label}
-          className={`grid grid-cols-[1.3fr_1fr_1fr] ${
-            i !== comparisonRows.length - 1 ? "border-b border-halo-charcoal/[0.06]" : ""
-          }`}
-        >
-          <div className="p-4 md:p-5 text-[13px] md:text-[14px] text-halo-charcoal/80 font-medium">
-            {row.label}
+      {/* Ambient champagne glow strip behind Halo column */}
+      <div
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          top: "10px",
+          bottom: "-8px",
+          left: "calc((1.3 / 3.3) * 100%)",
+          width: "calc((1 / 3.3) * 100%)",
+          background: `radial-gradient(120% 50% at 50% 0%, rgba(201,168,98,0.30) 0%, rgba(201,168,98,0) 70%), linear-gradient(180deg, rgba(201,168,98,0.12) 0%, rgba(201,168,98,0.02) 50%, rgba(201,168,98,0.10) 100%)`,
+          filter: "blur(8px)",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        className="relative rounded-[22px] overflow-hidden border border-halo-charcoal/[0.08] bg-white shadow-[0_20px_60px_-30px_rgba(0,0,0,0.12)]"
+        style={{ zIndex: 1 }}
+      >
+        {/* Column headers */}
+        <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-halo-charcoal/[0.08]">
+          <div className="p-4 md:p-5 flex items-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">
+              Compare
+            </span>
           </div>
           <div
-            className="p-4 md:p-5 text-center text-[13px] md:text-[14px] font-medium"
-            style={{ background: `${PERSONA}08`, color: PERSONA_DEEP }}
+            className="p-4 md:p-6 flex items-center justify-center text-center relative"
+            style={{
+              background: `${PERSONA}14`,
+              borderTop: `3px solid ${HALO_GOLD}`,
+              borderLeft: `3px solid ${HALO_GOLD}`,
+              borderRight: `3px solid ${HALO_GOLD}`,
+              boxShadow: `0 -10px 28px -8px rgba(201,168,98,0.32), inset 0 1.5px 0 rgba(229,212,156,0.35)`,
+            }}
           >
-            <span className="inline-flex items-center gap-1.5 justify-center">
-              <Check className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} style={{ color: PERSONA }} />
-              {row.halo}
-            </span>
+            <div>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <span
+                  className="inline-block w-2 h-2 rounded-full"
+                  style={{
+                    background: HALO_GOLD,
+                    boxShadow: `0 0 10px ${HALO_GOLD}`,
+                  }}
+                  aria-hidden
+                />
+                <p className="font-serif text-[18px] md:text-[20px] font-semibold leading-tight tracking-tight" style={{ color: PERSONA_DEEP }}>
+                  Halo
+                </p>
+              </div>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.22em]" style={{ color: PERSONA }}>
+                Your protocol
+              </p>
+            </div>
           </div>
-          <div className="p-4 md:p-5 text-center text-[13px] md:text-[14px] text-halo-charcoal/55">
-            <span className="inline-flex items-center gap-1.5 justify-center">
-              <X className="w-3.5 h-3.5 flex-shrink-0 text-halo-charcoal/30" strokeWidth={2.5} />
-              {row.typical}
-            </span>
+          <div className="p-4 md:p-5 flex items-center justify-center text-center">
+            <div>
+              <p className="font-serif text-[16px] md:text-[18px] text-halo-charcoal/70 leading-tight tracking-tight">
+                Typical care
+              </p>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/40">
+                PCP / urgent care
+              </p>
+            </div>
           </div>
         </div>
-      ))}
+
+        {/* Rows */}
+        {comparisonRows.map((row, i) => {
+          const isLast = i === comparisonRows.length - 1;
+          return (
+            <div
+              key={row.label}
+              className={`grid grid-cols-[1.3fr_1fr_1fr] ${
+                !isLast ? "border-b border-halo-charcoal/[0.06]" : ""
+              }`}
+            >
+              <div className="p-4 md:p-5 text-[13px] md:text-[14px] text-halo-charcoal/80 font-medium">
+                {row.label}
+              </div>
+              <div
+                className="p-4 md:p-5 text-center text-[13px] md:text-[14px] font-semibold"
+                style={{
+                  background: i % 2 === 0 ? "rgba(201,168,98,0.10)" : "rgba(201,168,98,0.06)",
+                  color: PERSONA_DEEP,
+                  borderLeft: `3px solid ${HALO_GOLD}`,
+                  borderRight: `3px solid ${HALO_GOLD}`,
+                  borderBottom: isLast ? `3px solid ${HALO_GOLD}` : "none",
+                  boxShadow: isLast ? `0 12px 36px -8px rgba(201,168,98,0.4)` : "none",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                <span className="inline-flex items-center gap-1.5 justify-center">
+                  <Check className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} style={{ color: PERSONA }} />
+                  {row.halo}
+                </span>
+              </div>
+              <div className="p-4 md:p-5 text-center text-[13px] md:text-[14px] text-halo-charcoal/55">
+                <span className="inline-flex items-center gap-1.5 justify-center">
+                  <X className="w-3.5 h-3.5 flex-shrink-0 text-halo-charcoal/30" strokeWidth={2.5} />
+                  {row.typical}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -754,118 +1219,209 @@ function ComparisonTable() {
    PAGE
    ============================== */
 
+type Cadence = "monthly" | "quarterly" | "yearly";
+
 export default function TestosteroneTherapyPage() {
+  const [selectedCadence, setSelectedCadence] = useState<Cadence>("quarterly");
+  const quizHref = `/quiz/trt?cadence=${selectedCadence}`;
+
   return (
     <>
       {/* ═══════════════════════════════════════════════
           1 · HERO — Portrait + content
           ═══════════════════════════════════════════════ */}
       <section className="relative section-light overflow-hidden">
-        <div className="grid lg:grid-cols-[1fr_1.1fr] lg:min-h-[680px]">
-          <div className="relative flex flex-col justify-center px-6 md:px-10 lg:px-14 py-12 md:py-16 lg:py-20 order-2 lg:order-1">
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.28em]" style={{ color: PERSONA }}>
-                Testosterone Therapy
-              </span>
-            </div>
+        {/* Subtle radial wash — depth without color noise */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `radial-gradient(80% 60% at 70% 30%, ${PERSONA}14 0%, transparent 60%), radial-gradient(60% 40% at 20% 20%, rgba(107,139,130,0.08) 0%, transparent 50%)`,
+          }}
+        />
 
-            <h1 className="headline-hero text-[34px] md:text-[48px] lg:text-[56px] text-halo-charcoal leading-[1.05] tracking-tight mb-5">
-              The testosterone therapy that{" "}
-              <span className="italic" style={{ color: PERSONA }}>
-                actually measures.
-              </span>
-            </h1>
+        {/* Bento hero — 4 cards: hero text · portrait · data point · informational */}
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-10 md:pt-14 lg:pt-16 pb-10">
+          <div
+            className="grid grid-cols-1 lg:grid-cols-12 gap-3 md:gap-4"
+          >
+            {/* HERO TEXT CARD — top-left, dominant */}
+            <div
+              className="lg:col-span-7 lg:row-span-1 rounded-[24px] bg-white border border-halo-charcoal/[0.06] p-7 md:p-10 lg:p-12 flex flex-col justify-end"
+              style={{ minHeight: "380px" }}
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <span
+                  className="block w-8 h-px"
+                  style={{ background: PERSONA }}
+                  aria-hidden
+                />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.28em]" style={{ color: PERSONA }}>
+                  Testosterone Therapy
+                </span>
+              </div>
 
-            <p className="text-[16px] md:text-[17px] text-halo-charcoal/70 leading-relaxed mb-8 max-w-md">
-              Full hormone panel. Physician-designed protocol. Medication in 14 days.
-            </p>
-
-            <ul className="space-y-2.5 mb-9 max-w-md">
-              {[
-                "Physician-led. Not a supplement stack.",
-                "Every adjustment based on bloodwork.",
-                "Medication delivered in 14 days.",
-              ].map((bullet) => (
-                <li key={bullet} className="flex items-start gap-3">
-                  <span
-                    className="mt-[10px] flex-shrink-0 w-5 h-px"
-                    style={{ background: PERSONA }}
-                  />
-                  <span className="text-[14px] md:text-[15px] text-halo-charcoal/85 leading-snug">
-                    {bullet}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Dual CTA — primary hidden on mobile (already on hero image) */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
-              <Link
-                href="/quiz/trt"
-                className="hidden md:inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
+              <h1
+                className="headline-hero text-halo-charcoal leading-[0.95] tracking-tight mb-5"
                 style={{
-                  backgroundColor: PERSONA,
-                  boxShadow: `0 8px 28px ${PERSONA}45`,
+                  fontSize: "clamp(2.5rem, 5.2vw, 4.25rem)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.04em",
                 }}
               >
-                Start my assessment
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/quiz/trt"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-halo-charcoal/20 text-halo-charcoal font-semibold text-sm hover:border-halo-charcoal/40 transition-colors"
-              >
-                Is TRT right for me?
-              </Link>
+                Back to your peak.
+              </h1>
+
+              <p className="text-[16px] md:text-[17px] leading-relaxed mb-7 max-w-lg" style={{ color: "rgba(28,28,30,0.65)" }}>
+                For men 35&ndash;65 who feel the difference. A physician designs the protocol around your actual labs and recalibrates every quarter.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-wrap">
+                <Link
+                  href="/quiz/trt"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-medium text-sm transition-all hover:brightness-95"
+                  style={{
+                    backgroundColor: "#1C1C1E",
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  See where you stand
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="#protocol"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-halo-charcoal"
+                  style={{ borderBottom: `1px solid #1C1C1E`, paddingBottom: "2px" }}
+                >
+                  Read what&rsquo;s in the protocol
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
 
-            <p className="text-[12px] text-halo-charcoal/50 italic">
-              Free physician consultation before any prescription.
-            </p>
-          </div>
-
-          <div
-            className="relative order-1 lg:order-2 min-h-[400px] md:min-h-[500px] lg:min-h-0 overflow-hidden"
-            style={{
-              background:
-                "linear-gradient(165deg, #E8EFF6 0%, #C9D9EB 50%, #8BA8C8 100%)",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/trt/hero-portrait.png"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ objectPosition: "center 35%" }}
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
+            {/* PORTRAIT CARD — right column, spans full bento height */}
             <div
-              className="absolute inset-0 pointer-events-none"
+              className="lg:col-span-5 lg:row-span-2 relative overflow-hidden rounded-[24px]"
               style={{
-                background:
-                  "linear-gradient(180deg, transparent 70%, rgba(20,25,35,0.35) 100%)",
+                background: PERSONA_DEEP,
+                minHeight: "380px",
               }}
-            />
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/trt/hero-portrait.png"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  objectPosition: "center 25%",
+                  filter: "contrast(1.05) saturate(0.7) brightness(0.92)",
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: `linear-gradient(155deg, ${PERSONA}3D 0%, rgba(15,17,21,0.05) 45%, rgba(15,17,21,0.45) 100%)`,
+                  mixBlendMode: "multiply",
+                }}
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(15,17,21,0.4) 100%)",
+                }}
+              />
+            </div>
 
-            {/* Mobile-only CTA overlay — keeps "Start my assessment" above the fold on phones */}
-            <div className="md:hidden absolute bottom-5 left-0 right-0 z-10 flex justify-center px-4">
-              <Link
-                href="/quiz/trt"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-white font-semibold text-sm shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
-                style={{ backgroundColor: PERSONA }}
-              >
-                Start my assessment
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+            {/* DATA POINT CARD — bottom-left, charcoal */}
+            <div
+              className="lg:col-span-3 rounded-[24px] p-6 md:p-7 flex flex-col justify-between text-white relative overflow-hidden"
+              style={{
+                background: `linear-gradient(155deg, #2A2826 0%, #1C1817 100%)`,
+                minHeight: "200px",
+              }}
+            >
+              <div>
+                <span
+                  className="text-[10px] font-semibold uppercase tracking-[0.28em]"
+                  style={{ color: PERSONA_SOFT }}
+                >
+                  To felt change
+                </span>
+              </div>
+              <div>
+                <div className="flex items-baseline gap-1.5 mb-1.5">
+                  <span
+                    className="font-serif font-light leading-none text-white"
+                    style={{
+                      fontSize: "clamp(3.5rem, 6vw, 5rem)",
+                      letterSpacing: "-0.04em",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    3
+                  </span>
+                  <span
+                    className="text-[14px] md:text-[16px]"
+                    style={{ color: PERSONA_SOFT }}
+                  >
+                    weeks
+                  </span>
+                </div>
+                <p className="text-[12px] text-white/65 leading-snug">
+                  Energy, drive, and sleep respond first. Saad et al · J Andrology 2011.
+                </p>
+              </div>
+            </div>
+
+            {/* INFORMATIONAL CARD — bottom-middle, cream */}
+            <div
+              className="lg:col-span-4 rounded-[24px] p-6 md:p-7 flex flex-col justify-between"
+              style={{
+                background: "#F0EBE0",
+                minHeight: "200px",
+              }}
+            >
+              <div>
+                <span
+                  className="text-[10px] font-semibold uppercase tracking-[0.28em]"
+                  style={{ color: PERSONA }}
+                >
+                  What we measure
+                </span>
+              </div>
+              <div>
+                <div className="flex items-baseline gap-1.5 mb-2">
+                  <span
+                    className="font-serif font-light leading-none text-halo-charcoal"
+                    style={{
+                      fontSize: "clamp(3rem, 5vw, 4.25rem)",
+                      letterSpacing: "-0.035em",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    60+
+                  </span>
+                  <span className="text-[14px] md:text-[16px] text-halo-charcoal/55">
+                    biomarkers
+                  </span>
+                </div>
+                <p className="text-[12px] text-halo-charcoal/65 leading-snug">
+                  Across hormonal, metabolic, cardiovascular, and inflammatory systems &mdash; every quarterly draw.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Trust strip */}
-        <div className="border-t border-halo-charcoal/[0.08] bg-white/60 backdrop-blur-sm">
+        {/* Trust strip — full-bleed below the bento */}
+        <div className="relative border-t border-halo-charcoal/[0.08] bg-white/60 backdrop-blur-sm">
           <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/60">
             <span>Board-certified physicians</span>
             <span className="text-halo-charcoal/20">&middot;</span>
@@ -886,10 +1442,10 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           3 · THE TREATMENT GAP — stats with inline citations
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
+      <section className="py-12 md:py-16 px-6 section-light">
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-16">
+            <div className="text-center mb-8 md:mb-10">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 What hasn&rsquo;t been measured
               </p>
@@ -934,9 +1490,36 @@ export default function TestosteroneTherapyPage() {
       <BiomarkerScroll />
 
       {/* ═══════════════════════════════════════════════
-          5 · THE DECLINE
+          5 · OUTCOME PICKER — interactive cross-sell
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6" style={{ background: "#F7F3EC" }}>
+      <section className="py-12 md:py-16 px-6 section-light">
+        <div className="max-w-5xl mx-auto">
+          <AnimateOnScroll>
+            <div className="text-center mb-8 md:mb-10">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
+                Where this shows up in your day
+              </p>
+              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.08] max-w-2xl mx-auto">
+                Tap what matters.{" "}
+                <span className="italic" style={{ color: PERSONA }}>
+                  Halo responds.
+                </span>
+              </h2>
+              <p className="text-[14px] md:text-[15px] text-halo-charcoal/55 max-w-lg mx-auto mt-5 leading-relaxed">
+                The biomarkers your physician prioritizes shift with what you&rsquo;re actually trying to change.
+              </p>
+            </div>
+          </AnimateOnScroll>
+          <AnimateOnScroll>
+            <OutcomePicker />
+          </AnimateOnScroll>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          6 · THE DECLINE
+          ═══════════════════════════════════════════════ */}
+      <section className="py-12 md:py-16 px-6" style={{ background: "#F7F3EC" }}>
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-10 md:mb-14">
@@ -965,53 +1548,12 @@ export default function TestosteroneTherapyPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          6 · SYMPTOMS — interactive flip cards
-          ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
-        <div className="max-w-5xl mx-auto">
-          <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-16">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
-                What it feels like
-              </p>
-              <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.08] max-w-2xl mx-auto">
-                You&rsquo;re not{" "}
-                <span className="italic" style={{ color: PERSONA }}>
-                  aging.
-                </span>{" "}
-                You&rsquo;re running low.
-              </h2>
-              <p className="text-[14px] md:text-[15px] text-halo-charcoal/55 max-w-lg mx-auto mt-5 leading-relaxed italic">
-                Hover or tap. See what comes back.
-              </p>
-            </div>
-          </AnimateOnScroll>
-          <AnimateOnScroll>
-            <SymptomFlipCards />
-          </AnimateOnScroll>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          6.5 · DRAG SCORE (engagement tool)
-          After science + reassurance, let the visitor self-assess before
-          they hit the treatment options.
-          ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
-        <div className="max-w-2xl mx-auto">
-          <AnimateOnScroll>
-            <EngagementTool slug="trt_drag" variant="light" />
-          </AnimateOnScroll>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
           7 · THREE FORMATS — with pricing + bullets + badge
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6" style={{ background: "#F0EBE0" }}>
+      <section id="protocol" className="py-12 md:py-16 px-6 scroll-mt-24" style={{ background: "#F0EBE0" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-16">
+            <div className="text-center mb-8 md:mb-10">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 The treatment
               </p>
@@ -1027,14 +1569,8 @@ export default function TestosteroneTherapyPage() {
             </div>
           </AnimateOnScroll>
 
-          <AnimateOnScroll stagger>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
-              {treatmentFormats.map((format) => (
-                <div key={format.name} className="aos-child">
-                  <FormatCard format={format} />
-                </div>
-              ))}
-            </div>
+          <AnimateOnScroll>
+            <FormatAccordion />
           </AnimateOnScroll>
         </div>
       </section>
@@ -1042,7 +1578,7 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           8 · COMPARISON TABLE — Halo vs typical care
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light" style={{ background: "#FAF8F4" }}>
+      <section className="py-12 md:py-16 px-6 section-light" style={{ background: "#FAF8F4" }}>
         <div className="max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-14">
@@ -1069,10 +1605,10 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           9 · 14-DAY TIMELINE
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6" style={{ background: "#1C1817" }}>
+      <section className="py-12 md:py-16 px-6" style={{ background: "#1C1817" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-16">
+            <div className="text-center mb-8 md:mb-10">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA_SOFT }}>
                 Your first 14 days
               </p>
@@ -1093,7 +1629,7 @@ export default function TestosteroneTherapyPage() {
               {trtSteps.map((step) => (
                 <div key={step.day} className="aos-child relative">
                   <div
-                    className="relative w-12 h-12 rounded-full mb-5 flex items-center justify-center mx-auto md:mx-0"
+                    className="relative w-12 h-12 rounded-full mb-5 flex items-center justify-center mx-auto"
                     style={{
                       background: "#1C1817",
                       border: `1.5px solid ${PERSONA}`,
@@ -1101,13 +1637,13 @@ export default function TestosteroneTherapyPage() {
                   >
                     <div className="w-3 h-3 rounded-full" style={{ background: PERSONA }} />
                   </div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-2 text-center md:text-left" style={{ color: PERSONA_SOFT }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-2 text-center" style={{ color: PERSONA_SOFT }}>
                     {step.day}
                   </p>
-                  <h3 className="font-serif text-[22px] md:text-[24px] text-white leading-tight tracking-tight mb-3 text-center md:text-left">
+                  <h3 className="font-serif text-[22px] md:text-[24px] text-white leading-tight tracking-tight mb-3 text-center">
                     {step.title}
                   </h3>
-                  <p className="text-[14px] text-white/65 leading-relaxed text-center md:text-left">
+                  <p className="text-[14px] text-white/65 leading-relaxed text-center">
                     {step.desc}
                   </p>
                 </div>
@@ -1120,10 +1656,10 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           10 · 90-DAY OUTCOMES
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
+      <section className="py-12 md:py-16 px-6 section-light">
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
-            <div className="text-center mb-12 md:mb-16">
+            <div className="text-center mb-8 md:mb-10">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                 90 days in
               </p>
@@ -1212,83 +1748,299 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           12 · PRICING + FAQ
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light" style={{ background: "#FAF8F4" }}>
+      <section className="py-12 md:py-16 px-6 section-light" style={{ background: "#FAF8F4" }}>
         <div className="max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
-                Terms
+                One price &middot; all-in
               </p>
               <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
-                One membership.{" "}
+                Medication, labs, and your physician —{" "}
                 <span className="italic" style={{ color: PERSONA }}>
-                  Everything in.
+                  together.
                 </span>
               </h2>
+              <p className="text-[15px] md:text-base text-halo-charcoal/65 max-w-2xl mx-auto mt-5 leading-relaxed">
+                Halo isn&rsquo;t a membership stacked with à-la-carte fees. One bundled price covers your prescription, the quarterly lab panel, and the physician who reads it. Pay how it fits your life.
+              </p>
             </div>
           </AnimateOnScroll>
 
           <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 md:gap-12 items-start">
             <AnimateOnScroll>
-              <div className="rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.15)] lg:sticky lg:top-24">
-                <div className="flex items-baseline gap-2 md:gap-3 mb-2 flex-wrap">
-                  <span className="font-serif text-[44px] md:text-[64px] font-light leading-none" style={{ color: PERSONA }}>
-                    {TRT_FOUNDING}
-                  </span>
-                  <span className="text-[15px] md:text-[18px] text-halo-charcoal/50">
-                    /month
-                  </span>
-                  <span className="text-halo-charcoal/30 line-through text-[13px] md:text-[14px] md:ml-2">
-                    {TRT_STD}
-                  </span>
-                </div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-6" style={{ color: PERSONA_DEEP }}>
-                  Founding rate &middot; locked in for life
+              <div className="rounded-[24px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-9 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.15)] lg:sticky lg:top-24">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/50 mb-4">
+                  Choose your billing cadence
                 </p>
 
-                <div className="border-t border-halo-charcoal/[0.08] pt-6">
+                {/* Three cadence cards — selectable */}
+                <div className="space-y-2.5 mb-7">
+                  {/* Monthly */}
+                  {(() => {
+                    const isSelected = selectedCadence === "monthly";
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCadence("monthly")}
+                        aria-pressed={isSelected}
+                        className="w-full text-left rounded-[14px] p-4 md:p-5 transition-all"
+                        style={{
+                          background: isSelected ? "#FAF8F4" : "white",
+                          border: isSelected
+                            ? `2px solid ${PERSONA}`
+                            : "1px solid rgba(28,28,30,0.10)",
+                          boxShadow: isSelected
+                            ? `0 8px 22px -10px ${PERSONA}40`
+                            : "none",
+                          padding: isSelected ? "calc(1rem - 1px) calc(1.25rem - 1px)" : "1rem 1.25rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <div className="flex items-baseline justify-between flex-wrap gap-2">
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/55 mb-1.5 flex items-center gap-2">
+                              <span
+                                aria-hidden
+                                className="inline-block rounded-full"
+                                style={{
+                                  width: "12px",
+                                  height: "12px",
+                                  border: `1.5px solid ${isSelected ? PERSONA : "rgba(28,28,30,0.25)"}`,
+                                  background: isSelected ? PERSONA : "transparent",
+                                  position: "relative",
+                                }}
+                              >
+                                {isSelected && (
+                                  <span
+                                    aria-hidden
+                                    style={{
+                                      position: "absolute",
+                                      inset: "2px",
+                                      borderRadius: "50%",
+                                      background: "white",
+                                    }}
+                                  />
+                                )}
+                              </span>
+                              Monthly
+                            </p>
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="font-serif text-[34px] md:text-[40px] font-light leading-none text-halo-charcoal">
+                                {TRT_FOUNDING}
+                              </span>
+                              <span className="text-[13px] text-halo-charcoal/55">
+                                /mo
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-[11px] text-halo-charcoal/55">
+                            Billed monthly
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })()}
+
+                  {/* Quarterly */}
+                  {(() => {
+                    const isSelected = selectedCadence === "quarterly";
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCadence("quarterly")}
+                        aria-pressed={isSelected}
+                        className="w-full text-left rounded-[14px] p-4 md:p-5 transition-all"
+                        style={{
+                          background: isSelected ? "#FAF8F4" : "white",
+                          border: isSelected
+                            ? `2px solid ${PERSONA}`
+                            : "1px solid rgba(28,28,30,0.10)",
+                          boxShadow: isSelected
+                            ? `0 8px 22px -10px ${PERSONA}40`
+                            : "none",
+                          padding: isSelected ? "calc(1rem - 1px) calc(1.25rem - 1px)" : "1rem 1.25rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <div className="flex items-baseline justify-between flex-wrap gap-2">
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/55 mb-1.5 flex items-center gap-2">
+                              <span
+                                aria-hidden
+                                className="inline-block rounded-full"
+                                style={{
+                                  width: "12px",
+                                  height: "12px",
+                                  border: `1.5px solid ${isSelected ? PERSONA : "rgba(28,28,30,0.25)"}`,
+                                  background: isSelected ? PERSONA : "transparent",
+                                  position: "relative",
+                                }}
+                              >
+                                {isSelected && (
+                                  <span
+                                    aria-hidden
+                                    style={{
+                                      position: "absolute",
+                                      inset: "2px",
+                                      borderRadius: "50%",
+                                      background: "white",
+                                    }}
+                                  />
+                                )}
+                              </span>
+                              Quarterly
+                            </p>
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="font-serif text-[34px] md:text-[40px] font-light leading-none text-halo-charcoal">
+                                {formatPrice(TRT_QUARTERLY_PER_MO)}
+                              </span>
+                              <span className="text-[13px] text-halo-charcoal/55">
+                                /mo equiv.
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-[11px] text-halo-charcoal/55">
+                            {formatPrice(TRT_QUARTERLY_TOTAL)} every 90 days
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })()}
+
+                  {/* Annually — best value */}
+                  {(() => {
+                    const isSelected = selectedCadence === "yearly";
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCadence("yearly")}
+                        aria-pressed={isSelected}
+                        className="relative w-full text-left rounded-[14px] p-4 md:p-5 text-white transition-all"
+                        style={{
+                          background: `linear-gradient(155deg, #2A2826 0%, #1C1817 100%)`,
+                          border: isSelected
+                            ? `2px solid ${HALO_GOLD}`
+                            : "2px solid transparent",
+                          boxShadow: isSelected
+                            ? `0 18px 40px -22px rgba(201,168,98,0.45), 0 0 0 4px rgba(201,168,98,0.12)`
+                            : `0 18px 40px -22px rgba(28,24,23,0.55)`,
+                          padding: "calc(1rem - 1px) calc(1.25rem - 1px)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span
+                          className="absolute top-3 right-4 text-[9px] font-semibold uppercase tracking-[0.22em]"
+                          style={{ color: isSelected ? HALO_GOLD_SOFT : PERSONA_SOFT }}
+                        >
+                          Best value
+                        </span>
+                        <div className="flex items-baseline justify-between flex-wrap gap-2 mt-1">
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-1.5 flex items-center gap-2" style={{ color: PERSONA_SOFT }}>
+                              <span
+                                aria-hidden
+                                className="inline-block rounded-full"
+                                style={{
+                                  width: "12px",
+                                  height: "12px",
+                                  border: `1.5px solid ${isSelected ? HALO_GOLD : "rgba(248,248,250,0.35)"}`,
+                                  background: isSelected ? HALO_GOLD : "transparent",
+                                  position: "relative",
+                                }}
+                              >
+                                {isSelected && (
+                                  <span
+                                    aria-hidden
+                                    style={{
+                                      position: "absolute",
+                                      inset: "2px",
+                                      borderRadius: "50%",
+                                      background: "white",
+                                    }}
+                                  />
+                                )}
+                              </span>
+                              Annually
+                            </p>
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="font-serif text-[34px] md:text-[40px] font-light leading-none text-white">
+                                {formatPrice(TRT_YEARLY_PER_MO)}
+                              </span>
+                              <span className="text-[13px]" style={{ color: PERSONA_SOFT }}>
+                                /mo equiv.
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span
+                              className="inline-block text-[10px] font-semibold uppercase tracking-[0.18em] px-2 py-0.5 rounded-full"
+                              style={{
+                                background: isSelected ? `${HALO_GOLD}40` : `${PERSONA}25`,
+                                color: "#fff",
+                              }}
+                            >
+                              &minus;{TRT_YEARLY_SAVINGS_PCT}%
+                            </span>
+                            <p className="text-[11px] mt-1.5" style={{ color: PERSONA_SOFT }}>
+                              {formatPrice(TRT_YEARLY_TOTAL)} once a year
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })()}
+                </div>
+
+                <div className="border-t border-halo-charcoal/[0.08] pt-5">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-halo-charcoal/50 mb-4">
                     What&rsquo;s included
                   </p>
-                  <ul className="space-y-2.5 mb-8">
+                  <ul className="space-y-2.5 mb-7">
                     {[
-                      "Initial video consultation with your physician",
-                      "Full hormone panel (first one free)",
-                      "Testosterone and protocol medications",
-                      "Async physician access",
-                      "Follow-up labs at 90 days",
-                      "Protocol adjustments as needed",
-                      "Supplies (syringes, swabs) included",
+                      "Compounded testosterone (503A pharmacy)",
+                      "Quarterly comprehensive labs (60+ biomarkers)",
+                      "Physician oversight + dose adjustments",
+                      "Async physician access · 48-hour response",
+                      "Fertility-preservation adjuncts when indicated",
+                      "Founding rate · 10% off, locked for life",
                     ].map((item) => (
                       <li key={item} className="flex items-start gap-2.5 text-[13px] text-halo-charcoal/80 leading-snug">
-                        <span
-                          className="mt-[7px] flex-shrink-0 w-3 h-px"
-                          style={{ background: PERSONA }}
-                        />
+                        <Check className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: PERSONA }} strokeWidth={2.5} />
                         {item}
                       </li>
                     ))}
                   </ul>
                 </div>
 
+                <p className="text-[11px] text-halo-charcoal/45 mb-3">
+                  Standard rate {TRT_STD}/mo &middot; founding members lock in {TRT_FOUNDING}/mo for life.
+                </p>
+
                 <Link
-                  href="/quiz/trt"
+                  href={quizHref}
                   className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                   style={{
                     backgroundColor: PERSONA,
                     boxShadow: `0 8px 28px ${PERSONA}45`,
                   }}
                 >
-                  Start my assessment
+                  Continue with{" "}
+                  {selectedCadence === "monthly"
+                    ? "monthly"
+                    : selectedCadence === "quarterly"
+                    ? "quarterly"
+                    : "annual"}{" "}
+                  billing
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <p className="text-center text-[11px] text-halo-charcoal/45 italic mt-4">
-                  No contracts. Cancel anytime.
+                  Cancel any time &middot; founding rate locked once you&rsquo;re in.
                 </p>
               </div>
             </AnimateOnScroll>
 
-            <AnimateOnScroll>
+            <AnimateOnScroll stagger>
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
                   Questions
@@ -1296,7 +2048,7 @@ export default function TestosteroneTherapyPage() {
                 <h3 className="headline-section text-2xl md:text-3xl text-halo-charcoal leading-[1.15] mb-8">
                   Everything worth asking.
                 </h3>
-                <FAQ items={faqItems} />
+                <FAQ items={faqItems} categories={[]} />
               </div>
             </AnimateOnScroll>
           </div>
@@ -1307,7 +2059,7 @@ export default function TestosteroneTherapyPage() {
           13 · FINAL CTA
           ═══════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden py-16 md:py-24 px-6"
+        className="relative overflow-hidden py-12 md:py-16 px-6"
         style={{ background: "#1C1817" }}
       >
         <HaloPattern
