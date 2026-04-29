@@ -9,7 +9,7 @@ import HaloPattern from "@/components/HaloPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import ScrollRotate from "@/components/ScrollRotate";
 import BenefitScroller from "@/components/BenefitScroller";
-import EngagementTool from "@/components/quiz/EngagementTool";
+import WeightLossProjector from "@/components/quiz/WeightLossProjector";
 import {
   applyFoundingDiscount,
   formatPrice,
@@ -999,7 +999,7 @@ export default function WeightLossPage() {
       <section className="py-16 md:py-24 px-6 section-light">
         <div className="max-w-2xl mx-auto">
           <AnimateOnScroll>
-            <EngagementTool slug="weight_loss_projection" variant="light" />
+            <WeightLossProjector />
           </AnimateOnScroll>
         </div>
       </section>
