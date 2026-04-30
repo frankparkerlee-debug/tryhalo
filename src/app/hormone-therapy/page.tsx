@@ -6,6 +6,7 @@ import { useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
+import PillPattern from "@/components/PillPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import CountUpNumber from "@/components/CountUpNumber";
 import EngagementTool from "@/components/quiz/EngagementTool";
@@ -1055,8 +1056,9 @@ export default function HormoneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           3 · WHY WOMEN WAIT YEARS — impact stats
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
-        <div className="max-w-5xl mx-auto">
+      <section className="relative py-16 md:py-24 px-6 section-light overflow-hidden">
+        <PillPattern density="medium" tone="warm" />
+        <div className="relative z-10 max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
               <p

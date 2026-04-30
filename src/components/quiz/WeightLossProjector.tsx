@@ -128,24 +128,27 @@ export default function WeightLossProjector() {
         background: "#FFFFFF",
         border: `1px solid ${BORDER}`,
         borderRadius: "24px",
-        padding: "2rem 1.75rem",
-        maxWidth: "640px",
+        padding: "2.25rem 1.5rem",
+        maxWidth: "720px",
         margin: "0 auto",
         boxShadow: "0 24px 60px -36px rgba(15,17,21,0.18)",
       }}
     >
-      {/* Slider styling — scoped via styled-jsx so it doesn't leak */}
-      <style jsx>{`
+      {/* Slider styling — uses styled-jsx GLOBAL because range-input
+          pseudo-elements (::-webkit-slider-runnable-track, ::-webkit-slider-thumb)
+          live in the shadow DOM and don't reliably receive scoped class names.
+          The .halo-projector-slider class is unique enough to not leak. */}
+      <style jsx global>{`
         .halo-projector-slider {
           width: 100%;
           appearance: none;
           -webkit-appearance: none;
           background: transparent;
           cursor: pointer;
-          height: 24px;
+          height: 32px;
         }
         .halo-projector-slider::-webkit-slider-runnable-track {
-          height: 6px;
+          height: 10px;
           border-radius: 999px;
           background: linear-gradient(
             to right,
@@ -156,46 +159,46 @@ export default function WeightLossProjector() {
           );
         }
         .halo-projector-slider::-moz-range-track {
-          height: 6px;
+          height: 10px;
           border-radius: 999px;
           background: ${GOLD_SOFT}55;
         }
         .halo-projector-slider::-moz-range-progress {
-          height: 6px;
+          height: 10px;
           border-radius: 999px;
           background: ${GOLD};
         }
         .halo-projector-slider::-webkit-slider-thumb {
           appearance: none;
           -webkit-appearance: none;
-          margin-top: -8px;
-          width: 22px;
-          height: 22px;
+          margin-top: -10px;
+          width: 30px;
+          height: 30px;
           border-radius: 50%;
           background: ${GOLD};
-          border: 3px solid #ffffff;
-          box-shadow: 0 2px 10px rgba(184, 151, 78, 0.4);
+          border: 4px solid #ffffff;
+          box-shadow: 0 4px 14px rgba(184, 151, 78, 0.45);
           cursor: grab;
           transition: transform 120ms ease;
         }
         .halo-projector-slider::-webkit-slider-thumb:active {
           cursor: grabbing;
-          transform: scale(1.08);
+          transform: scale(1.1);
         }
         .halo-projector-slider::-moz-range-thumb {
-          width: 22px;
-          height: 22px;
+          width: 30px;
+          height: 30px;
           border-radius: 50%;
           background: ${GOLD};
-          border: 3px solid #ffffff;
-          box-shadow: 0 2px 10px rgba(184, 151, 78, 0.4);
+          border: 4px solid #ffffff;
+          box-shadow: 0 4px 14px rgba(184, 151, 78, 0.45);
           cursor: grab;
         }
         .halo-projector-slider:focus-visible {
           outline: none;
         }
         .halo-projector-slider:focus-visible::-webkit-slider-thumb {
-          box-shadow: 0 0 0 4px rgba(184, 151, 78, 0.25), 0 2px 10px rgba(184, 151, 78, 0.4);
+          box-shadow: 0 0 0 5px rgba(184, 151, 78, 0.25), 0 4px 14px rgba(184, 151, 78, 0.45);
         }
       `}</style>
 

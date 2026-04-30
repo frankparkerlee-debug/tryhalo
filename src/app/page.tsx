@@ -13,8 +13,6 @@ import {
 import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
-import FoundingCircleForm from "@/components/FoundingCircleForm";
-import CountUpNumber from "@/components/CountUpNumber";
 import FAQ from "@/components/FAQ";
 import HaloLogo from "@/components/HaloLogo";
 import HeroVideo from "@/components/HeroVideo";
@@ -459,25 +457,6 @@ const testimonials = [
   },
 ];
 
-const foundingBenefits = [
-  {
-    title: "10% off every term \u2014 for life",
-    desc: "Founding rate on every core program \u2014 HRT, NAD+, TRT, peptides, and compounded GLP-1. Your price never goes up.",
-  },
-  {
-    title: "Free baseline labs",
-    desc: "Your first comprehensive hormone panel included ($300 value)",
-  },
-  {
-    title: "Priority onboarding",
-    desc: "Skip the waitlist and start your protocol in days, not weeks",
-  },
-  {
-    title: "First access to new programs",
-    desc: "Sexual wellness, vitamin injections, and future protocols before they launch publicly",
-  },
-];
-
 /* ─── MOBILE QUIZ BANNER ────────────────────────────────────────
    Slides up from the bottom after the user scrolls past the hero.
    Hidden on tablet/desktop where the hero has its own quiz button.
@@ -740,53 +719,66 @@ export default function Home() {
               })}
           </div>
 
-          {/* Programs supporting tier — slim NAD+ / Peptides / GLP-1 row + "also available" */}
-          <div id="programs" className="space-y-3 scroll-mt-24">
-            {/* SUPPORT programs — slim horizontal cards (image · name · arrow).
-                Pinned to NAD+ / Peptides / GLP-1 in that order. */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          {/* Programs supporting tier — NAD+ / Peptides / GLP-1 with pill imagery + "also available" */}
+          <div id="programs" className="space-y-4 scroll-mt-24">
+            {/* SUPPORT programs — vertical cards with the transparent compounded
+                pills (purple/green/orange) as the visual anchor. Pinned by name. */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
               {(["NAD+ Therapy", "Peptide Therapy", "GLP-1 Weight Management"] as const)
                 .map((targetName) =>
                   personalizedPrograms.find((p) => p.name === targetName)
                 )
                 .filter((p): p is NonNullable<typeof p> => p !== undefined)
                 .map((program) => {
-                  const Icon = program.icon;
+                  // Pill mapping — each program color matches its pill color
+                  const pillSrc =
+                    program.name === "NAD+ Therapy"
+                      ? "/pill-purple.png"
+                      : program.name === "Peptide Therapy"
+                      ? "/pill-green.png"
+                      : "/pill-orange.png";
                   return (
                     <Link
                       key={program.name}
                       href={program.href}
-                      className="group flex items-center gap-3 p-3 rounded-[14px] bg-white border border-halo-charcoal/[0.08] hover:border-halo-charcoal/20 hover:shadow-[0_8px_22px_-12px_rgba(0,0,0,0.18)] transition-all"
+                      className="group flex flex-col overflow-hidden rounded-[18px] bg-white border border-halo-charcoal/[0.08] hover:border-halo-charcoal/20 hover:shadow-[0_18px_44px_-22px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 transition-all"
                     >
+                      {/* Pill panel — pill floats over a soft program-tinted gradient */}
                       <div
-                        className="relative w-14 h-14 rounded-[10px] overflow-hidden flex-shrink-0"
-                        style={{ background: program.cardBg }}
+                        className="relative flex items-center justify-center overflow-hidden"
+                        style={{
+                          height: "140px",
+                          background: `radial-gradient(ellipse at center, ${program.cardBg} 0%, ${program.cardBg}cc 60%, ${program.cardBg}66 100%)`,
+                        }}
                       >
-                        {program.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={program.image}
-                            alt=""
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                            loading="lazy"
-                            decoding="async"
-                            draggable={false}
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Icon className="w-6 h-6 opacity-25" style={{ color: program.accent }} />
-                          </div>
-                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={pillSrc}
+                          alt=""
+                          aria-hidden="true"
+                          className="h-[88px] md:h-[92px] w-auto object-contain transition-all duration-500 group-hover:scale-[1.08] group-hover:-rotate-[6deg]"
+                          style={{ filter: "drop-shadow(0 14px 22px rgba(15,17,21,0.18))" }}
+                          loading="lazy"
+                          decoding="async"
+                          draggable={false}
+                        />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[14px] font-semibold text-halo-charcoal truncate leading-tight">
+
+                      {/* Content row */}
+                      <div className="px-5 md:px-6 py-4 md:py-5">
+                        <p className="text-[16px] md:text-[17px] font-semibold text-halo-charcoal leading-tight mb-1">
                           {program.name.replace(" Therapy", "").replace(" Weight Management", "")}
                         </p>
-                        <p className="text-[11px] text-halo-charcoal/55 truncate mt-0.5">
-                          {program.outcome} &middot; {program.startingPrice}
+                        <p className="text-[12.5px] text-halo-charcoal/60 leading-snug mb-3 line-clamp-1">
+                          {program.outcome}
                         </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-medium text-halo-charcoal/50">
+                            {program.startingPrice}
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-halo-charcoal/30 group-hover:text-halo-charcoal/65 group-hover:translate-x-0.5 transition-all" />
+                        </div>
                       </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-halo-charcoal/25 flex-shrink-0 group-hover:text-halo-charcoal/60 group-hover:translate-x-0.5 transition-all" />
                     </Link>
                   );
                 })}
@@ -1327,158 +1319,108 @@ export default function Home() {
       <div className="section-divider" />
 
       {/* ═══════════════════════════════════════════════
-          6 · FOUNDING CIRCLE — Full-width split
+          6 · IN THE BRIEF — magazine stat tiles (ported from v11)
           ═══════════════════════════════════════════════ */}
-      <section id="founding-circle" className="section-dark overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[700px]">
-          {/* LEFT: Visual panel — the HALO is the Founding Circle */}
-          <div className="relative min-h-[420px] lg:min-h-[700px] overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
-            {/* Subtle ambient warmth — reduced gold presence */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              aria-hidden="true"
-              style={{
-                background:
-                  "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(200,169,110,0.14) 0%, rgba(200,169,110,0.04) 45%, transparent 75%)",
-              }}
-            />
-
-            {/* Halo signature pattern — brand mark, core hidden so our counter takes its place */}
-            <HaloPattern
-              variant="default"
-              intensity={2.1}
-              color="#C8A96E"
-              showCore={false}
-              className="absolute inset-0 w-full h-full"
-            />
-
-            {/* Central focal point: progress ring + counter */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="relative w-[300px] h-[300px] md:w-[380px] md:h-[380px] lg:w-[440px] lg:h-[440px] flex items-center justify-center">
-
-                {/* Progress ring — gold, because it signals scarcity (the one place gold earns its keep) */}
-                <svg
-                  className="absolute inset-0 w-full h-full"
-                  viewBox="0 0 100 100"
-                  style={{ transform: "rotate(-90deg)" }}
-                  aria-hidden="true"
-                >
-                  {/* Full-circle faint guide */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="48"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.08)"
-                    strokeWidth="0.4"
-                  />
-                  {/* Progress arc (64.7% = 647/999) */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="48"
-                    fill="none"
-                    stroke="#C8A96E"
-                    strokeWidth="0.7"
-                    strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 48 * 0.6477} ${2 * Math.PI * 48}`}
-                    opacity="0.95"
-                  />
-                </svg>
-
-                {/* Counter in the center — cream, not gold. Content stands out; pattern stays atmosphere */}
-                <div className="flex flex-col items-center text-center">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/55 mb-3">
-                    Founding Members
-                  </p>
-                  <CountUpNumber
-                    target={647}
-                    start={600}
-                    duration={2000}
-                    className="font-serif text-[96px] md:text-[128px] lg:text-[148px] font-light text-[#F3EADA] leading-[0.9] tracking-tight"
-                  />
-                  <div
-                    className="w-10 h-px bg-white/25 my-4"
-                    aria-hidden="true"
-                  />
-                  <p className="text-[13px] text-white/55">
-                    of{" "}
-                    <span className="text-white/85 font-semibold">{FOUNDING_CAP}</span>{" "}
-                    spots claimed
-                  </p>
-                </div>
-              </div>
-
-              {/* Caption below the ring — includes deadline */}
-              <div className="flex flex-col items-center gap-2 mt-6 md:mt-8">
-                <p className="text-[10px] text-white/35 uppercase tracking-[0.28em] font-semibold">
-                  64.7% claimed &middot; 352 remaining
-                </p>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-1 h-1 rounded-full bg-[#C8A96E]"
-                    aria-hidden="true"
-                  />
-                  <p className="text-[11px] text-[#C8A96E] uppercase tracking-[0.28em] font-semibold">
-                    Closes June 1
-                  </p>
-                  <span
-                    className="w-1 h-1 rounded-full bg-[#C8A96E]"
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT: Content panel */}
-          <div className="flex flex-col justify-center px-6 lg:px-16 py-16 lg:py-20">
-            <div className="max-w-md">
-              <AnimateOnScroll>
-                <div className="mb-5 flex items-center gap-3">
-                  <span className="label-rule" />
-                  <p className="label-accent">Founding Circle</p>
-                  <span className="text-[#C8A96E]/40 text-xs">&middot;</span>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#C8A96E]">
-                    Ends June 1
-                  </p>
-                </div>
-                <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-white mb-5">
-                  The first {FOUNDING_CAP} get in at the best price. Permanently.
+      <section id="brief" className="py-16 md:py-24 px-6 section-light">
+        <div className="max-w-7xl mx-auto">
+          <AnimateOnScroll>
+            <div className="mb-10 md:mb-14 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <div className="max-w-2xl">
+                <p className="label-accent mb-3">In the brief</p>
+                <h2 className="headline-section text-3xl md:text-4xl lg:text-5xl text-halo-charcoal leading-[1.1]">
+                  What we&rsquo;re tracking.
                 </h2>
-                <p className="text-base text-white/30 mb-8 leading-relaxed">
-                  Lock in founding pricing for life, get your first labs free, and be the first to access every new program we launch.{" "}
-                  <span className="text-white/55 font-medium">
-                    Founding Circle closes June 1, 2026.
-                  </span>
+                <p className="text-[15px] md:text-base text-halo-charcoal/60 mt-4 leading-relaxed">
+                  Quick reads from the science of feeling better, longer — pulled from the data we look at every quarter.
                 </p>
-              </AnimateOnScroll>
-
-              <AnimateOnScroll>
-                <FoundingCircleForm variant="dark" />
-              </AnimateOnScroll>
-
-              <AnimateOnScroll stagger>
-                <div className="mt-10 space-y-3">
-                  {foundingBenefits.map((b, i) => (
-                    <div key={i} className="aos-child flex items-start gap-3">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white/40 mt-2 flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-white">{b.title}</p>
-                        <p className="text-sm text-white/25">{b.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </AnimateOnScroll>
-
-              <AnimateOnScroll>
-                <p className="text-xs text-white/12 mt-8">
-                  Everything included &mdash; medications, labs, visits, shipping. No commitment until your first consultation. Cancel anytime.
-                </p>
-              </AnimateOnScroll>
+              </div>
             </div>
-          </div>
+          </AnimateOnScroll>
+
+          <AnimateOnScroll stagger>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+              {/* Tile 1 — NAD+ decline data tile (typographic) */}
+              <Link
+                href="/nad-therapy"
+                className="aos-child group flex flex-col rounded-[20px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-8 hover:border-halo-charcoal/20 hover:shadow-[0_18px_44px_-22px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 transition-all"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/45 mb-6">
+                  Data &middot; Cellular energy
+                </p>
+                <div className="flex-1 flex flex-col justify-center">
+                  <span
+                    className="font-serif font-light text-halo-charcoal leading-[0.9] tracking-tight mb-4"
+                    style={{ fontSize: "clamp(3.5rem, 7vw, 5.5rem)", letterSpacing: "-0.045em" }}
+                  >
+                    &#x2198; <span style={{ color: "#7B6B8F" }}>50%</span>
+                  </span>
+                  <p className="text-[13px] md:text-[14px] text-halo-charcoal/60 leading-snug">
+                    Tissue NAD<sup>+</sup> decline from age 30 to 70 — and the floor below which mitochondrial output stops keeping up.
+                  </p>
+                </div>
+                <span className="mt-6 inline-flex items-center gap-1.5 text-[12px] font-semibold text-halo-charcoal/85 self-start border-b border-halo-charcoal/30 group-hover:border-halo-charcoal/60 pb-0.5 transition-colors">
+                  Read the brief
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </Link>
+
+              {/* Tile 2 — Biological-age primer (cream card, editorial) */}
+              <Link
+                href="/how-it-works"
+                className="aos-child group flex flex-col rounded-[20px] p-7 md:p-8 hover:shadow-[0_18px_44px_-22px_rgba(0,0,0,0.16)] hover:-translate-y-0.5 transition-all"
+                style={{ background: "#F0EBE0" }}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-6" style={{ color: "#8F7438" }}>
+                  Primer &middot; Methodology
+                </p>
+                <div className="flex-1">
+                  <h3
+                    className="font-serif font-light text-halo-charcoal leading-tight mb-4"
+                    style={{ fontSize: "clamp(1.625rem, 2.6vw, 2rem)", letterSpacing: "-0.02em" }}
+                  >
+                    Biological age, explained.
+                  </h3>
+                  <p className="text-[13px] md:text-[14px] text-halo-charcoal/65 leading-relaxed">
+                    The methylation, phenotypic, and pace-of-aging clocks behind longevity intelligence — and which one Halo uses to project where you actually stand.
+                  </p>
+                </div>
+                <span className="mt-6 inline-flex items-center gap-1.5 text-[12px] font-semibold text-halo-charcoal/85 self-start border-b border-halo-charcoal/30 group-hover:border-halo-charcoal/60 pb-0.5 transition-colors">
+                  Read &middot; 90 seconds
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </Link>
+
+              {/* Tile 3 — FDA peptide briefing (dark, current-event coded) */}
+              <Link
+                href="/peptide-therapy"
+                className="aos-child group flex flex-col rounded-[20px] p-7 md:p-8 text-white hover:shadow-[0_24px_56px_-22px_rgba(15,17,21,0.5)] hover:-translate-y-0.5 transition-all"
+                style={{ background: "#0F1115" }}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-6" style={{ color: "#C8A96E" }}>
+                  Current event &middot; Regulatory
+                </p>
+                <div className="flex-1">
+                  <h3
+                    className="font-serif font-light leading-tight mb-4"
+                    style={{
+                      fontSize: "clamp(1.625rem, 2.6vw, 2rem)",
+                      letterSpacing: "-0.02em",
+                      color: "#F3EADA",
+                    }}
+                  >
+                    The 2026 FDA peptide review.
+                  </h3>
+                  <p className="text-[13px] md:text-[14px] text-white/60 leading-relaxed">
+                    PCAC convenes July 23&ndash;24 to reclassify seven peptides &mdash; including BPC-157, KPV, and TB-500. What changes for your protocol when the verdict lands.
+                  </p>
+                </div>
+                <span className="mt-6 inline-flex items-center gap-1.5 text-[12px] font-semibold text-white self-start border-b border-white/30 group-hover:border-white/60 pb-0.5 transition-colors">
+                  Read the briefing
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </Link>
+            </div>
+          </AnimateOnScroll>
         </div>
       </section>
 

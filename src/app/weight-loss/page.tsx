@@ -46,7 +46,9 @@ const products = [
     stock: "In stock",
     stockColor: "#4A7A4A",
     price: GLP_COMPOUND_FOUNDING,
-    image: "/wegovy-pen.avif",
+    image: "/pill-orange.png",
+    imageRotation: 0,
+    imageScale: 1,
     bullets: [
       "Same active ingredient as Ozempic®",
       "Weekly subcutaneous injection",
@@ -59,7 +61,9 @@ const products = [
     stock: "Direct-pay",
     stockColor: "#B8974E",
     price: OZEMPIC_PRICE,
-    image: "/wegovy-pen.avif",
+    image: "/ozempic-pen.png",
+    imageRotation: -10, // un-tilt the natural right lean → vertical
+    imageScale: 0.85,
     bullets: [
       "FDA-approved branded semaglutide",
       "Flat monthly pricing — no founding discount",
@@ -72,7 +76,9 @@ const products = [
     stock: "Direct-pay",
     stockColor: "#B8974E",
     price: ZEPBOUND_PRICE,
-    image: "/wegovy-pen.avif",
+    image: "/zepbound-pen.avif",
+    imageRotation: 0, // tune if it lands at a different angle than Ozempic
+    imageScale: 0.85,
     bullets: [
       "FDA-approved tirzepatide (dual GLP-1 / GIP agonist)",
       "Flat monthly pricing — no founding discount",
@@ -114,7 +120,7 @@ const outcomes = [
     label: "Body weight",
     claim:
       "mean body weight reduction at 68 weeks on semaglutide 2.4 mg — with up to ~34 lbs lost in the STEP 1 trial (N=1,961).",
-    image: "/glp/life-appetite.jpg",
+    image: "/glp/expect-body.jpg",
     source: "Wilding et al., NEJM, 2021 (STEP 1)",
   },
   {
@@ -122,7 +128,7 @@ const outcomes = [
     label: "Food noise",
     claim:
       "drop in the share of patients reporting constant food-related thoughts after starting semaglutide — a 46-point reduction in the INFORM patient survey (N=550).",
-    image: "/glp/life-energy.jpg",
+    image: "/glp/expect-foodnoise.jpg",
     source: "INFORM survey, Novo Nordisk, EASD 2025",
   },
   {
@@ -130,7 +136,7 @@ const outcomes = [
     label: "HbA1c (T2D)",
     claim:
       "percentage-point HbA1c reduction in adults with type 2 diabetes on semaglutide 2.4 mg over 68 weeks.",
-    image: "/glp/life-energy.jpg",
+    image: "/glp/expect-a1c.jpg",
     source: "Davies et al., Lancet, 2021 (STEP 2)",
   },
 ];
@@ -419,20 +425,36 @@ function ProductCard({ product }: { product: (typeof products)[number] }) {
       )}
 
       <div
-        className="relative aspect-[4/5] flex items-center justify-center overflow-hidden"
+        className="relative aspect-[4/5] flex items-center justify-center overflow-hidden p-6 md:p-8"
         style={{
           background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}40 60%, ${PERSONA}30 100%)`,
         }}
       >
         {!imgFailed && (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={product.image}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            onError={() => setImgFailed(true)}
-          />
+          // Two nested wrappers — outer owns the hover scale,
+          // inner owns the alignment rotation + base scale.
+          // Independent transforms so they don't override each other.
+          <div className="relative w-full h-full transition-transform duration-500 group-hover:scale-[1.04]">
+            <div
+              className="w-full h-full"
+              style={{
+                transform: `rotate(${product.imageRotation ?? 0}deg) scale(${product.imageScale ?? 1})`,
+                transformOrigin: "center",
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={product.image}
+                alt=""
+                aria-hidden="true"
+                className="w-full h-full object-contain"
+                style={{
+                  filter: "drop-shadow(0 16px 28px rgba(143,67,36,0.18))",
+                }}
+                onError={() => setImgFailed(true)}
+              />
+            </div>
+          </div>
         )}
         {imgFailed && (
           <div className="flex flex-col items-center gap-2 opacity-40" aria-hidden="true">
@@ -745,8 +767,9 @@ export default function WeightLossPage() {
               </Link>
             </div>
 
-            {/* Asymmetric bento: 4-col × 4-row grid with staggered tiles */}
-            <div className="grid grid-cols-4 grid-rows-4 gap-2 md:gap-3 h-full min-h-[480px] md:min-h-[560px] lg:min-h-[640px]">
+            {/* Tightened bento: 3 tiles on a 4-col × 3-row grid.
+                Bottom row removed (was holding awkward filler portraits). */}
+            <div className="grid grid-cols-4 grid-rows-3 gap-2 md:gap-3 h-full min-h-[420px] md:min-h-[500px] lg:min-h-[560px]">
               {/* Tile 1 — Woman portrait (TALL, cols 1-2, rows 1-3) */}
               <div
                 className="relative rounded-[14px] md:rounded-[18px] overflow-hidden col-start-1 col-end-3 row-start-1 row-end-4"
@@ -756,7 +779,7 @@ export default function WeightLossPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/glp/hero-woman.jpg"
+                  src="/glp/hero-woman.png"
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 w-full h-full object-cover"
@@ -805,58 +828,20 @@ export default function WeightLossPage() {
                 }}
               >
                 <p className="text-[8px] md:text-[9px] font-semibold uppercase tracking-[0.26em] text-white/70 mb-1">
-                  At 68 weeks
+                  Top responders
                 </p>
                 <p
-                  className="font-sans leading-none text-white text-[40px] md:text-[52px] lg:text-[60px] mb-2"
+                  className="font-sans leading-none text-white text-[44px] md:text-[58px] lg:text-[68px] mb-2"
                   style={{ fontWeight: 500, letterSpacing: "-0.03em" }}
                 >
-                  &minus;15 lbs
+                  Up to 22%
                 </p>
                 <p className="text-[10px] md:text-[11px] text-white/75 leading-snug max-w-[180px]">
-                  Average body weight reduction on semaglutide 2.4mg.
+                  Body weight on semaglutide 2.4mg at 68 weeks &mdash; top quartile.
                 </p>
                 <p className="text-[8px] md:text-[9px] italic text-white/40 mt-2">
-                  Wilding, NEJM 2021
+                  STEP 1 · Wilding, NEJM 2021
                 </p>
-              </div>
-
-              {/* Tile 4 — Man portrait (SQUARE, cols 1-2, row 4) */}
-              <div
-                className="relative rounded-[14px] md:rounded-[18px] overflow-hidden col-start-1 col-end-3 row-start-4 row-end-5"
-                style={{
-                  background: `linear-gradient(145deg, #E4D2C0 0%, ${PERSONA}35 100%)`,
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/hero-trt-person.jpg"
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-              </div>
-
-              {/* Tile 5 — Lifestyle (WIDE, cols 3-4, row 4) */}
-              <div
-                className="relative rounded-[14px] md:rounded-[18px] overflow-hidden col-start-3 col-end-5 row-start-4 row-end-5"
-                style={{
-                  background: `linear-gradient(145deg, #F0DDC8 0%, #D9B896 100%)`,
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/halo-difference.jpg"
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
               </div>
             </div>
           </div>
@@ -890,7 +875,17 @@ export default function WeightLossPage() {
           4 · THE TREATMENT GAP
           ═══════════════════════════════════════════════ */}
       <section className="relative py-16 md:py-24 px-6 section-light overflow-hidden">
-        <PillPattern density="medium" tone="warm" />
+        <PillPattern
+          density="medium"
+          tone="warm"
+          assets={[
+            "/pill-orange.png",
+            "/lilly-pill.png",
+            "/ozempic-pen.png",
+            "/pill-orange.png",
+            "/lilly-pill.png",
+          ]}
+        />
         <div className="relative z-10 max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
@@ -1008,7 +1003,7 @@ export default function WeightLossPage() {
           6-month number before we show qualitative results.
           ═══════════════════════════════════════════════ */}
       <section className="py-16 md:py-24 px-6 section-light">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <AnimateOnScroll>
             <WeightLossProjector />
           </AnimateOnScroll>

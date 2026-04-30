@@ -6,6 +6,7 @@ import { useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
+import PillPattern from "@/components/PillPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import {
   applyFoundingDiscount,
@@ -1442,8 +1443,9 @@ export default function TestosteroneTherapyPage() {
       {/* ═══════════════════════════════════════════════
           3 · THE TREATMENT GAP — stats with inline citations
           ═══════════════════════════════════════════════ */}
-      <section className="py-12 md:py-16 px-6 section-light">
-        <div className="max-w-5xl mx-auto">
+      <section className="relative py-12 md:py-16 px-6 section-light overflow-hidden">
+        <PillPattern density="medium" tone="warm" />
+        <div className="relative z-10 max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-8 md:mb-10">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
