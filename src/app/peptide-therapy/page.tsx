@@ -399,14 +399,21 @@ export default function PeptideTherapyPage() {
               </div>
             </div>
 
-            {/* PORTRAIT CARD — tumbling pill composition.
-                Inspired by Novo's diagonal pill cascade ad: ~12 green Halo
-                pills at varied scales and rotations falling through the
-                frame. Background is a green gradient (deep at edges,
-                lifted at center) so the pills feel weightless rather than
-                pasted on. Each pill carries an individual drop-shadow for
-                depth — denser shadows on larger pills create perceived
-                proximity to the camera. */}
+            {/* PORTRAIT CARD — animated tumbling pill composition.
+                Inspired by Novo's diagonal pill cascade ad: ~13 green Halo
+                pills at varied scales tumble into place on load (staggered
+                drop-in entrance) and then breathe in a continuous gentle
+                float so the cluster feels suspended rather than frozen.
+
+                Each pill is wrapped in two divs:
+                  - outer = position anchor (left/top + center translate)
+                  - inner = animation host (drop-in then float)
+                The img inside owns the per-pill rotation. Independent
+                transforms so animations don't clobber alignment.
+
+                Per-pill `delay` staggers the entrance (smaller pills land
+                first, hero pills last), `floatDur` keeps motion out of
+                sync so the whole cluster never moves in unison. */}
             <div
               className="lg:col-span-5 lg:row-span-2 relative overflow-hidden rounded-[24px]"
               style={{
@@ -420,49 +427,103 @@ export default function PeptideTherapyPage() {
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    "radial-gradient(80% 60% at 60% 25%, rgba(255,255,255,0.10) 0%, transparent 60%)",
+                    "radial-gradient(80% 60% at 60% 25%, rgba(255,255,255,0.12) 0%, transparent 60%)",
                 }}
               />
 
-              {/* Tumbling pill cluster — 12 pills, varied scale + rotation.
-                  All green for a monochrome composition; size and angle do
-                  the work the color variety would otherwise do. */}
+              {/* Animation keyframes — declared inline so they ship with
+                  the component. Reduced-motion respected globally. */}
+              <style>{`
+                @keyframes pep-pill-drop {
+                  0%   { opacity: 0; transform: translateY(-44px) scale(0.88); }
+                  60%  { opacity: 1; }
+                  100% { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                @keyframes pep-pill-float {
+                  0%, 100% { transform: translateY(0) rotate(0deg); }
+                  50%      { transform: translateY(-9px) rotate(0.6deg); }
+                }
+                .pep-pill-anim {
+                  animation:
+                    pep-pill-drop 1.1s cubic-bezier(0.16, 0.7, 0.25, 1) var(--pep-delay) backwards,
+                    pep-pill-float var(--pep-float-dur) ease-in-out calc(var(--pep-delay) + 1.2s) infinite;
+                  will-change: transform, opacity;
+                }
+                @media (prefers-reduced-motion: reduce) {
+                  .pep-pill-anim {
+                    animation: none !important;
+                    opacity: 1;
+                  }
+                }
+              `}</style>
+
+              {/* Tumbling pill cluster — 13 pills, varied scale + rotation. */}
               {[
-                { left: "55%", top: "8%",  rotate: 22,  size: 34, opacity: 1.0  },
-                { left: "82%", top: "16%", rotate: -18, size: 14, opacity: 0.95 },
-                { left: "26%", top: "20%", rotate: -28, size: 18, opacity: 0.92 },
-                { left: "60%", top: "30%", rotate: 8,   size: 36, opacity: 1.0  },
-                { left: "18%", top: "40%", rotate: 38,  size: 14, opacity: 0.92 },
-                { left: "78%", top: "44%", rotate: -32, size: 24, opacity: 0.95 },
-                { left: "42%", top: "55%", rotate: -10, size: 40, opacity: 1.0  },
-                { left: "20%", top: "65%", rotate: 26,  size: 20, opacity: 0.95 },
-                { left: "68%", top: "68%", rotate: 14,  size: 16, opacity: 0.9  },
-                { left: "38%", top: "80%", rotate: -22, size: 32, opacity: 1.0  },
-                { left: "78%", top: "84%", rotate: 4,   size: 18, opacity: 0.95 },
-                { left: "12%", top: "88%", rotate: -40, size: 13, opacity: 0.85 },
+                // Top band — smaller pills, light cascade
+                { left: "62%", top: "6%",  rotate: 22,  size: 32, opacity: 1.0,  delay: 0.55, floatDur: 5.2 },
+                { left: "84%", top: "14%", rotate: -22, size: 14, opacity: 0.92, delay: 0.10, floatDur: 4.4 },
+                { left: "28%", top: "16%", rotate: -32, size: 18, opacity: 0.92, delay: 0.20, floatDur: 5.8 },
+
+                // Upper-mid — first hero pill
+                { left: "58%", top: "28%", rotate: 6,   size: 38, opacity: 1.0,  delay: 0.70, floatDur: 6.1 },
+                { left: "16%", top: "34%", rotate: 38,  size: 14, opacity: 0.88, delay: 0.25, floatDur: 4.7 },
+
+                // Mid band — biggest hero anchor + side pills
+                { left: "78%", top: "42%", rotate: -28, size: 22, opacity: 0.95, delay: 0.40, floatDur: 5.5 },
+                { left: "44%", top: "52%", rotate: -10, size: 42, opacity: 1.0,  delay: 0.90, floatDur: 6.3 },
+                { left: "20%", top: "58%", rotate: 26,  size: 18, opacity: 0.92, delay: 0.45, floatDur: 4.9 },
+
+                // Lower-mid — bridge to bottom cluster
+                { left: "70%", top: "66%", rotate: 14,  size: 16, opacity: 0.88, delay: 0.50, floatDur: 5.4 },
+                { left: "30%", top: "72%", rotate: -38, size: 14, opacity: 0.85, delay: 0.30, floatDur: 4.6 },
+
+                // Bottom band — second large pill + scatter
+                { left: "52%", top: "82%", rotate: -18, size: 34, opacity: 1.0,  delay: 0.80, floatDur: 5.9 },
+                { left: "82%", top: "84%", rotate: 4,   size: 18, opacity: 0.95, delay: 0.60, floatDur: 4.8 },
+                { left: "14%", top: "88%", rotate: -42, size: 16, opacity: 0.85, delay: 0.65, floatDur: 5.7 },
               ].map((p, i) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <div
                   key={i}
-                  src="/pill-green.png"
-                  alt=""
-                  aria-hidden="true"
-                  draggable={false}
-                  loading="eager"
-                  decoding="async"
                   style={{
                     position: "absolute",
                     left: p.left,
                     top: p.top,
                     width: `${p.size}%`,
-                    height: "auto",
-                    opacity: p.opacity,
-                    transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
-                    // Larger pills sit "closer" — heavier shadow.
-                    filter: `drop-shadow(0 ${Math.round(p.size / 4)}px ${Math.round(p.size / 2)}px rgba(15,28,18,${0.18 + p.size * 0.005}))`,
+                    transform: "translate(-50%, -50%)",
                     pointerEvents: "none",
                   }}
-                />
+                >
+                  {/* Inner div hosts the animation so the rotation on the
+                      img isn't clobbered by transform: translate. */}
+                  <div
+                    className="pep-pill-anim"
+                    style={
+                      {
+                        "--pep-delay": `${p.delay}s`,
+                        "--pep-float-dur": `${p.floatDur}s`,
+                      } as React.CSSProperties
+                    }
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/pill-green.png"
+                      alt=""
+                      aria-hidden="true"
+                      draggable={false}
+                      loading="eager"
+                      decoding="async"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: "auto",
+                        opacity: p.opacity,
+                        transform: `rotate(${p.rotate}deg)`,
+                        // Bigger pills cast heavier shadows = read closer.
+                        filter: `drop-shadow(0 ${Math.round(p.size / 4)}px ${Math.round(p.size / 2)}px rgba(15,28,18,${0.20 + p.size * 0.005}))`,
+                      }}
+                    />
+                  </div>
+                </div>
               ))}
 
               {/* Soft vignette so the pills sit in a depth cup */}
