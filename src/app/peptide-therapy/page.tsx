@@ -399,42 +399,79 @@ export default function PeptideTherapyPage() {
               </div>
             </div>
 
-            {/* PORTRAIT CARD — green-toned, peptide imagery */}
+            {/* PORTRAIT CARD — tumbling pill composition.
+                Inspired by Novo's diagonal pill cascade ad: ~12 green Halo
+                pills at varied scales and rotations falling through the
+                frame. Background is a green gradient (deep at edges,
+                lifted at center) so the pills feel weightless rather than
+                pasted on. Each pill carries an individual drop-shadow for
+                depth — denser shadows on larger pills create perceived
+                proximity to the camera. */}
             <div
               className="lg:col-span-5 lg:row-span-2 relative overflow-hidden rounded-[24px]"
               style={{
-                background: PERSONA_DEEP,
+                background: `radial-gradient(120% 100% at 50% 35%, ${PERSONA} 0%, ${PERSONA_DEEP} 55%, #3A5640 100%)`,
                 minHeight: "380px",
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/support-peptide.jpg"
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{
-                  objectPosition: "center 35%",
-                  filter: "contrast(1.05) saturate(0.75) brightness(0.92)",
-                }}
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-              <div
-                aria-hidden
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: `linear-gradient(155deg, ${PERSONA}3D 0%, rgba(15,17,21,0.05) 45%, rgba(15,17,21,0.45) 100%)`,
-                  mixBlendMode: "multiply",
-                }}
-              />
+              {/* Subtle highlight wash to give the surface dimension */}
               <div
                 aria-hidden
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    "radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(15,17,21,0.4) 100%)",
+                    "radial-gradient(80% 60% at 60% 25%, rgba(255,255,255,0.10) 0%, transparent 60%)",
+                }}
+              />
+
+              {/* Tumbling pill cluster — 12 pills, varied scale + rotation.
+                  All green for a monochrome composition; size and angle do
+                  the work the color variety would otherwise do. */}
+              {[
+                { left: "55%", top: "8%",  rotate: 22,  size: 34, opacity: 1.0  },
+                { left: "82%", top: "16%", rotate: -18, size: 14, opacity: 0.95 },
+                { left: "26%", top: "20%", rotate: -28, size: 18, opacity: 0.92 },
+                { left: "60%", top: "30%", rotate: 8,   size: 36, opacity: 1.0  },
+                { left: "18%", top: "40%", rotate: 38,  size: 14, opacity: 0.92 },
+                { left: "78%", top: "44%", rotate: -32, size: 24, opacity: 0.95 },
+                { left: "42%", top: "55%", rotate: -10, size: 40, opacity: 1.0  },
+                { left: "20%", top: "65%", rotate: 26,  size: 20, opacity: 0.95 },
+                { left: "68%", top: "68%", rotate: 14,  size: 16, opacity: 0.9  },
+                { left: "38%", top: "80%", rotate: -22, size: 32, opacity: 1.0  },
+                { left: "78%", top: "84%", rotate: 4,   size: 18, opacity: 0.95 },
+                { left: "12%", top: "88%", rotate: -40, size: 13, opacity: 0.85 },
+              ].map((p, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={i}
+                  src="/pill-green.png"
+                  alt=""
+                  aria-hidden="true"
+                  draggable={false}
+                  loading="eager"
+                  decoding="async"
+                  style={{
+                    position: "absolute",
+                    left: p.left,
+                    top: p.top,
+                    width: `${p.size}%`,
+                    height: "auto",
+                    opacity: p.opacity,
+                    transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
+                    // Larger pills sit "closer" — heavier shadow.
+                    filter: `drop-shadow(0 ${Math.round(p.size / 4)}px ${Math.round(p.size / 2)}px rgba(15,28,18,${0.18 + p.size * 0.005}))`,
+                    pointerEvents: "none",
+                  }}
+                />
+              ))}
+
+              {/* Soft vignette so the pills sit in a depth cup */}
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(140% 110% at 50% 45%, transparent 50%, rgba(15,28,18,0.45) 100%)",
                 }}
               />
             </div>
