@@ -46,7 +46,7 @@ const products = [
     stock: "In stock",
     stockColor: "#4A7A4A",
     price: GLP_COMPOUND_FOUNDING,
-    image: "/glp/product-semaglutide.jpg",
+    image: "/wegovy-pen.avif",
     bullets: [
       "Same active ingredient as Ozempic®",
       "Weekly subcutaneous injection",
@@ -72,7 +72,7 @@ const products = [
     stock: "Direct-pay",
     stockColor: "#B8974E",
     price: ZEPBOUND_PRICE,
-    image: "/glp/product-branded.jpg",
+    image: "/wegovy-pen.avif",
     bullets: [
       "FDA-approved tirzepatide (dual GLP-1 / GIP agonist)",
       "Flat monthly pricing — no founding discount",
@@ -130,7 +130,7 @@ const outcomes = [
     label: "HbA1c (T2D)",
     claim:
       "percentage-point HbA1c reduction in adults with type 2 diabetes on semaglutide 2.4 mg over 68 weeks.",
-    image: "/glp/life-metabolic.jpg",
+    image: "/glp/life-energy.jpg",
     source: "Davies et al., Lancet, 2021 (STEP 2)",
   },
 ];
@@ -830,7 +830,7 @@ export default function WeightLossPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/glp/hero-man.jpg"
+                  src="/hero-trt-person.jpg"
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 w-full h-full object-cover"
@@ -849,7 +849,7 @@ export default function WeightLossPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/glp/hero-kitchen.jpg"
+                  src="/halo-difference.jpg"
                   alt=""
                   aria-hidden="true"
                   className="absolute inset-0 w-full h-full object-cover"
