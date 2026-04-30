@@ -1159,7 +1159,7 @@ export default function HormoneTherapyPage() {
             </h2>
           </div>
 
-          {/* Floating symptom chips — scattered */}
+          {/* Floating symptom chips — desktop scatter */}
           <div className="absolute inset-0 hidden md:block pointer-events-none">
             {symptomChips.map((chip, i) => {
               // Position around the edges, avoiding center
@@ -1193,22 +1193,38 @@ export default function HormoneTherapyPage() {
             })}
           </div>
 
-          {/* Mobile: symptom chips in a scrollable row at bottom */}
-          <div className="absolute bottom-6 left-0 right-0 md:hidden overflow-x-auto pb-2 px-6">
-            <div className="flex gap-2 whitespace-nowrap">
-              {symptomChips.map((chip) => (
-                <span
+          {/* Floating symptom chips — mobile scatter (same aesthetic, tighter spacing) */}
+          <div className="absolute inset-0 md:hidden pointer-events-none">
+            {symptomChips.slice(0, 7).map((chip, i) => {
+              // Mobile-tuned scatter — chips hug the top + bottom strips
+              // (centered headline takes the middle), edges stay close to the
+              // viewport so nothing clips off-screen on narrow phones.
+              const positions = [
+                { top: "8%",  left: "5%"  },
+                { top: "10%", right: "5%" },
+                { top: "22%", left: "3%"  },
+                { top: "78%", right: "3%" },
+                { top: "82%", left: "8%"  },
+                { top: "90%", right: "10%" },
+                { top: "70%", left: "5%" },
+              ];
+              const pos = positions[i % positions.length];
+              return (
+                <div
                   key={chip}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 text-[11px] font-medium text-white flex-shrink-0"
+                  className="absolute inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full backdrop-blur-sm bg-black/45 border border-white/20 shadow-[0_4px_20px_-6px_rgba(0,0,0,0.4)]"
+                  style={pos}
                 >
                   <span
                     className="w-1 h-1 rounded-full"
                     style={{ background: PERSONA }}
                   />
-                  {chip}
-                </span>
-              ))}
-            </div>
+                  <span className="text-[10px] font-medium text-white whitespace-nowrap">
+                    {chip}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

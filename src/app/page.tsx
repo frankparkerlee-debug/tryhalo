@@ -2,6 +2,7 @@
 
 import {
   ArrowRight,
+  TrendingDown,
   Zap,
   Heart,
   Moon,
@@ -1334,6 +1335,13 @@ export default function Home() {
                   Quick reads from the science of feeling better, longer — pulled from the data we look at every quarter.
                 </p>
               </div>
+              <Link
+                href="/brief"
+                className="group inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-halo-charcoal/70 hover:text-halo-charcoal border-b border-halo-charcoal/30 hover:border-halo-charcoal/70 pb-1 self-start md:self-end transition-colors"
+              >
+                View all briefs
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
           </AnimateOnScroll>
 
@@ -1341,7 +1349,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
               {/* Tile 1 — NAD+ decline data tile (typographic) */}
               <Link
-                href="/nad-therapy"
+                href="/brief/nad-decline"
                 className="aos-child group flex flex-col rounded-[20px] bg-white border border-halo-charcoal/[0.08] p-7 md:p-8 hover:border-halo-charcoal/20 hover:shadow-[0_18px_44px_-22px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 transition-all"
               >
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-halo-charcoal/45 mb-6">
@@ -1349,10 +1357,16 @@ export default function Home() {
                 </p>
                 <div className="flex-1 flex flex-col justify-center">
                   <span
-                    className="font-serif font-light text-halo-charcoal leading-[0.9] tracking-tight mb-4"
+                    className="font-serif font-light text-halo-charcoal leading-[0.9] tracking-tight mb-4 inline-flex items-center gap-3"
                     style={{ fontSize: "clamp(3.5rem, 7vw, 5.5rem)", letterSpacing: "-0.045em" }}
                   >
-                    &#x2198; <span style={{ color: "#7B6B8F" }}>50%</span>
+                    <TrendingDown
+                      className="flex-shrink-0"
+                      style={{ width: "0.7em", height: "0.7em", color: "#7B6B8F" }}
+                      strokeWidth={1.5}
+                      aria-hidden
+                    />
+                    <span style={{ color: "#7B6B8F" }}>50%</span>
                   </span>
                   <p className="text-[13px] md:text-[14px] text-halo-charcoal/60 leading-snug">
                     Tissue NAD<sup>+</sup> decline from age 30 to 70 — and the floor below which mitochondrial output stops keeping up.
@@ -1366,7 +1380,7 @@ export default function Home() {
 
               {/* Tile 2 — Biological-age primer (cream card, editorial) */}
               <Link
-                href="/how-it-works"
+                href="/brief/biological-age"
                 className="aos-child group flex flex-col rounded-[20px] p-7 md:p-8 hover:shadow-[0_18px_44px_-22px_rgba(0,0,0,0.16)] hover:-translate-y-0.5 transition-all"
                 style={{ background: "#F0EBE0" }}
               >
@@ -1392,7 +1406,7 @@ export default function Home() {
 
               {/* Tile 3 — FDA peptide briefing (dark, current-event coded) */}
               <Link
-                href="/peptide-therapy"
+                href="/brief/fda-peptide-review"
                 className="aos-child group flex flex-col rounded-[20px] p-7 md:p-8 text-white hover:shadow-[0_24px_56px_-22px_rgba(15,17,21,0.5)] hover:-translate-y-0.5 transition-all"
                 style={{ background: "#0F1115" }}
               >

@@ -39,7 +39,29 @@ const PERSONA_DEEP = "#8F4324";
    DATA
    ============================== */
 
-const products = [
+type ProductClusterPill = {
+  left: string;
+  top: string;
+  rotate: number;
+  size: number;
+  opacity: number;
+  z: number;
+};
+
+type Product = {
+  name: string;
+  badge: string | null;
+  stock: string;
+  stockColor: string;
+  price: string;
+  image: string;
+  imageRotation: number;
+  imageScale: number;
+  cluster?: ProductClusterPill[];
+  bullets: string[];
+};
+
+const products: Product[] = [
   {
     name: "Compounded Semaglutide",
     badge: "Most prescribed",
@@ -49,6 +71,17 @@ const products = [
     image: "/pill-orange.png",
     imageRotation: 0,
     imageScale: 1,
+    // Flat-lay pill cluster — replaces the single-pill image. Five orange
+    // pills tumbled at varied rotations, sized to fill the card and feel
+    // like a magazine product shot. Center pill is the hero; four
+    // satellites overlap subtly behind it.
+    cluster: [
+      { left: "50%", top: "50%", rotate: -8,  size: 78, opacity: 1.0,  z: 5 }, // hero
+      { left: "26%", top: "32%", rotate: -42, size: 52, opacity: 0.95, z: 3 },
+      { left: "72%", top: "30%", rotate: 28,  size: 48, opacity: 0.95, z: 3 },
+      { left: "30%", top: "72%", rotate: 18,  size: 46, opacity: 0.92, z: 2 },
+      { left: "74%", top: "70%", rotate: -22, size: 50, opacity: 0.95, z: 4 },
+    ],
     bullets: [
       "Same active ingredient as Ozempic®",
       "Weekly subcutaneous injection",
@@ -124,7 +157,7 @@ const outcomes = [
     source: "Wilding et al., NEJM, 2021 (STEP 1)",
   },
   {
-    stat: "62% → 16%",
+    stat: "62% to 16%",
     label: "Food noise",
     claim:
       "drop in the share of patients reporting constant food-related thoughts after starting semaglutide — a 46-point reduction in the INFORM patient survey (N=550).",
@@ -410,7 +443,7 @@ function SymptomFlipCards() {
    COMPONENT: PRODUCT CARD
    ============================== */
 
-function ProductCard({ product }: { product: (typeof products)[number] }) {
+function ProductCard({ product }: { product: Product }) {
   const [imgFailed, setImgFailed] = useState(false);
   return (
     <div className="group relative rounded-[20px] border border-halo-charcoal/[0.08] bg-white overflow-hidden transition-all duration-300 hover:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.22)] hover:-translate-y-1">
@@ -430,7 +463,35 @@ function ProductCard({ product }: { product: (typeof products)[number] }) {
           background: `linear-gradient(145deg, #F5F1EA 0%, ${PERSONA_SOFT}40 60%, ${PERSONA}30 100%)`,
         }}
       >
-        {!imgFailed && (
+        {!imgFailed && product.cluster && (
+          // Multi-pill flat-lay cluster — used for compounded products where
+          // a single pill reads sparse. Hero pill anchors the center; the
+          // satellites drift outward at varied angles, layered for depth.
+          <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-[1.04]">
+            {product.cluster.map((p, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={`${product.name}-cluster-${i}`}
+                src={product.image}
+                alt=""
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: p.left,
+                  top: p.top,
+                  width: `${p.size}%`,
+                  height: "auto",
+                  opacity: p.opacity,
+                  zIndex: p.z,
+                  transform: `translate(-50%, -50%) rotate(${p.rotate}deg)`,
+                  filter: `drop-shadow(0 ${8 + p.z * 2}px ${14 + p.z * 3}px rgba(143,67,36,${0.10 + p.z * 0.025}))`,
+                }}
+                onError={() => setImgFailed(true)}
+              />
+            ))}
+          </div>
+        )}
+        {!imgFailed && !product.cluster && (
           // Two nested wrappers — outer owns the hover scale,
           // inner owns the alignment rotation + base scale.
           // Independent transforms so they don't override each other.
