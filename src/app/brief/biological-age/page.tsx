@@ -16,6 +16,15 @@ export default function BiologicalAgeBrief() {
       readTime="90 second read"
       publishedAt="April 2026"
       accentColor="#8F7438"
+      cta={{
+        eyebrow: "Halo · Begin",
+        headline: "Project where you actually stand.",
+        body: "Five-minute assessment plus a comprehensive lab panel returns your phenotypic age, your trajectory, and the protocol that moves them. No commitment to start.",
+        buttonLabel: "Start your assessment",
+        href: "/quiz",
+        secondaryHref: "/how-it-works",
+        secondaryLabel: "How Halo works",
+      }}
       related={[
         {
           href: "/brief/nad-decline",

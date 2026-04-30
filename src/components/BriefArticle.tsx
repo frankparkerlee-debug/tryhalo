@@ -26,6 +26,22 @@ type RelatedBrief = {
   accentColor?: string;
 };
 
+type BriefCTA = {
+  /** Destination — usually /quiz/[program] or a specific program page. */
+  href: string;
+  /** Eyebrow label sitting above the CTA headline. */
+  eyebrow: string;
+  /** Editorial headline — keep to one line, serif voice. */
+  headline: string;
+  /** Supporting line under the headline (1–2 sentences). */
+  body: string;
+  /** Button label — imperative, short. */
+  buttonLabel: string;
+  /** Optional secondary link (e.g. "Learn more about the program"). */
+  secondaryHref?: string;
+  secondaryLabel?: string;
+};
+
 interface BriefArticleProps {
   eyebrow: string;
   title: string;
@@ -35,6 +51,7 @@ interface BriefArticleProps {
   accentColor: string;
   category: "Data" | "Primer" | "Current event" | "Field note";
   related: RelatedBrief[];
+  cta: BriefCTA;
   children: React.ReactNode;
 }
 
@@ -47,6 +64,7 @@ export default function BriefArticle({
   accentColor,
   category,
   related,
+  cta,
   children,
 }: BriefArticleProps) {
   return (
@@ -114,6 +132,75 @@ export default function BriefArticle({
           </AnimateOnScroll>
         </div>
       </div>
+
+      {/* CTA — end-of-article conversion. The accent color carries through
+          from the article so the handoff feels coherent rather than tacked on. */}
+      <section className="px-6 pb-16 md:pb-20 section-light">
+        <div className="max-w-3xl mx-auto">
+          <AnimateOnScroll>
+            <div
+              className="relative overflow-hidden rounded-[24px] p-8 md:p-12"
+              style={{
+                background: `linear-gradient(140deg, ${accentColor}10 0%, ${accentColor}22 60%, ${accentColor}30 100%)`,
+                border: `1px solid ${accentColor}33`,
+              }}
+            >
+              {/* Decorative corner accent */}
+              <div
+                aria-hidden
+                className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none"
+                style={{
+                  background: accentColor,
+                  filter: "blur(80px)",
+                  opacity: 0.18,
+                }}
+              />
+
+              <div className="relative">
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.24em] mb-5"
+                  style={{ color: accentColor }}
+                >
+                  {cta.eyebrow}
+                </p>
+                <h2
+                  className="font-serif font-light text-halo-charcoal leading-[1.1] tracking-tight mb-4"
+                  style={{
+                    fontSize: "clamp(1.625rem, 3.4vw, 2.25rem)",
+                    letterSpacing: "-0.02em",
+                  }}
+                >
+                  {cta.headline}
+                </h2>
+                <p className="text-[15px] md:text-[16px] text-halo-charcoal/70 leading-relaxed mb-7 max-w-[52ch]">
+                  {cta.body}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <Link
+                    href={cta.href}
+                    className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-[13px] font-semibold text-white transition-all hover:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.35)] hover:-translate-y-0.5"
+                    style={{ background: accentColor }}
+                  >
+                    {cta.buttonLabel}
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+
+                  {cta.secondaryHref && cta.secondaryLabel && (
+                    <Link
+                      href={cta.secondaryHref}
+                      className="group inline-flex items-center gap-1.5 text-[13px] font-semibold text-halo-charcoal/75 hover:text-halo-charcoal border-b border-halo-charcoal/30 hover:border-halo-charcoal/70 pb-0.5 transition-colors"
+                    >
+                      {cta.secondaryLabel}
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
 
       {/* Related briefs */}
       {related.length > 0 && (

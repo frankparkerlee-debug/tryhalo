@@ -16,6 +16,15 @@ export default function NADDeclineBrief() {
       readTime="4 min read"
       publishedAt="April 2026"
       accentColor="#7B6B8F"
+      cta={{
+        eyebrow: "Halo NAD+ program",
+        headline: "Restore the cofactor your mitochondria run on.",
+        body: "Eight weeks of injectable NAD+ followed by maintenance NMN, calibrated against the markers that actually move. Five-minute health profile to see if you qualify.",
+        buttonLabel: "Start your assessment",
+        href: "/quiz/nad",
+        secondaryHref: "/nad-therapy",
+        secondaryLabel: "About the NAD+ program",
+      }}
       related={[
         {
           href: "/brief/biological-age",

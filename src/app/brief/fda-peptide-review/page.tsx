@@ -16,6 +16,15 @@ export default function FDAPeptideReviewBrief() {
       readTime="6 min read"
       publishedAt="April 2026"
       accentColor="#C8A96E"
+      cta={{
+        eyebrow: "Halo peptide program",
+        headline: "Built to survive the regulatory outcome — not bet on it.",
+        body: "Member-tier peptide protocols designed around the conservative case. Substitutions mapped, providers credentialed, follow-up brief incoming after the July meeting.",
+        buttonLabel: "Join the program",
+        href: "/peptide-therapy",
+        secondaryHref: "/quiz",
+        secondaryLabel: "Take the assessment",
+      }}
       related={[
         {
           href: "/brief/nad-decline",
