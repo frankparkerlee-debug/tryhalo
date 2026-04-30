@@ -6,8 +6,8 @@ import { useState } from "react";
 import FAQ from "@/components/FAQ";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import HaloPattern from "@/components/HaloPattern";
+import PillPattern from "@/components/PillPattern";
 import HaloMarquee from "@/components/HaloMarquee";
-import ScrollRotate from "@/components/ScrollRotate";
 import BenefitScroller from "@/components/BenefitScroller";
 import WeightLossProjector from "@/components/quiz/WeightLossProjector";
 import {
@@ -59,7 +59,7 @@ const products = [
     stock: "Direct-pay",
     stockColor: "#B8974E",
     price: OZEMPIC_PRICE,
-    image: "/glp/product-branded.jpg",
+    image: "/wegovy-pen.avif",
     bullets: [
       "FDA-approved branded semaglutide",
       "Flat monthly pricing — no founding discount",
@@ -766,25 +766,35 @@ export default function WeightLossPage() {
                 />
               </div>
 
-              {/* Tile 2 — Product vial with scroll rotation (SQUARE, cols 3-4, rows 1-2) */}
+              {/* Tile 2 — Wegovy fan (branded GLP-1 medication composition).
+                  Trademark attribution lives in a small footnote pinned to
+                  the bottom of the tile. ISI link sits in the page footer. */}
               <div
                 className="relative rounded-[14px] md:rounded-[18px] overflow-hidden flex items-center justify-center col-start-3 col-end-5 row-start-1 row-end-3"
                 style={{
                   background: `linear-gradient(145deg, #EDE0D2 0%, ${PERSONA}28 100%)`,
                 }}
               >
-                <ScrollRotate maxDeg={20} scrollExtent={1000} axis="y" className="w-[55%] h-[65%] flex items-center justify-center">
+                <div className="w-[78%] h-[78%] flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/glp/product-vial.png"
-                    alt=""
-                    aria-hidden="true"
-                    className="w-full h-full object-contain drop-shadow-[0_18px_30px_rgba(143,67,36,0.25)]"
+                    src="/wegovy-fan.png"
+                    alt="Wegovy® semaglutide injection — multiple dose strengths"
+                    className="w-full h-full object-contain drop-shadow-[0_22px_38px_rgba(143,67,36,0.30)]"
+                    loading="eager"
+                    decoding="async"
+                    draggable={false}
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                     }}
                   />
-                </ScrollRotate>
+                </div>
+                <span
+                  className="absolute bottom-2 left-2 right-2 text-center text-[8px] md:text-[9px] font-medium tracking-[0.04em]"
+                  style={{ color: PERSONA_DEEP, opacity: 0.55 }}
+                >
+                  Wegovy® is a registered trademark of Novo Nordisk A/S.
+                </span>
               </div>
 
               {/* Tile 3 — Stat card (WIDE, cols 3-4, row 3) — the hero claim as typography */}
@@ -879,8 +889,9 @@ export default function WeightLossPage() {
       {/* ═══════════════════════════════════════════════
           4 · THE TREATMENT GAP
           ═══════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 px-6 section-light">
-        <div className="max-w-5xl mx-auto">
+      <section className="relative py-16 md:py-24 px-6 section-light overflow-hidden">
+        <PillPattern density="medium" tone="warm" />
+        <div className="relative z-10 max-w-5xl mx-auto">
           <AnimateOnScroll>
             <div className="text-center mb-12 md:mb-16">
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4" style={{ color: PERSONA }}>
@@ -1337,7 +1348,7 @@ export default function WeightLossPage() {
         </div>
       </section>
 
-      {/* Disclaimer */}
+      {/* Disclaimer + trademark + ISI references */}
       <div className="py-6 px-6 section-light border-t border-halo-charcoal/[0.05]">
         <p className="text-center text-[11px] text-halo-charcoal/35 max-w-3xl mx-auto leading-relaxed">
           Halo is a technology platform that connects patients with licensed
@@ -1347,6 +1358,39 @@ export default function WeightLossPage() {
           GLP-1 medications may cause nausea, vomiting, diarrhea, pancreatitis,
           or gallbladder issues. Not for personal or family history of MTC or
           MEN 2 syndrome. Rx required. Not available in all 50 states.
+        </p>
+        <p className="text-center text-[11px] text-halo-charcoal/35 max-w-3xl mx-auto leading-relaxed mt-3">
+          Wegovy® and Ozempic® are registered trademarks of Novo Nordisk A/S.
+          Zepbound® is a registered trademark of Eli Lilly and Company.
+          Halo is not affiliated with, endorsed by, or sponsored by either manufacturer.
+          {" "}
+          <a
+            href="https://www.novo-pi.com/wegovy.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-halo-charcoal/55 transition-colors"
+          >
+            Important Safety Information &middot; Wegovy®
+          </a>
+          {" · "}
+          <a
+            href="https://www.novo-pi.com/ozempic.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-halo-charcoal/55 transition-colors"
+          >
+            Ozempic®
+          </a>
+          {" · "}
+          <a
+            href="https://uspl.lilly.com/zepbound/zepbound.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-halo-charcoal/55 transition-colors"
+          >
+            Zepbound®
+          </a>
+          .
         </p>
       </div>
     </>

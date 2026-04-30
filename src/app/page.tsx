@@ -20,6 +20,7 @@ import HaloLogo from "@/components/HaloLogo";
 import HeroVideo from "@/components/HeroVideo";
 import AnchorDataOverlay from "@/components/AnchorDataOverlay";
 import HaloPattern from "@/components/HaloPattern";
+import PillPattern from "@/components/PillPattern";
 import HaloMarquee from "@/components/HaloMarquee";
 import { usePersonalization } from "@/hooks/usePersonalization";
 import {
@@ -1105,8 +1106,9 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════
           5 · TESTIMONIALS — Editorial pull-quote + supporting 2-up
           ═══════════════════════════════════════════════ */}
-      <section className="py-20 md:py-24 px-6 section-light">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative py-20 md:py-24 px-6 section-light overflow-hidden">
+        <PillPattern density="light" tone="quiet" />
+        <div className="relative z-10 max-w-6xl mx-auto">
           <AnimateOnScroll>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 md:mb-16 gap-4">
               <div>
