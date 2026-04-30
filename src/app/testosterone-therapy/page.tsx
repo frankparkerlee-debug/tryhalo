@@ -47,7 +47,7 @@ const treatmentFormats = [
     name: "Injection",
     desc: "Weekly subcutaneous",
     body: "The gold standard. Most precise dosing. Most studied. A small needle, once a week.",
-    image: "/trt/format-injection.png",
+    image: "/trt/format-injection.webp",
     badge: "Most prescribed",
     bullets: [
       "Most consistent blood levels",
@@ -59,7 +59,7 @@ const treatmentFormats = [
     name: "Cream",
     desc: "Daily transdermal",
     body: "Applied to shoulders or upper arms. Smooth levels, no needles. Absorbs in minutes.",
-    image: "/trt/format-cream.png",
+    image: "/trt/format-cream.webp",
     bullets: [
       "No needles",
       "Daily application",
@@ -70,7 +70,7 @@ const treatmentFormats = [
     name: "Pill",
     desc: "Daily oral capsule",
     body: "Simple routine. No needles. A steady daily format that moves with your life.",
-    image: "/trt/format-pill.png",
+    image: "/trt/format-pill.webp",
     bullets: [
       "No needles",
       "Pocketable daily capsule",
@@ -103,21 +103,21 @@ const outcomes = [
     label: "Drive & libido",
     claim: "men studied. Significant improvements in sexual activity, desire, and erectile function on testosterone therapy over 12 months.",
     source: "Snyder et al., NEJM, 2016 (Testosterone Trials)",
-    image: "/trt/life-drive.png",
+    image: "/trt/life-drive.webp",
   },
   {
     stat: "+4 lbs",
     label: "Body composition",
     claim: "lean mass gain (and ~6.6 lbs fat mass loss) in men with low testosterone over 3 years.",
     source: "Snyder et al., JCEM, 1999",
-    image: "/trt/life-recovery.png",
+    image: "/trt/life-recovery.webp",
   },
   {
     stat: "Up to 54%",
     label: "Anemia corrected",
     claim: "of anemic men with low testosterone had their anemia corrected after 12 months of therapy.",
     source: "Roy et al., JAMA Internal Medicine, 2017 (TTrials Anemia Trial)",
-    image: "/trt/life-energy.png",
+    image: "/trt/life-energy.webp",
   },
 ];
 
@@ -188,7 +188,7 @@ const biomarkers = [
 const featuredPhysician = {
   name: "Dr. James Rivera, DO",
   title: "Family Medicine · Men\u2019s Health",
-  image: "/providers/james-rivera.png",
+  image: "/providers/james-rivera.webp",
 };
 
 const faqItems = [
@@ -348,21 +348,21 @@ const trtOutcomePicks = [
     id: "energy",
     label: "Energy through the day",
     sub: "Mornings that don't take 30 minutes to start. No 3pm crash.",
-    image: "/trt/life-energy.png",
+    image: "/trt/life-energy.webp",
     biomarkers: ["Free testosterone", "Cortisol", "Ferritin", "TSH"],
   },
   {
     id: "recovery",
     label: "Recovery in 24 hours",
     sub: "Training hard without paying for it for a week.",
-    image: "/trt/life-recovery.png",
+    image: "/trt/life-recovery.webp",
     biomarkers: ["IGF-1", "hs-CRP", "Creatine kinase", "Hematocrit"],
   },
   {
     id: "composition",
     label: "A body that responds again",
     sub: "Strength returning. Composition shifting.",
-    image: "/trt/life-drive.png",
+    image: "/trt/life-drive.webp",
     biomarkers: ["Lean mass", "Body fat", "HbA1c", "ApoB"],
   },
 ];
@@ -1310,7 +1310,7 @@ export default function TestosteroneTherapyPage() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/trt/hero-portrait.png"
+                src="/trt/hero-portrait.webp"
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 w-full h-full object-cover"

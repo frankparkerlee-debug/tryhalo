@@ -1176,7 +1176,7 @@ function QuizPageInner() {
                       <img
                         src={
                           gender === "Man"
-                            ? "/trt/hero-portrait.png"
+                            ? "/trt/hero-portrait.webp"
                             : "/hrt/gate-portrait.png"
                         }
                         alt=""

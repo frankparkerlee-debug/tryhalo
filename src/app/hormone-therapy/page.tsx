@@ -34,9 +34,9 @@ const PERSONA_SOFT = "#E8A798";
    ============================== */
 
 const treatmentFormats = [
-  { name: "Patch", desc: "Twice-weekly transdermal", image: "/hrt/format-patch.png" },
-  { name: "Cream", desc: "Daily topical compound", image: "/hrt/format-cream.png" },
-  { name: "Pill", desc: "Oral capsule", image: "/hrt/format-pill.png" },
+  { name: "Patch", desc: "Twice-weekly transdermal", image: "/hrt/format-patch.webp" },
+  { name: "Cream", desc: "Daily topical compound", image: "/hrt/format-cream.webp" },
+  { name: "Pill", desc: "Oral capsule", image: "/hrt/format-pill.webp" },
 ];
 
 const impactStats = [
@@ -74,26 +74,26 @@ const compounds = [
     name: "Estradiol",
     subtitle: "Transdermal · Oral · Cream",
     desc: "The primary estrogen your body produces less of in perimenopause. Delivered as a patch, cream, or pill based on your needs. Addresses hot flashes, sleep, cognition, and bone health.",
-    image: "/hrt/compound-estradiol.png",
+    image: "/hrt/compound-estradiol.webp",
   },
   {
     name: "Progesterone",
     subtitle: "Bioidentical micronized",
     desc: "Essential for sleep, mood, and uterine health. Compounded to your specific dose. Most patients take it nightly.",
-    image: "/hrt/compound-progesterone.png",
+    image: "/hrt/compound-progesterone.webp",
     objectPosition: "35% center",
   },
   {
     name: "Testosterone",
     subtitle: "For women · Low-dose",
     desc: "Most providers don’t test women’s testosterone. We do. A small dose can transform energy, libido, and body composition — without masculinizing effects.",
-    image: "/hrt/compound-testosterone.png",
+    image: "/hrt/compound-testosterone.webp",
   },
   {
     name: "DHEA",
     subtitle: "Adrenal support",
     desc: "For women whose cortisol and DHEA levels have shifted with age. Supports energy, mood, and hormonal buffering.",
-    image: "/hrt/compound-dhea.png",
+    image: "/hrt/compound-dhea.webp",
   },
 ];
 
@@ -103,7 +103,7 @@ const subjectiveCharts = [
     stat: "Up to 68%",
     claim: "remission of depressive symptoms in perimenopausal women on transdermal estradiol",
     source: "Soares et al., Arch Gen Psychiatry, 2001",
-    lifeImage: "/hrt/life-mood.png",
+    lifeImage: "/hrt/life-mood.webp",
     type: "mood" as const,
   },
   {
@@ -111,7 +111,7 @@ const subjectiveCharts = [
     stat: "4 yrs",
     claim: "of sustained sleep-quality improvement on transdermal estradiol + oral micronized progesterone — Halo's exact formulation.",
     source: "KEEPS trial, Cintron et al., Menopause, 2017",
-    lifeImage: "/hrt/life-sleep.png",
+    lifeImage: "/hrt/life-sleep.webp",
     type: "sleep" as const,
   },
   {
@@ -119,7 +119,7 @@ const subjectiveCharts = [
     stat: "Up to 75%",
     claim: "reduction in hot flash frequency versus placebo across 24 randomized trials",
     source: "MacLennan et al., Cochrane Review, 2004",
-    lifeImage: "/hrt/life-energy.png",
+    lifeImage: "/hrt/life-energy.webp",
     type: "energy" as const,
   },
 ];
@@ -611,6 +611,8 @@ function CompoundCard({ compound }: { compound: (typeof compounds)[number] }) {
             src={compound.image}
             alt=""
             aria-hidden="true"
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover"
             style={{
               objectPosition: compound.objectPosition || "center",
@@ -724,9 +726,11 @@ function HowItWorksAccordion() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/hrt/how-it-works.png"
+          src="/hrt/how-it-works.webp"
           alt=""
           aria-hidden="true"
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
           onError={(e) => {
             e.currentTarget.style.display = "none";
@@ -886,9 +890,11 @@ export default function HormoneTherapyPage() {
             {/* Real portrait loads if file present */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/hrt/hero-portrait.png"
+              src="/hrt/hero-portrait.webp"
               alt=""
               aria-hidden="true"
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ objectPosition: "center 25%" }}
               onError={(e) => {
@@ -945,6 +951,8 @@ export default function HormoneTherapyPage() {
                     <img
                       src={format.image}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = "none";
@@ -1126,9 +1134,11 @@ export default function HormoneTherapyPage() {
           {/* Real portrait loads if present */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/hrt/symptoms-portrait.png"
+            src="/hrt/symptoms-portrait.webp"
             alt=""
             aria-hidden="true"
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover"
             onError={(e) => {
               e.currentTarget.style.display = "none";
@@ -1399,6 +1409,8 @@ export default function HormoneTherapyPage() {
                         src={chart.lifeImage}
                         alt=""
                         aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
                         className="absolute inset-0 w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.style.display = "none";
@@ -1458,9 +1470,11 @@ export default function HormoneTherapyPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/providers/sarah-chen.png"
+                  src="/providers/sarah-chen.webp"
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";

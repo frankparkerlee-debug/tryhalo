@@ -311,7 +311,7 @@ const providers = [
     bio: "Twelve years of clinical experience in hormone optimization and perimenopause care. Previously at Mount Sinai.",
     initials: "SC",
     color: "#D4836B",
-    image: "/providers/sarah-chen.png",
+    image: "/providers/sarah-chen.webp",
   },
   {
     name: "Dr. James Rivera, DO",
@@ -320,7 +320,7 @@ const providers = [
     bio: "Board-certified with a sports medicine fellowship. Ten years of TRT protocol design and men\u2019s performance care.",
     initials: "JR",
     color: "#5A7394",
-    image: "/providers/james-rivera.png",
+    image: "/providers/james-rivera.webp",
   },
   {
     name: "Dr. Priya Patel, MD",
@@ -329,7 +329,7 @@ const providers = [
     bio: "Internal medicine specialist with expertise in peptide and NAD+ protocols. Published researcher in regenerative medicine.",
     initials: "PP",
     color: "#7B6B8F",
-    image: "/providers/priya-patel.png",
+    image: "/providers/priya-patel.webp",
   },
 ];
 

@@ -144,7 +144,7 @@ const biomarkers = [
 const featuredPhysician = {
   name: "Dr. Priya Patel, MD",
   title: "Internal Medicine \u00B7 Peptide & NAD+ Therapy",
-  image: "/providers/priya-patel.png",
+  image: "/providers/priya-patel.webp",
 };
 
 /* ==============================

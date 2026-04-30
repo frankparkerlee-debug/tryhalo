@@ -242,7 +242,7 @@ const biomarkers = [
 const featuredPhysician = {
   name: "Dr. Priya Patel, MD",
   title: "Internal Medicine \u00B7 Metabolic Health",
-  image: "/providers/priya-patel.png",
+  image: "/providers/priya-patel.webp",
 };
 
 const faqItems = [
