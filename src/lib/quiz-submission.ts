@@ -60,6 +60,10 @@ export const QUIZ_TYPES = [
   "stack_built",
   "intake_started",
   "waitlist_joined",
+  // Support inbox — /contact form. Routes through the same Klaviyo pipeline
+  // so messages land alongside quiz leads and the team can reply from the
+  // same surface. The user-typed message rides in `answers.message`.
+  "support_inquiry",
   // Legacy — founding-circle email capture (pre-launch waitlist)
   "founding_circle",
 ] as const;
@@ -268,6 +272,8 @@ export const KLAVIYO_EVENT_NAME: Record<QuizType, string> = {
   stack_built: "Built Stack",
   intake_started: "Started Intake",
   waitlist_joined: "Joined Waitlist",
+  // Support inbox
+  support_inquiry: "Submitted Contact Form",
   // Legacy
   founding_circle: "Joined Founding Circle",
 };
@@ -304,6 +310,10 @@ export const KLAVIYO_LIST_ENV: Record<QuizType, string> = {
   stack_built: "KLAVIYO_LIST_FOUNDING_CIRCLE",
   intake_started: "KLAVIYO_LIST_FOUNDING_CIRCLE",
   waitlist_joined: "KLAVIYO_LIST_FOUNDING_CIRCLE",
+  // Support inbox — routes to the founding-circle list pre-launch so the
+  // team has a single inbox; can split into a dedicated KLAVIYO_LIST_SUPPORT
+  // once volume warrants it.
+  support_inquiry: "KLAVIYO_LIST_FOUNDING_CIRCLE",
   // Legacy
   founding_circle: "KLAVIYO_LIST_FOUNDING_CIRCLE",
 };
