@@ -1627,8 +1627,7 @@ function CellularAgeQuiz() {
                   full assessment.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2.5 justify-center">
-                  {/* TODO: Swap to /quiz/nad once the focused NAD+ qualification quiz ships */}
-                  <Link
+                    <Link
                     href="/quiz/nad"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
                     style={{ backgroundColor: PERSONA }}
@@ -1668,7 +1667,6 @@ function CellularAgeQuiz() {
                   Ready to measure your actual NAD+? The full assessment takes
                   about four minutes.
                 </p>
-                {/* TODO: Swap to /quiz/nad once the focused NAD+ qualification quiz ships */}
                 <Link
                   href="/quiz/nad"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all hover:brightness-95"
