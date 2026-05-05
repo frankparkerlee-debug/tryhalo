@@ -309,8 +309,13 @@ export default function NoticeOfPrivacyPracticesPage() {
           <br />
           Halo Wellness, LLC
           <br />
+          PO Box 600715
+          <br />
+          Dallas, TX 75206
+          <br />
           Email:{" "}
           <a href="mailto:privacy@tryhalo.co">privacy@tryhalo.co</a>
+          <br />
           <br />
           For complaints relating to clinical care, you may also contact the
           OpenLoop ACE Privacy Officer at{" "}

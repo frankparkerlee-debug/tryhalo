@@ -384,6 +384,11 @@ export default function TermsOfUsePage() {
         <div className="legal-callout">
           <strong>Halo Wellness, LLC</strong>
           <br />
+          PO Box 600715
+          <br />
+          Dallas, TX 75206
+          <br />
+          <br />
           Email:{" "}
           <a href="mailto:hello@tryhalo.co">hello@tryhalo.co</a>
           <br />
