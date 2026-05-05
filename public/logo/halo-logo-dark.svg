@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60">
   <defs>
     <linearGradient id="halo-grad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#E8D4A0"/>
@@ -6,10 +6,10 @@
       <stop offset="100%" stop-color="#A07838"/>
     </linearGradient>
   </defs>
-  <!-- Mark — slightly inset so the rotated stroke doesn't clip -->
-  <g transform="translate(2, 8)">
+  <!-- Mark — centered at y=30 with breathing room above and below for the rotated stroke -->
+  <g transform="translate(4, 12)">
     <ellipse cx="21" cy="18" rx="18" ry="14" fill="none" stroke="url(#halo-grad)" stroke-width="3.2" transform="rotate(-12 21 18)"/>
   </g>
-  <!-- Wordmark — Inter Bold, charcoal for light backgrounds -->
-  <text x="50" y="35" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700" font-size="36" fill="#1C1C1E" letter-spacing="-0.36">Halo</text>
+  <!-- Wordmark — Inter Bold, charcoal for light backgrounds. Baseline at y=42 aligns the cap-line with the ring center. -->
+  <text x="56" y="42" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700" font-size="36" fill="#1C1C1E" letter-spacing="-0.36">Halo</text>
 </svg>
