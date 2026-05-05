@@ -21,7 +21,7 @@ export default function TermsPage() {
               1. Platform Description
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
-              Halo Health Inc. (&ldquo;Halo&rdquo;) operates a technology platform that connects
+              Halo Wellness, LLC (&ldquo;Halo&rdquo;) operates a technology platform that connects
               patients with independent licensed healthcare providers for telehealth consultations,
               laboratory testing, and prescription management. Halo is not a healthcare provider and
               does not practice medicine. All clinical decisions, diagnoses, and prescriptions are made
@@ -102,7 +102,7 @@ export default function TermsPage() {
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               All content, trademarks, logos, and intellectual property displayed on our website and
-              platform are owned by Halo Health Inc. or its licensors. You may not copy, reproduce,
+              platform are owned by Halo Wellness, LLC or its licensors. You may not copy, reproduce,
               distribute, or create derivative works from any content without our prior written consent.
             </p>
           </section>
@@ -112,7 +112,7 @@ export default function TermsPage() {
               8. Limitation of Liability
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
-              To the maximum extent permitted by law, Halo Health Inc. shall not be liable for any
+              To the maximum extent permitted by law, Halo Wellness, LLC shall not be liable for any
               indirect, incidental, special, consequential, or punitive damages, including but not
               limited to loss of profits, data, or other intangible losses, resulting from your use
               of or inability to use our Services. Halo&apos;s total liability for all claims arising
@@ -127,9 +127,9 @@ export default function TermsPage() {
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
               These Terms shall be governed by and construed in accordance with the laws of the State
-              of Delaware, without regard to its conflict of law provisions. Any disputes arising from
-              these Terms shall be resolved through binding arbitration in accordance with the rules
-              of the American Arbitration Association.
+              of Texas, without regard to its conflict of law provisions. Any disputes arising from
+              these Terms shall be resolved through binding arbitration in Dallas County, Texas, in
+              accordance with the rules of the American Arbitration Association.
             </p>
           </section>
 
@@ -179,7 +179,7 @@ export default function TermsPage() {
               Questions about these Terms should be directed to:
             </p>
             <p className="text-sm text-halo-charcoal/70 mt-2">
-              Halo Health Inc.
+              Halo Wellness, LLC
               <br />
               PO Box 600715
               <br />

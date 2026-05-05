@@ -24,7 +24,7 @@ export default function TermsOfUsePage() {
           application, the Halo telehealth platform, and any related products,
           features, or services (collectively, the &ldquo;Site&rdquo; and the
           &ldquo;Services&rdquo;) provided by{" "}
-          <strong>Halo Health Inc.</strong> (&ldquo;Halo,&rdquo;
+          <strong>Halo Wellness, LLC</strong> (&ldquo;Halo,&rdquo;
           &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;).
         </p>
         <p>
@@ -249,7 +249,7 @@ export default function TermsOfUsePage() {
         </p>
         <p>
           &ldquo;Halo,&rdquo; the Halo logo, and other Halo marks are
-          trademarks of Halo Health Inc. You may not use them without our
+          trademarks of Halo Wellness, LLC. You may not use them without our
           prior written consent.
         </p>
       </section>
@@ -350,11 +350,11 @@ export default function TermsOfUsePage() {
       <section>
         <h2>18. Governing law and dispute resolution</h2>
         <p>
-          These Terms are governed by the laws of the State of Delaware
+          These Terms are governed by the laws of the State of Texas
           without regard to its conflict-of-laws principles. Any dispute
           arising out of or relating to these Terms or the Services that is
           not resolved informally will be brought exclusively in the state
-          or federal courts located in Wilmington, Delaware, and you consent
+          or federal courts located in Dallas County, Texas, and you consent
           to personal jurisdiction and venue in those courts.
         </p>
       </section>
@@ -382,7 +382,7 @@ export default function TermsOfUsePage() {
         <h2>20. Contact us</h2>
         <p>Questions about these Terms? Contact us:</p>
         <div className="legal-callout">
-          <strong>Halo Health Inc.</strong>
+          <strong>Halo Wellness, LLC</strong>
           <br />
           Email:{" "}
           <a href="mailto:hello@tryhalo.co">hello@tryhalo.co</a>

@@ -28,7 +28,7 @@ export default function HipaaPage() {
               1. Who We Are
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
-              This notice is provided by Halo Health Inc. and the independent licensed healthcare
+              This notice is provided by Halo Wellness, LLC and the independent licensed healthcare
               providers who deliver care through our telehealth platform. We are required by law to
               maintain the privacy of your Protected Health Information (PHI), provide you with this
               notice of our legal duties and privacy practices, and follow the terms of this notice
@@ -144,7 +144,7 @@ export default function HipaaPage() {
             </p>
             <ul className="list-disc pl-5 space-y-2 text-sm text-halo-charcoal/70">
               <li>
-                <strong>Halo Health Inc.</strong> &mdash; Contact our Privacy Officer at{" "}
+                <strong>Halo Wellness, LLC</strong> &mdash; Contact our Privacy Officer at{" "}
                 <a href="mailto:privacy@tryhalo.co" className="text-[#6B7B6E] hover:underline">
                   privacy@tryhalo.co
                 </a>
@@ -178,7 +178,7 @@ export default function HipaaPage() {
               For questions about this notice or to exercise your rights, contact:
             </p>
             <p className="text-sm text-halo-charcoal/70 mt-2">
-              Halo Health Inc.
+              Halo Wellness, LLC
               <br />
               Privacy Officer
               <br />

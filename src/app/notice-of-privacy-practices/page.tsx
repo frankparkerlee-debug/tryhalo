@@ -20,7 +20,7 @@ export default function NoticeOfPrivacyPracticesPage() {
         <h2>Who we are</h2>
         <p>
           This Notice of Privacy Practices is provided by{" "}
-          <strong>Halo Health Inc.</strong> (&ldquo;Halo,&rdquo; &ldquo;we,&rdquo;
+          <strong>Halo Wellness, LLC</strong> (&ldquo;Halo,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us,&rdquo; or &ldquo;our&rdquo;) and the affiliated covered
           entities (&ldquo;ACE&rdquo;) that provide clinical care through the
           Halo platform. The clinical practice is delivered by{" "}
@@ -307,7 +307,7 @@ export default function NoticeOfPrivacyPracticesPage() {
         <div className="legal-callout">
           <strong>Halo Privacy Officer</strong>
           <br />
-          Halo Health Inc.
+          Halo Wellness, LLC
           <br />
           Email:{" "}
           <a href="mailto:privacy@tryhalo.co">privacy@tryhalo.co</a>
@@ -321,7 +321,7 @@ export default function NoticeOfPrivacyPracticesPage() {
         </div>
         <p className="text-sm" style={{ fontSize: "13px", color: "rgba(28,30,32,0.55)" }}>
           A paper copy of this notice is available on request. This notice
-          applies to the privacy practices of Halo Health Inc. and the Halo
+          applies to the privacy practices of Halo Wellness, LLC and the Halo
           Provider Network ACE designated above.
         </p>
       </section>

@@ -25,7 +25,7 @@ export default function SmsTermsPage() {
               By providing your mobile number and opting in, you agree to receive
               recurring automated marketing and transactional text messages
               (including those sent using an automatic telephone dialing system)
-              from Halo Health Inc. (&ldquo;Halo&rdquo;) at the number you
+              from Halo Wellness, LLC (&ldquo;Halo&rdquo;) at the number you
               provided. Consent is not a condition of purchase. Message frequency
               varies. Message and data rates may apply.
             </p>
@@ -129,7 +129,7 @@ export default function SmsTermsPage() {
               Questions about these SMS Terms should be directed to:
             </p>
             <p className="text-sm text-halo-charcoal/70 mt-2">
-              Halo Health Inc.
+              Halo Wellness, LLC
               <br />
               PO Box 600715
               <br />

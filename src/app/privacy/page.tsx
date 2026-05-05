@@ -21,7 +21,7 @@ export default function PrivacyPage() {
               1. Introduction
             </h2>
             <p className="text-sm text-halo-charcoal/70 leading-relaxed">
-              Halo Health Inc. (&ldquo;Halo,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;)
+              Halo Wellness, LLC (&ldquo;Halo,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;)
               is committed to protecting your privacy. This Privacy Policy describes how we collect,
               use, disclose, and safeguard your personal information when you use our website at
               tryhalo.co and our telehealth platform (collectively, the &ldquo;Services&rdquo;).
@@ -237,7 +237,7 @@ export default function PrivacyPage() {
               If you have questions about this Privacy Policy or our data practices, please contact us at:
             </p>
             <p className="text-sm text-halo-charcoal/70 mt-2">
-              Halo Health Inc.
+              Halo Wellness, LLC
               <br />
               Email:{" "}
               <a href="mailto:privacy@tryhalo.co" className="text-[#6B7B6E] hover:underline">
