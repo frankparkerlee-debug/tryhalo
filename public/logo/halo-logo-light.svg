@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50">
+  <defs>
+    <linearGradient id="halo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E8D4A0"/>
+      <stop offset="50%" stop-color="#C8A96E"/>
+      <stop offset="100%" stop-color="#A07838"/>
+    </linearGradient>
+  </defs>
+  <!-- Mark — slightly inset so the rotated stroke doesn't clip -->
+  <g transform="translate(2, 8)">
+    <ellipse cx="21" cy="18" rx="18" ry="14" fill="none" stroke="url(#halo-grad)" stroke-width="3.2" transform="rotate(-12 21 18)"/>
+  </g>
+  <!-- Wordmark — Inter Bold, white for dark backgrounds -->
+  <text x="50" y="35" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700" font-size="36" fill="#FFFFFF" letter-spacing="-0.36">Halo</text>
+</svg>
