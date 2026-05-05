@@ -26,6 +26,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/terms", priority: 0.3, changeFrequency: "yearly" as const },
     { path: "/terms-of-use", priority: 0.3, changeFrequency: "yearly" as const },
     { path: "/notice-of-privacy-practices", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/telehealth-consent", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/cancellation-and-refund-policy", priority: 0.3, changeFrequency: "yearly" as const },
     { path: "/hipaa", priority: 0.3, changeFrequency: "yearly" as const },
     { path: "/sms-terms", priority: 0.2, changeFrequency: "yearly" as const },
   ];

@@ -31,6 +31,8 @@ const footerColumns = [
       { label: "Terms of Service", href: "/terms" },
       { label: "Terms of Use", href: "/terms-of-use" },
       { label: "Notice of Privacy Practices", href: "/notice-of-privacy-practices" },
+      { label: "Telehealth Consent", href: "/telehealth-consent" },
+      { label: "Cancellation & Refund", href: "/cancellation-and-refund-policy" },
       { label: "SMS Terms", href: "/sms-terms" },
       { label: "HIPAA Notice", href: "/hipaa" },
     ],
