@@ -24,7 +24,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/contact", priority: 0.5, changeFrequency: "yearly" as const },
     { path: "/privacy", priority: 0.3, changeFrequency: "yearly" as const },
     { path: "/terms", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/terms-of-use", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/notice-of-privacy-practices", priority: 0.3, changeFrequency: "yearly" as const },
     { path: "/hipaa", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/sms-terms", priority: 0.2, changeFrequency: "yearly" as const },
   ];
 
   return routes.map(({ path, priority, changeFrequency }) => ({

@@ -29,6 +29,8 @@ const footerColumns = [
     links: [
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
+      { label: "Terms of Use", href: "/terms-of-use" },
+      { label: "Notice of Privacy Practices", href: "/notice-of-privacy-practices" },
       { label: "SMS Terms", href: "/sms-terms" },
       { label: "HIPAA Notice", href: "/hipaa" },
     ],
